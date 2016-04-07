@@ -1,0 +1,4 @@
+# sim.fossils.unif
+# generate a better example
+# throw an error if tree != phylo
+# consider numbering horizons in a meaningful way
