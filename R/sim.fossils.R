@@ -81,3 +81,15 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling){
 
   # EOF
 }
+
+# written by Liam J. Revell
+n.ages<-function(tree) {
+    
+    node.ages<-max(nodeHeights(tree))-nodeHeights(tree)[match(1:tree$Nnode+length(tree$tip),tree$edge[,1]),1]
+    names(node.ages)<-1:tree$Nnode+length(tree$tip)
+    
+    return(node.ages)
+    
+    # EOF
+}
+
