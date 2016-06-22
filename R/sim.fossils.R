@@ -1,3 +1,52 @@
+#' Simulate fossils under a Poisson sampling model
+#'
+#' @param tree Phylo object.
+#' @param phi Sampling rate.
+#' @return dataframe of sampled fossils.
+#' sp = edge labels. h = ages.
+#' @examples
+#' t<-rtree(4)
+#' sim.fossils.poisson(t,1)
+#' @keywords uniform preseravtion
+#' @export
+sim.fossils.poisson<-function(tree,phi){
+  tree<-tree
+  lambda<-phi
+
+  node.ages<-n.ages(tree)
+
+  fossils<-data.frame(sp=numeric(),h=numeric())
+
+  for (i in tree$edge[,2]){ # internal nodes + tips
+
+    # work out the max age of the lineage (e.g. when that lineage became extant)
+    # & get ancestor
+    row=which(tree$edge[,2]==i)
+    ancestor=tree$edge[,1][row]
+
+    # get the age of the ancestor
+    a=which(names(node.ages)==ancestor)
+    lineage.start=node.ages[[a]]
+
+    # work out the min age of the lineage (e.g. when that lineage became extinct)
+    # & get the branch length
+    b=tree$edge.length[row]
+    lineage.end=lineage.start-b # branch length
+
+    # sample fossil numbers from the Poisson distribution
+    rand=rpois(1,b*lambda)
+
+    if(rand > 0){
+      for(r in 1:rand){
+        h=runif(r,min=lineage.end,max=lineage.start)
+        fossils<-rbind(fossils,data.frame(sp=i,h=h))
+      }
+    }
+  }
+  return(fossils) # in this data frame h=fossil age and sp=lineage
+  # EOF
+}
+
 #' Simulate fossils under a uniform model of preservation
 #'
 #' @param tree Phylo object.
