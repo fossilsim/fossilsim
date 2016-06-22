@@ -1,14 +1,16 @@
 #' Simulate fossils under a uniform model of preservation
-#' @param tree Phylo object
-#' @param basin.age Maximum age fossils may sampled
-#' @param strata Number of stratigraphic horizons
-#' @param sampling Probability of sampling/preservation
-#' @keywords uniform preseravtion
-#' @export
+#'
+#' @param tree Phylo object.
+#' @param basin.age Maximum age fossils may be sampled.
+#' @param strata Number of stratigraphic horizons.
+#' @param sampling Probability of sampling/preservation.
+#' @return dataframe of sampled fossils.
+#' sp = edge labels. h = horizon labels (= max horizon age).
 #' @examples
 #' t<-rtree(4)
 #' sim.fossils.unif(t,1,5,0.5)
-#'
+#' @keywords uniform preseravtion
+#' @export
 sim.fossils.unif<-function(tree,basin.age,strata,sampling){
   tree<-tree
   basin.age<-basin.age
@@ -80,16 +82,5 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling){
   return(fossils) # in this data frame h=horizon and sp=lineage
 
   # EOF
-}
-
-# written by Liam J. Revell
-n.ages<-function(tree) {
-    
-    node.ages<-max(nodeHeights(tree))-nodeHeights(tree)[match(1:tree$Nnode+length(tree$tip),tree$edge[,1]),1]
-    names(node.ages)<-1:tree$Nnode+length(tree$tip)
-    
-    return(node.ages)
-    
-    # EOF
 }
 

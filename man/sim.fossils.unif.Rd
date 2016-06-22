@@ -7,13 +7,17 @@
 sim.fossils.unif(tree, basin.age, strata, sampling)
 }
 \arguments{
-\item{tree}{Phylo object}
+\item{tree}{Phylo object.}
 
-\item{basin.age}{Maximum age fossils may sampled}
+\item{basin.age}{Maximum age fossils may be sampled.}
 
-\item{strata}{Number of stratigraphic horizons}
+\item{strata}{Number of stratigraphic horizons.}
 
-\item{sampling}{Probability of sampling/preservation}
+\item{sampling}{Probability of sampling/preservation.}
+}
+\value{
+dataframe of sampled fossils.
+sp = edge labels. h = horizon labels (= max horizon age).
 }
 \description{
 Simulate fossils under a uniform model of preservation
@@ -21,7 +25,6 @@ Simulate fossils under a uniform model of preservation
 \examples{
 t<-rtree(4)
 sim.fossils.unif(t,1,5,0.5)
-
 }
 \keyword{preseravtion}
 \keyword{uniform}
