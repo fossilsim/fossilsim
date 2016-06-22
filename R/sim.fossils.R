@@ -15,7 +15,7 @@ sim.fossils.poisson<-function(tree,phi){
 
   node.ages<-n.ages(tree)
 
-  fossils<-data.frame(sp=numeric(),h=numeric())
+  fossils<-data.frame(h=numeric(),sp=numeric())
 
   for (i in tree$edge[,2]){ # internal nodes + tips
 
@@ -39,7 +39,7 @@ sim.fossils.poisson<-function(tree,phi){
     if(rand > 0){
       for(r in 1:rand){
         h=runif(r,min=lineage.end,max=lineage.start)
-        fossils<-rbind(fossils,data.frame(sp=i,h=h))
+        fossils<-rbind(fossils,data.frame(h=h,sp=i))
       }
     }
   }
