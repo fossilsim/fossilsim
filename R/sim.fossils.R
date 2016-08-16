@@ -18,7 +18,6 @@ sim.fossils.poisson<-function(tree,phi){
   fossils<-data.frame(h=numeric(),sp=numeric())
 
   for (i in tree$edge[,2]){ # internal nodes + tips
-    cat("node", i, "\n")
 
     # work out the max age of the lineage (e.g. when that lineage became extant)
     # & get ancestor
@@ -34,15 +33,11 @@ sim.fossils.poisson<-function(tree,phi){
     b=tree$edge.length[row]
     lineage.end=lineage.start-b # branch length
 
-    cat("ant", ancestor, "\n")
-    cat("start", lineage.start, "\n")
-    cat("end", lineage.end, "\n")
-
     # sample fossil numbers from the Poisson distribution
     rand=rpois(1,b*lambda)
 
     if(rand > 0){
-      h=runif(r,min=lineage.end,max=lineage.start)
+      h=runif(rand,min=lineage.end,max=lineage.start)
       fossils<-rbind(fossils,data.frame(h=h,sp=i))
     }
   }
