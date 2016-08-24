@@ -9,9 +9,10 @@
 #' sim.fossils.poisson(t,1)
 #' @keywords uniform preseravtion
 #' @export
-sim.fossils.poisson<-function(tree,phi){
+sim.fossils.poisson<-function(tree,phi,root.edge=T){
   tree<-tree
   lambda<-phi
+  root.edge<-root.edge
 
   node.ages<-n.ages(tree)
 
@@ -41,6 +42,26 @@ sim.fossils.poisson<-function(tree,phi){
       fossils<-rbind(fossils,data.frame(h=h,sp=i))
     }
   }
+
+  if(root.edge && exists("root.edge",tree) ){
+
+    root=length(tree$tip.label)+1
+    a=which(names(node.ages)==root)
+    lineage.end=node.ages[[a]]
+
+    b=tree$root.edge
+    lineage.start=lineage.end+b
+
+    # sample fossil numbers from the Poisson distribution
+    rand=rpois(1,b*lambda)
+
+    if(rand > 0){
+      h=runif(rand,min=lineage.end,max=lineage.start)
+      fossils<-rbind(fossils,data.frame(h=h,sp=root))
+    }
+
+  }
+
   return(fossils) # in this data frame h=fossil age and sp=lineage
   # EOF
 }
