@@ -44,6 +44,3 @@ is.root<-function(edge,tree){
     return(FALSE)
   #eof
 }
-
-
-
