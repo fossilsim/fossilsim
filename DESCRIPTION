@@ -1,11 +1,12 @@
 Package: FossilSim
 Type: Package
-Title: Simulating Fossils 
+Title: Simulating Fossils
 Version: 0.1
 Authors@R: person("Rachel", "Warnock", email="rachel.warnock@ethz.bsse.ch", role=c("aut","cre"))
-Description: Simulating fossil data on phylogenetic trees under mechanistic models of
-     preservation and sampling.
+Description: Simulating fossil data on phylogenetic trees under mechanistic
+    models of preservation and sampling.
 License: What license is it under?
 LazyData: TRUE
-RoxygenNote: 5.0.1.9000
-Imports: ape
+RoxygenNote: 5.0.1
+Imports:
+    ape

@@ -26,6 +26,7 @@ Simulate fossils under a uniform model of preservation
 t<-rtree(4)
 sim.fossils.unif(t,1,5,0.5)
 }
+\keyword{fossil}
 \keyword{preseravtion}
 \keyword{uniform}
 

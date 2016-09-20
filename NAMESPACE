@@ -2,4 +2,5 @@
 
 export(sim.fossils.poisson)
 export(sim.fossils.unif)
+export(sim.water.depth)
 importFrom(phytools,nodeHeights)

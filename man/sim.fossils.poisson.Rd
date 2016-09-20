@@ -4,7 +4,7 @@
 \alias{sim.fossils.poisson}
 \title{Simulate fossils under a Poisson sampling model}
 \usage{
-sim.fossils.poisson(tree, phi)
+sim.fossils.poisson(tree, phi, root.edge = T)
 }
 \arguments{
 \item{tree}{Phylo object.}
