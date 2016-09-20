@@ -77,7 +77,7 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
 #' @examples
 #' t<-rtree(4)
 #' sim.fossils.unif(t,1,5,0.5)
-#' @keywords uniform preseravtion
+#' @keywords uniform fossil preseravtion
 #' @export
 sim.fossils.unif<-function(tree,basin.age,strata,sampling){
   tree<-tree
@@ -151,4 +151,31 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling){
 
   # EOF
 }
+
+#' Simulate water depth profile
+#'
+#' @param strata Number of stratigraphic horizons.
+#' @return dataframe of sampled water depths.
+#' @examples
+#' wd<-sim.water.depth(100)
+#' plot(wd, type="l")
+#' @keywords non-uniform fossil preservation
+#' @export
+sim.water.depth<-function(strata,depth=2,cycles=2) {
+
+  # define the x-axis values
+  x=seq(0,2,length.out=strata)
+
+  # define y-axis values
+  # a - total depth excursion - amplitude
+  # b - number of cycles - period
+  # 1/c - defines the relative start time of each cycle - phase shift
+  # y = a * sin (b * pi * (x-1/c))
+  y=depth*sin(cycles*pi*(x-1/4))
+
+  return(data.frame(x=c(1:strata),y=y))
+
+  # EOF
+}
+
 
