@@ -4,7 +4,7 @@
 \alias{sim.fossils.unif}
 \title{Simulate fossils under a uniform model of preservation}
 \usage{
-sim.fossils.unif(tree, basin.age, strata, sampling)
+sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T)
 }
 \arguments{
 \item{tree}{Phylo object.}
@@ -23,7 +23,8 @@ sp = edge labels. h = horizon labels (= max horizon age).
 Simulate fossils under a uniform model of preservation
 }
 \examples{
-t<-rtree(4)
+t<-ape::rtree(4)
+ba<-basin.age(t,root.edge=F)
 sim.fossils.unif(t,1,5,0.5)
 }
 \keyword{fossil}
