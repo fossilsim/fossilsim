@@ -70,7 +70,7 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
 #' Simulate fossils under a uniform model of preservation
 #'
 #' @param tree Phylo object.
-#' @param basin.age Maximum age fossils may be sampled.
+#' @param basin.age Maximum age of the oldest horizon.
 #' @param strata Number of stratigraphic horizons.
 #' @param sampling Probability of sampling/preservation.
 #' @return dataframe of sampled fossils.
@@ -225,7 +225,7 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
 #' @param tree Phylo object.
-#' @param basin.age Maximum age fossils may be sampled.
+#' @param basin.age Maximum age of the oldest horizon.
 #' @param strata Number of stratigraphic horizons.
 #' @param PA Peak adbundance parameter.
 #' @param PD Preferred depth parameter.
