@@ -10,6 +10,8 @@ sim.fossils.poisson(tree, phi, root.edge = T)
 \item{tree}{Phylo object.}
 
 \item{phi}{Sampling rate.}
+
+\item{root.edge}{Boolean indicating tree inclues a root edge.}
 }
 \value{
 dataframe of sampled fossils.
