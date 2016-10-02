@@ -29,11 +29,6 @@ sp = edge labels. h = horizon labels (= max horizon age).
 \description{
 Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 }
-\examples{
-t<-ape::rtree(4)
-ba<-basin.age(t,root.edge=F)
-sim.fossils.unif(t,1,5,0.5)
-}
 \keyword{fossil}
 \keyword{preseravtion}
 \keyword{uniform}

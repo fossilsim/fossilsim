@@ -78,7 +78,7 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
 #' @examples
 #' t<-ape::rtree(4)
 #' ba<-basin.age(t,root.edge=F)
-#' sim.fossils.unif(t,1,5,0.5)
+#' sim.fossils.unif(t,ba,5,0.5)
 #' @keywords uniform fossil preseravtion
 #' @export
 sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T){
@@ -196,6 +196,8 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T){
 #' Simulate water depth profile
 #'
 #' @param strata Number of stratigraphic horizons.
+#' @param depth Maximum water depth.
+#' @param cycles Number of cycles (transgressions and regressions)
 #' @return dataframe of sampled water depths.
 #' @examples
 #' wd<-sim.water.depth(100)
@@ -231,10 +233,6 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 #' @param root.edge Boolean indicating tree inclues a root edge.
 #' @return dataframe of sampled fossils.
 #' sp = edge labels. h = horizon labels (= max horizon age).
-#' @examples
-#' t<-ape::rtree(4)
-#' ba<-basin.age(t,root.edge=F)
-#' sim.fossils.unif(t,1,5,0.5)
 #' @keywords uniform fossil preseravtion
 #' @export
 sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,root.edge=T){
@@ -375,3 +373,4 @@ basin.age<-function(tree,root.edge=T){
   ba = round(ba,1)+0.1
   return(ba)
 }
+

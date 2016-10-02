@@ -25,7 +25,7 @@ Simulate fossils under a uniform model of preservation
 \examples{
 t<-ape::rtree(4)
 ba<-basin.age(t,root.edge=F)
-sim.fossils.unif(t,1,5,0.5)
+sim.fossils.unif(t,ba,5,0.5)
 }
 \keyword{fossil}
 \keyword{preseravtion}

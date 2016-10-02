@@ -8,6 +8,10 @@ sim.water.depth(strata, depth = 2, cycles = 2)
 }
 \arguments{
 \item{strata}{Number of stratigraphic horizons.}
+
+\item{depth}{Maximum water depth.}
+
+\item{cycles}{Number of cycles (transgressions and regressions)}
 }
 \value{
 dataframe of sampled water depths.
