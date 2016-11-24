@@ -90,7 +90,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T){
   s1=basin.age/strata # horizon length (= max age of youngest horizon)
   horizons<-seq(s1, basin.age, length=strata)
 
-  node.ages<-n.ages(tree)
+  node.ages<-TreeSim::getx(tree,sersampling = 1)
   root=length(tree$tip.label)+1
 
   fossils<-data.frame(h=numeric(),sp=numeric())
@@ -119,7 +119,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T){
       # if the lineage is extant during this horizon
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
 
-        # 1. generate a random number from the uniform distribution
+        # 1. generate a random number from a uniform distribution
         random.number=runif(1)
 
         # 2. calculate the proportion of time during each horizon the lineage is extant
