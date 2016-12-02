@@ -81,16 +81,20 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
 #' sim.fossils.unif(t,ba,5,0.5)
 #' @keywords uniform fossil preseravtion
 #' @export
-sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T){
+sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K=T){
   tree<-tree
   basin.age<-basin.age
   strata<-strata
   sampling<-sampling
+  generate.K<-generate.K
 
   s1=basin.age/strata # horizon length (= max age of youngest horizon)
   horizons<-seq(s1, basin.age, length=strata)
 
-  node.ages<-TreeSim::getx(tree,sersampling = 1)
+  # poisson rate
+  rate = -log(1-sampling)/(basin.age/strata)
+
+  node.ages<-n.ages(tree)
   root=length(tree$tip.label)+1
 
   fossils<-data.frame(h=numeric(),sp=numeric())
@@ -143,7 +147,13 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T){
 
         # 4. if random.number < pr { record fossil as collected }
         if (random.number <= pr ) {
-          fossils<-rbind(fossils,data.frame(h=h,sp=i))
+          k=0
+          while(k==0){
+            k = rpois(1,rate*pr*s1)
+          }
+          for(j in 1:k){
+            fossils<-rbind(fossils,data.frame(h=h,sp=i))
+          }
         }
       }
 
@@ -220,7 +230,6 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 
   # EOF
 }
-
 
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
