@@ -81,7 +81,7 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
 #' sim.fossils.unif(t,ba,5,0.5)
 #' @keywords uniform fossil preseravtion
 #' @export
-sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K=T){
+sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K=F){
   tree<-tree
   basin.age<-basin.age
   strata<-strata
