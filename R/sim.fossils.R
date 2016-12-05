@@ -180,10 +180,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
 
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
 
-        # 1. generate a random number from the uniform distribution
-        random.number=runif(1)
-
-        # 2. calculate the proportion of time during each horizon the lineage is extant
+        # calculate the proportion of time during each horizon the lineage is extant
         # lineage speciates and goes extinct in interval h
         if((lineage.end > h.min) && (lineage.start < h.max)){
           pr = (lineage.start-lineage.end)/s1
@@ -209,22 +206,23 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
           f.min = h.min
         }
 
-        # 3. define the probabilty
-        pr = pr * sampling
+        brl = brl + (s1*pr)
 
-        # 4. if random.number < pr { record fossil as collected }
-        if (random.number <= pr ) {
-          if(generate.K){
-            k=0
-            while(k==0){
-              k = rpois(1,rate*s1)
-            }
+        if(convert.rate){
+          # generate k fossils from a poisson distribution
+          k = rpois(1,rate*s1*pr)
+          if(k > 0){
             for(j in 1:k){
               age = runif(1,f.min,f.max)
-              fossils<-rbind(fossils,data.frame(h=age,sp=root))
+              fossils<-rbind(fossils,data.frame(h=age,sp=i))
             }
-          } else {
-            fossils<-rbind(fossils,data.frame(h=h,sp=root))
+          }
+        } else {
+          # define the probabilty
+          pr = pr * sampling
+          # if random.number < pr { record fossil as collected }
+          if (runif(1) <= pr) {
+            fossils<-rbind(fossils,data.frame(h=h,sp=i))
           }
         }
       }
