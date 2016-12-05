@@ -127,36 +127,50 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K
         random.number=runif(1)
 
         # 2. calculate the proportion of time during each horizon the lineage is extant
-        # if lineage is extant for the entire duration of the horizon
-        if ( (lineage.end <= h.min) & (lineage.start >= h.max) ) {
-          pr=1
+        # lineage speciates and goes extinct in interval h
+        if((lineage.end > h.min) && (lineage.start < h.max)){
+          pr = (lineage.start-lineage.end)/s1
+          f.max = lineage.start
+          f.min = lineage.end
         }
-        # if lineage goes extinct within the horizon
-        else if (lineage.end >= h.min) {
-          pr=h.max-lineage.end
-          pr=pr/s1
+        # lineage goes extinct in interval h
+        else if(lineage.end > h.min){
+          pr = (h.max-lineage.end)/s1
+          f.max = h.max
+          f.min = lineage.end
         }
-        # if lineage originates within the horizon
-        else {
-          pr=lineage.start-h.min
-          pr=pr/s1
+        # lineage speciates in interval h
+        else if(lineage.start < h.max){
+          pr = (lineage.start-h.min)/s1
+          f.max = lineage.start
+          f.min = h.min
+        }
+        # lineage is extant the entire duration of interval h
+        else{
+          pr = 1
+          f.max = h.max
+          f.min = h.min
         }
 
         # 3. define the probabilty
         pr = pr * sampling
 
         # 4. if random.number < pr { record fossil as collected }
-        if (random.number <= pr ) {
-          k=0
-          while(k==0){
-            k = rpois(1,rate*pr*s1)
-          }
-          for(j in 1:k){
+        if (random.number <= pr) {
+          if(generate.K){
+            k=0
+            while(k==0){
+              k = rpois(1,rate*s1)
+            }
+            for(j in 1:k){
+              age = runif(1,f.min,f.max)
+              fossils<-rbind(fossils,data.frame(h=age,sp=i))
+            }
+          } else {
             fossils<-rbind(fossils,data.frame(h=h,sp=i))
           }
         }
       }
-
     }
 
     if(root.edge){
@@ -170,19 +184,29 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K
         random.number=runif(1)
 
         # 2. calculate the proportion of time during each horizon the lineage is extant
-        # if lineage is extant for the entire duration of the horizon
-        if ( (lineage.end <= h.min) & (lineage.start >= h.max) ) {
-          pr=1
+        # lineage speciates and goes extinct in interval h
+        if((lineage.end > h.min) && (lineage.start < h.max)){
+          pr = (lineage.start-lineage.end)/s1
+          f.max = lineage.start
+          f.min = lineage.end
         }
-        # if lineage goes extinct within the horizon
-        else if (lineage.end >= h.min) {
-          pr=h.max-lineage.end
-          pr=pr/s1
+        # lineage goes extinct in interval h
+        else if(lineage.end > h.min){
+          pr = (h.max-lineage.end)/s1
+          f.max = h.max
+          f.min = lineage.end
         }
-        # if lineage originates within the horizon
-        else {
-          pr=lineage.start-h.min
-          pr=pr/s1
+        # lineage speciates in interval h
+        else if(lineage.start < h.max){
+          pr = (lineage.start-h.min)/s1
+          f.max = lineage.start
+          f.min = h.min
+        }
+        # lineage is extant the entire duration of interval h
+        else{
+          pr = 1
+          f.max = h.max
+          f.min = h.min
         }
 
         # 3. define the probabilty
@@ -190,16 +214,23 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K
 
         # 4. if random.number < pr { record fossil as collected }
         if (random.number <= pr ) {
-          fossils<-rbind(fossils,data.frame(h=h,sp=root))
+          if(generate.K){
+            k=0
+            while(k==0){
+              k = rpois(1,rate*s1)
+            }
+            for(j in 1:k){
+              age = runif(1,f.min,f.max)
+              fossils<-rbind(fossils,data.frame(h=age,sp=root))
+            }
+          } else {
+            fossils<-rbind(fossils,data.frame(h=h,sp=root))
+          }
         }
       }
-
     }
-
   }
-
   return(fossils) # in this data frame h=horizon and sp=lineage
-
   # EOF
 }
 
