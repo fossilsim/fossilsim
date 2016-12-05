@@ -81,23 +81,25 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
 #' sim.fossils.unif(t,ba,5,0.5)
 #' @keywords uniform fossil preseravtion
 #' @export
-sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K=F){
+sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.rate=FALSE){
   tree<-tree
   basin.age<-basin.age
   strata<-strata
   sampling<-sampling
-  generate.K<-generate.K
+  convert.rate<-convert.rate # convert prability to rate and generate k fossils
 
   s1=basin.age/strata # horizon length (= max age of youngest horizon)
   horizons<-seq(s1, basin.age, length=strata)
 
-  # poisson rate
+  # poisson rate under constant model
   rate = -log(1-sampling)/(basin.age/strata)
 
   node.ages<-n.ages(tree)
   root=length(tree$tip.label)+1
 
   fossils<-data.frame(h=numeric(),sp=numeric())
+
+  brl = 0 # record total branch length for debugging
 
   for(h in horizons){
 
@@ -123,10 +125,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K
       # if the lineage is extant during this horizon
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
 
-        # 1. generate a random number from a uniform distribution
-        random.number=runif(1)
-
-        # 2. calculate the proportion of time during each horizon the lineage is extant
+        # calculate the proportion of time during each horizon the lineage is extant
         # lineage speciates and goes extinct in interval h
         if((lineage.end > h.min) && (lineage.start < h.max)){
           pr = (lineage.start-lineage.end)/s1
@@ -152,21 +151,22 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,generate.K
           f.min = h.min
         }
 
-        # 3. define the probabilty
-        pr = pr * sampling
+        brl = brl + (s1*pr)
 
-        # 4. if random.number < pr { record fossil as collected }
-        if (random.number <= pr) {
-          if(generate.K){
-            k=0
-            while(k==0){
-              k = rpois(1,rate*s1)
-            }
+        if(convert.rate){
+          # generate k fossils from a poisson distribution
+          k = rpois(1,rate*s1*pr)
+          if(k > 0){
             for(j in 1:k){
               age = runif(1,f.min,f.max)
               fossils<-rbind(fossils,data.frame(h=age,sp=i))
             }
-          } else {
+          }
+        } else {
+          # define the probabilty
+          pr = pr * sampling
+          # if random.number < pr { record fossil as collected }
+          if (runif(1) <= pr) {
             fossils<-rbind(fossils,data.frame(h=h,sp=i))
           }
         }
