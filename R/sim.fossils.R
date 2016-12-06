@@ -216,7 +216,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
           if(k > 0){
             for(j in 1:k){
               age = runif(1,f.min,f.max)
-              fossils<-rbind(fossils,data.frame(h=age,sp=i))
+              fossils<-rbind(fossils,data.frame(h=age,sp=root))
             }
           }
         } else {
@@ -224,7 +224,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
           pr = pr * sampling
           # if random.number < pr { record fossil as collected }
           if (runif(1) <= pr) {
-            fossils<-rbind(fossils,data.frame(h=h,sp=i))
+            fossils<-rbind(fossils,data.frame(h=h,sp=root))
           }
         }
       }
@@ -419,7 +419,7 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
           if(k > 0){
             for(j in 1:k){
               age = runif(1,f.min,f.max)
-              fossils<-rbind(fossils,data.frame(h=age,sp=i))
+              fossils<-rbind(fossils,data.frame(h=age,sp=root))
             }
           }
         } else {
@@ -427,7 +427,7 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
           pr = pr * sampling
           # if random.number < pr { record fossil as collected }
           if (runif(1) <= pr) {
-            fossils<-rbind(fossils,data.frame(h=h,sp=i))
+            fossils<-rbind(fossils,data.frame(h=h,sp=root))
           }
         }
       }
