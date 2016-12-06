@@ -73,8 +73,10 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
 #' @param basin.age Maximum age of the oldest horizon.
 #' @param strata Number of stratigraphic horizons.
 #' @param sampling Probability of sampling/preservation.
+#' @param root.edge Boolean indicating tree includes root edge (default = TRUE).
+#' @param convert.rate Boolean indicating sampling probability should be converted to a per interval Poisson rate (default = FALSE).
 #' @return dataframe of sampled fossils.
-#' sp = edge labels. h = horizon labels (= max horizon age).
+#' sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 #' @examples
 #' t<-ape::rtree(4)
 #' ba<-basin.age(t,root.edge=F)
@@ -268,12 +270,13 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 #' @param PA Peak adbundance parameter.
 #' @param PD Preferred depth parameter.
 #' @param DT Depth tolerance parameter.
-#' @param root.edge Boolean indicating tree inclues a root edge.
+#' @param root.edge Boolean indicating tree includes root edge (default = TRUE).
+#' @param convert.rate Boolean indicating sampling probability should be converted to a per interval Poisson rate (default = FALSE).
 #' @return dataframe of sampled fossils.
-#' sp = edge labels. h = horizon labels (= max horizon age).
+#' sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 #' @keywords uniform fossil preseravtion
 #' @export
-sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,root.edge=T){
+sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,root.edge=T,convert.rate=F){
   tree<-tree
   basin.age<-basin.age
   strata<-strata
@@ -282,6 +285,7 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
   PD<-PD
   PA<-PA
   root.edge<-root.edge
+  convert.rate<-convert.rate
 
   s1=basin.age/strata # horizon length (= max age of youngest horizon)
   horizons<-seq(s1, basin.age, length=strata)
@@ -291,12 +295,18 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
 
   fossils<-data.frame(h=numeric(),sp=numeric())
 
+  brl = 0 # record total branch length for debugging
+
   depth.counter=0
 
   for(h in horizons){
 
     depth.counter=depth.counter+1
     current.depth=profile$y[depth.counter]
+
+    # calculate the interval rate
+    sampling = PA * exp( (-(current.depth-PD)**2) / (2 * (DT ** 2)) )
+    rate = -log(1-sampling)/(basin.age/strata)
 
     h.min<-h-s1
     h.max<-h
@@ -320,34 +330,52 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
       # if the lineage is extant during this horizon
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
 
-        # 1. generate a random number from the uniform distribution
-        random.number=runif(1)
-
-        # 2. calculate the proportion of time during each horizon the lineage is extant
-        # if lineage is extant for the entire duration of the horizon
-        if ( (lineage.end <= h.min) & (lineage.start >= h.max) ) {
-          pr=1
+        # calculate the proportion of time during each horizon the lineage is extant
+        # lineage speciates and goes extinct in interval h
+        if((lineage.end > h.min) && (lineage.start < h.max)){
+          pr = (lineage.start-lineage.end)/s1
+          f.max = lineage.start
+          f.min = lineage.end
         }
-        # if lineage goes extinct within the horizon
-        else if (lineage.end >= h.min) {
-          pr=h.max-lineage.end
-          pr=pr/s1
+        # lineage goes extinct in interval h
+        else if(lineage.end > h.min){
+          pr = (h.max-lineage.end)/s1
+          f.max = h.max
+          f.min = lineage.end
         }
-        # if lineage originates within the horizon
-        else {
-          pr=lineage.start-h.min
-          pr=pr/s1
+        # lineage speciates in interval h
+        else if(lineage.start < h.max){
+          pr = (lineage.start-h.min)/s1
+          f.max = lineage.start
+          f.min = h.min
+        }
+        # lineage is extant the entire duration of interval h
+        else{
+          pr = 1
+          f.max = h.max
+          f.min = h.min
         }
 
-        # 3. define the probabilty
-        pr = pr * PA * exp( (-(current.depth-PD)**2) / (2 * (DT ** 2)) )
+        brl = brl + (s1*pr)
 
-        # 4. if random.number < pr { record fossil as collected }
-        if (random.number <= pr ) {
-          fossils<-rbind(fossils,data.frame(h=h,sp=i))
+        if(convert.rate){
+          # generate k fossils from a poisson distribution
+          k = rpois(1,rate*s1*pr)
+          if(k > 0){
+            for(j in 1:k){
+              age = runif(1,f.min,f.max)
+              fossils<-rbind(fossils,data.frame(h=age,sp=i))
+            }
+          }
+        } else {
+          # define the probabilty
+          pr = pr * sampling
+          # if random.number < pr { record fossil as collected }
+          if (runif(1) <= pr) {
+            fossils<-rbind(fossils,data.frame(h=h,sp=i))
+          }
         }
       }
-
     }
 
     if(root.edge){
@@ -357,34 +385,52 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
 
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
 
-        # 1. generate a random number from the uniform distribution
-        random.number=runif(1)
-
-        # 2. calculate the proportion of time during each horizon the lineage is extant
-        # if lineage is extant for the entire duration of the horizon
-        if ( (lineage.end <= h.min) & (lineage.start >= h.max) ) {
-          pr=1
+        # calculate the proportion of time during each horizon the lineage is extant
+        # lineage speciates and goes extinct in interval h
+        if((lineage.end > h.min) && (lineage.start < h.max)){
+          pr = (lineage.start-lineage.end)/s1
+          f.max = lineage.start
+          f.min = lineage.end
         }
-        # if lineage goes extinct within the horizon
-        else if (lineage.end >= h.min) {
-          pr=h.max-lineage.end
-          pr=pr/s1
+        # lineage goes extinct in interval h
+        else if(lineage.end > h.min){
+          pr = (h.max-lineage.end)/s1
+          f.max = h.max
+          f.min = lineage.end
         }
-        # if lineage originates within the horizon
-        else {
-          pr=lineage.start-h.min
-          pr=pr/s1
+        # lineage speciates in interval h
+        else if(lineage.start < h.max){
+          pr = (lineage.start-h.min)/s1
+          f.max = lineage.start
+          f.min = h.min
+        }
+        # lineage is extant the entire duration of interval h
+        else{
+          pr = 1
+          f.max = h.max
+          f.min = h.min
         }
 
-        # 3. define the probabilty
-        pr = pr * PA * exp( (-(current.depth-PD)**2) / (2 * (DT ** 2)) )
+        brl = brl + (s1*pr)
 
-        # 4. if random.number < pr { record fossil as collected }
-        if (random.number <= pr ) {
-          fossils<-rbind(fossils,data.frame(h=h,sp=root))
+        if(convert.rate){
+          # generate k fossils from a poisson distribution
+          k = rpois(1,rate*s1*pr)
+          if(k > 0){
+            for(j in 1:k){
+              age = runif(1,f.min,f.max)
+              fossils<-rbind(fossils,data.frame(h=age,sp=i))
+            }
+          }
+        } else {
+          # define the probabilty
+          pr = pr * sampling
+          # if random.number < pr { record fossil as collected }
+          if (runif(1) <= pr) {
+            fossils<-rbind(fossils,data.frame(h=h,sp=i))
+          }
         }
       }
-
     }
 
   }

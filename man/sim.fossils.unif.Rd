@@ -4,20 +4,25 @@
 \alias{sim.fossils.unif}
 \title{Simulate fossils under a uniform model of preservation}
 \usage{
-sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T)
+sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T,
+  convert.rate = FALSE)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{basin.age}{Maximum age fossils may be sampled.}
+\item{basin.age}{Maximum age of the oldest horizon.}
 
 \item{strata}{Number of stratigraphic horizons.}
 
 \item{sampling}{Probability of sampling/preservation.}
+
+\item{root.edge}{Boolean indicating tree includes root edge (default = TRUE).}
+
+\item{convert.rate}{Boolean indicating sampling probability should be converted to a per interval Poisson rate (default = FALSE).}
 }
 \value{
 dataframe of sampled fossils.
-sp = edge labels. h = horizon labels (= max horizon age).
+sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 }
 \description{
 Simulate fossils under a uniform model of preservation
