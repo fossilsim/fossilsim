@@ -5,7 +5,7 @@
 \title{Simulate fossils under a non-uniform model of preservation (Holland, 1995)}
 \usage{
 sim.fossils.non.unif(tree, basin.age, strata, profile, PA = 0.5, PD = 0.5,
-  DT = 0.5, root.edge = T)
+  DT = 0.5, root.edge = T, convert.rate = F)
 }
 \arguments{
 \item{tree}{Phylo object.}
@@ -20,11 +20,13 @@ sim.fossils.non.unif(tree, basin.age, strata, profile, PA = 0.5, PD = 0.5,
 
 \item{DT}{Depth tolerance parameter.}
 
-\item{root.edge}{Boolean indicating tree inclues a root edge.}
+\item{root.edge}{Boolean indicating tree includes root edge (default = TRUE).}
+
+\item{convert.rate}{Boolean indicating sampling probability should be converted to a per interval Poisson rate (default = FALSE).}
 }
 \value{
 dataframe of sampled fossils.
-sp = edge labels. h = horizon labels (= max horizon age).
+sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 }
 \description{
 Simulate fossils under a non-uniform model of preservation (Holland, 1995)
