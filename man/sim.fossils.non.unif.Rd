@@ -10,7 +10,7 @@ sim.fossils.non.unif(tree, basin.age, strata, profile, PA = 0.5, PD = 0.5,
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{basin.age}{Maximum age fossils may be sampled.}
+\item{basin.age}{Maximum age of the oldest horizon.}
 
 \item{strata}{Number of stratigraphic horizons.}
 

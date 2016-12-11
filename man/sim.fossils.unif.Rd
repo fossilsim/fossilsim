@@ -4,12 +4,13 @@
 \alias{sim.fossils.unif}
 \title{Simulate fossils under a uniform model of preservation}
 \usage{
-sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T)
+sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T,
+  generate.K = T)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{basin.age}{Maximum age fossils may be sampled.}
+\item{basin.age}{Maximum age of the oldest horizon.}
 
 \item{strata}{Number of stratigraphic horizons.}
 
