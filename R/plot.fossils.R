@@ -8,13 +8,22 @@
 #' t<-ape::rtree(10)
 #' f<-sim.fossils.poisson(t,3)
 #' @export
-draw.fossils<-function (x, fossils, root.edge = FALSE, show.tip.label = TRUE, align.tip.label = FALSE, add.fossils = TRUE, ...) {
+draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE, add.axis = TRUE,...) {
   x<-x  # tree
   fossils<-fossils
   root.edge<-root.edge
   show.tip.label<-show.tip.label
   align.tip.label<-align.tip.label
   add.fossils<-add.fossils
+  add.tree<-add.tree
+  add.strata<-add.strata
+  strata<-strata
+  add.ranges<-add.ranges
+  binned<-binned
+  add.axis<-add.axis
+
+  if(!add.tree)
+    align.tip.label = TRUE
 
   # possible options
   show.node.label = FALSE
@@ -129,24 +138,49 @@ draw.fossils<-function (x, fossils, root.edge = FALSE, show.tip.label = TRUE, al
 
   if (plot) {
 
+    ba = basin.age(x,root.edge = root.edge)
+
     # add colored strata
-    # y-axis:
+    # notes
     # rect(xleft, ybottom, xright, ytop)
-    #y.bottom = 0
-    #y.top = max(yy)+1
-    # need to work out how to define the following
-    #x.left = min(xx)-1
-    #x.right = 0
-    #rect(xleft = x.left, xright=x.right, ybottom = y.bottom, ytop = y.top, col="red",border=NA)
+    # ADD NOTES
+    if(add.strata){
+
+      # y-axis:
+      y.bottom = 0
+      y.top = max(yy)+1
+
+      # x-axis:
+      s1 = ba / strata
+      x.left = 0 - (ba - max(xx))
+      x.right = x.left + s1
+      cc = 1 # color switch
+
+      axis.strata = x.left
+
+      for(i in 1:strata){
+        if(cc %% 2 == 0)
+          col="grey90"
+        else
+          col="grey95"
+        rect(xleft = x.left, xright = x.right, ybottom = y.bottom, ytop = y.top, col=col, border=NA)
+        x.left = x.right
+        x.right = x.left + s1
+        cc = cc + 1
+        axis.strata = c(axis.strata, x.left)
+      }
+
+      if(add.axis)
+        axis(1, col = 'grey75', at = axis.strata, labels = seq(ba, 0, by=-s1) )
+
+    }
 
     # plot the tree
-    ape::phylogram.plot(x$edge, Ntip, Nnode, xx, yy, horizontal, edge.color, edge.width, edge.lty)
-
-    # add an axis (if add axis == T)
-    #axis(1, col = 'grey75', line = -1)
+    if(add.tree)
+      ape::phylogram.plot(x$edge, Ntip, Nnode, xx, yy, horizontal, edge.color, edge.width, edge.lty)
 
     # format the root edge
-    if (root.edge) {
+    if (root.edge && add.tree) {
       rootcol <- if (length(edge.color) == 1)
         edge.color
       else "black"
@@ -197,7 +231,33 @@ draw.fossils<-function (x, fossils, root.edge = FALSE, show.tip.label = TRUE, al
     }
 
     # add fossils
-    points(max(xx)-fossils$h,yy[fossils$sp],col="darkorange",pch=19,cex=1.2)
+    if(add.fossils){
+      if(binned){
+        s2 = (ba / strata)/2
+        points(max(xx)-fossils$h+s2,yy[fossils$sp],col="darkorange",pch=19,cex=1.2)
+      }
+      else
+        points(max(xx)-fossils$h,yy[fossils$sp],col="darkorange",pch=19,cex=1.2)
+    }
+
+    if(add.ranges){
+      buffer = 0.01 * max(xx) # buffer for singletons
+      s2 = 0
+      if(binned)
+        s2 = (ba / strata)/2
+
+      for(i in unique(fossils$sp)) {
+
+        range = fossils$h[which(fossils$sp==i)]
+        if(length(range) == 1)
+          range = c(range-buffer,range+buffer)
+
+        species = rep(yy[i], length(range))
+
+        lines(y = species, x = max(xx)-range+s2, lwd = 6, col="darkorange")
+      }
+    }
+
 
   }
   L <- list(type = type, use.edge.length = TRUE,
@@ -212,27 +272,24 @@ draw.fossils<-function (x, fossils, root.edge = FALSE, show.tip.label = TRUE, al
   invisible(L)
 }
 
-# add.tscale<-function(root.time){
-#   side = 1
-#   backward = TRUE
-#
-#   lastPP <- get("last_plot.phylo", envir = .PlotPhyloEnv)
-#
-#   xscale <- range(lastPP$xx)
-#   tscale <- c(0, xscale[2] - xscale[1])
-#   tscale <- tscale[2:1]
-#
+add.tscale<-function(basin.age){
+   side = 1
+
+   xscale <- range(0,basin.age)
+   tscale <- c(0, xscale[2] - xscale[1])
+   tscale <- tscale[2:1]
+
 #     if (!is.null(root.time)) {
 #       tscale <- tscale + root.time
 #       if (backward)
 #         tscale <- tscale - xscale[2]
 #     }
-#     beta <- diff(xscale)/diff(tscale)
-#     alpha <- xscale[1] - beta * tscale[1]
-#     lab <- pretty(tscale)
-#     x <- beta * lab + alpha
-#     axis(side = side, at = x, labels = lab)
-#
-# }
+      beta <- diff(xscale)/diff(tscale)
+      alpha <- xscale[1] - beta * tscale[1]
+      lab <- pretty(tscale)
+      x <- beta * lab + alpha
+      axis(side = side, at = x, labels = lab)
+
+}
 
 
