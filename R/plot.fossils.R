@@ -8,7 +8,7 @@
 #' t<-ape::rtree(10)
 #' f<-sim.fossils.poisson(t,3)
 #' @export
-draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE, add.axis = TRUE,...) {
+draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE, add.axis = TRUE, hide.edge = FALSE,...) {
   x<-x  # tree
   fossils<-fossils
   root.edge<-root.edge
@@ -21,6 +21,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
   add.ranges<-add.ranges
   binned<-binned
   add.axis<-add.axis
+  hide.edge<-hide.edge
 
   if(!add.tree)
     align.tip.label = TRUE
@@ -144,7 +145,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
     # notes
     # rect(xleft, ybottom, xright, ytop)
     # ADD NOTES
-    if(add.strata){
+    if(add.strata || add.axis){
 
       # y-axis:
       y.bottom = 0
@@ -163,7 +164,8 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
           col="grey90"
         else
           col="grey95"
-        rect(xleft = x.left, xright = x.right, ybottom = y.bottom, ytop = y.top, col=col, border=NA)
+        if(add.strata)
+          rect(xleft = x.left, xright = x.right, ybottom = y.bottom, ytop = y.top, col=col, border=NA)
         x.left = x.right
         x.right = x.left + s1
         cc = cc + 1
@@ -171,7 +173,8 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
       }
 
       if(add.axis)
-        axis(1, col = 'grey75', at = axis.strata, labels = seq(ba, 0, by=-s1) )
+        axis(1, col = 'grey75', at = axis.strata, labels = FALSE, lwd = 2)
+      #axis(1, col = 'grey75', at = axis.strata, labels = seq(ba, 0, by=-s1) )
 
     }
 
@@ -180,7 +183,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
       ape::phylogram.plot(x$edge, Ntip, Nnode, xx, yy, horizontal, edge.color, edge.width, edge.lty)
 
     # format the root edge
-    if (root.edge && add.tree) {
+    if (root.edge && add.tree && !hide.edge) {
       rootcol <- if (length(edge.color) == 1)
         edge.color
       else "black"
@@ -270,26 +273,6 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
   assign("last_plot.phylo", c(L, list(edge = xe, xx = xx, yy = yy)),
          envir = ape::.PlotPhyloEnv)
   invisible(L)
-}
-
-add.tscale<-function(basin.age){
-   side = 1
-
-   xscale <- range(0,basin.age)
-   tscale <- c(0, xscale[2] - xscale[1])
-   tscale <- tscale[2:1]
-
-#     if (!is.null(root.time)) {
-#       tscale <- tscale + root.time
-#       if (backward)
-#         tscale <- tscale - xscale[2]
-#     }
-      beta <- diff(xscale)/diff(tscale)
-      alpha <- xscale[1] - beta * tscale[1]
-      lab <- pretty(tscale)
-      x <- beta * lab + alpha
-      axis(side = side, at = x, labels = lab)
-
 }
 
 
