@@ -1,12 +1,12 @@
 #' Simulate fossils under a Poisson sampling model
 #'
 #' @param tree Phylo object.
-#' @param phi Sampling rate.
-#' @param root.edge Boolean indicating tree inclues a root edge.
+#' @param phi Poisson sampling rate.
+#' @param root.edge If TRUE include the root edge (default = FALSE).
 #' @return dataframe of sampled fossils.
 #' sp = edge labels. h = ages.
 #' @examples
-#' t<-rtree(4)
+#' t<-ape::rtree(4)
 #' sim.fossils.poisson(t,1)
 #' @keywords uniform preseravtion
 #' @export
@@ -70,11 +70,11 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
 #' Simulate fossils under a uniform model of preservation
 #'
 #' @param tree Phylo object.
-#' @param basin.age Maximum age of the oldest horizon.
+#' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic horizons.
 #' @param sampling Probability of sampling/preservation.
-#' @param root.edge Boolean indicating tree includes root edge (default = TRUE).
-#' @param convert.rate Boolean indicating sampling probability should be converted to a per interval Poisson rate (default = FALSE).
+#' @param root.edge If TRUE include the root edge (default = FALSE).
+#' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return dataframe of sampled fossils.
 #' sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 #' @examples
@@ -175,7 +175,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
       }
     }
 
-    if(root.edge){
+    if(root.edge && exists("root.edge",tree) ){
 
       lineage.start = max(node.ages)+tree$root.edge
       lineage.end = max(node.ages)
@@ -265,13 +265,13 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
 #' @param tree Phylo object.
-#' @param basin.age Maximum age of the oldest horizon.
+#' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic horizons.
 #' @param PA Peak adbundance parameter.
 #' @param PD Preferred depth parameter.
 #' @param DT Depth tolerance parameter.
-#' @param root.edge Boolean indicating tree includes root edge (default = TRUE).
-#' @param convert.rate Boolean indicating sampling probability should be converted to a per interval Poisson rate (default = FALSE).
+#' @param root.edge If TRUE include the root edge (default = FALSE).
+#' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return dataframe of sampled fossils.
 #' sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 #' @keywords uniform fossil preseravtion
@@ -378,7 +378,7 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
       }
     }
 
-    if(root.edge){
+    if(root.edge && exists("root.edge",tree) ){
 
       lineage.start = max(node.ages)+tree$root.edge
       lineage.end = max(node.ages)
@@ -434,7 +434,6 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
     }
 
   }
-
   return(fossils) # in this data frame h=horizon and sp=lineage
 
   # EOF
@@ -449,7 +448,7 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
 #' @export
 basin.age<-function(tree,root.edge=T){
   node.ages<-n.ages(tree)
-  if(root.edge)
+  if(root.edge && exists("root.edge",tree) )
     ba = max(node.ages)+tree$root.edge
   else
     ba = max(node.ages)

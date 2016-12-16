@@ -4,8 +4,10 @@
 \alias{draw.fossils}
 \title{Plot simulated fossils}
 \usage{
-draw.fossils(x, fossils, root.edge = FALSE, show.tip.label = TRUE,
-  align.tip.label = FALSE, add.fossils = TRUE, ...)
+draw.fossils(x, fossils = NULL, root.edge = FALSE, show.tip.label = FALSE,
+  align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE,
+  add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE,
+  add.axis = TRUE, hide.edge = FALSE, ...)
 }
 \arguments{
 \item{fossils}{Dataframe of sampled fossils (sp = edge labels. h = ages.)}

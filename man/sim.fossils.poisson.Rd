@@ -9,9 +9,9 @@ sim.fossils.poisson(tree, phi, root.edge = T)
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{phi}{Sampling rate.}
+\item{phi}{Poisson sampling rate.}
 
-\item{root.edge}{Boolean indicating tree inclues a root edge.}
+\item{root.edge}{If TRUE include the root edge (default = FALSE).}
 }
 \value{
 dataframe of sampled fossils.
@@ -21,7 +21,7 @@ sp = edge labels. h = ages.
 Simulate fossils under a Poisson sampling model
 }
 \examples{
-t<-rtree(4)
+t<-ape::rtree(4)
 sim.fossils.poisson(t,1)
 }
 \keyword{preseravtion}

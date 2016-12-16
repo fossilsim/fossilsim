@@ -10,7 +10,7 @@ sim.fossils.non.unif(tree, basin.age, strata, profile, PA = 0.5, PD = 0.5,
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{basin.age}{Maximum age of the oldest horizon.}
+\item{basin.age}{Maximum age of the oldest stratigraphic interval.}
 
 \item{strata}{Number of stratigraphic horizons.}
 
@@ -20,9 +20,9 @@ sim.fossils.non.unif(tree, basin.age, strata, profile, PA = 0.5, PD = 0.5,
 
 \item{DT}{Depth tolerance parameter.}
 
-\item{root.edge}{Boolean indicating tree includes root edge (default = TRUE).}
+\item{root.edge}{If TRUE include the root edge (default = FALSE).}
 
-\item{convert.rate}{Boolean indicating sampling probability should be converted to a per interval Poisson rate (default = FALSE).}
+\item{convert.rate}{If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).}
 }
 \value{
 dataframe of sampled fossils.
