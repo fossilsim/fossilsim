@@ -1,12 +1,19 @@
 #' Plot simulated fossils
 #'
 #' @param tree Phylo object.
-#' @param root.edge Boolean indicating tree inclues a root edge.
-#' @param add.fossils Boolean indicating plot should inclue fossils.
 #' @param fossils Dataframe of sampled fossils (sp = edge labels. h = ages.)
+#' @param root.edge If TRUE include the root edge (default = FALSE).
+#' @param add.fossils If TRUE plot fossils (default = FALSE).
+#' @param add.tree If TRUE plot the tree  (default = TRUE).
+#' @param add.strata If TRUE plot strata  (default = FALSE).
+#' @param add.ranges If TRUE plot ranges (default = FALSE).
+#' @param binned If TRUE fossils are plotted in the mid point of each interval.
+#' @param add.axis If TRUE plot axis (default = TRUE).
+#' @param hide.edge If TRUE hide the root edge (default = FALSE).
 #' @examples
 #' t<-ape::rtree(10)
 #' f<-sim.fossils.poisson(t,3)
+#' draw.fossils(t,f)
 #' @export
 draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE, add.axis = TRUE, hide.edge = FALSE,...) {
   x<-x  # tree

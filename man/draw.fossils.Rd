@@ -12,9 +12,21 @@ draw.fossils(x, fossils = NULL, root.edge = FALSE, show.tip.label = FALSE,
 \arguments{
 \item{fossils}{Dataframe of sampled fossils (sp = edge labels. h = ages.)}
 
-\item{root.edge}{Boolean indicating tree inclues a root edge.}
+\item{root.edge}{If TRUE include the root edge (default = FALSE).}
 
-\item{add.fossils}{Boolean indicating plot should inclue fossils.}
+\item{add.fossils}{If TRUE plot fossils (default = FALSE).}
+
+\item{add.tree}{If TRUE plot the tree  (default = TRUE).}
+
+\item{add.strata}{If TRUE plot strata  (default = FALSE).}
+
+\item{add.ranges}{If TRUE plot ranges (default = FALSE).}
+
+\item{binned}{If TRUE fossils are plotted in the mid point of each interval.}
+
+\item{add.axis}{If TRUE plot axis (default = TRUE).}
+
+\item{hide.edge}{If TRUE hide the root edge (default = FALSE).}
 
 \item{tree}{Phylo object.}
 }
@@ -24,5 +36,6 @@ Plot simulated fossils
 \examples{
 t<-ape::rtree(10)
 f<-sim.fossils.poisson(t,3)
+draw.fossils(t,f)
 }
 
