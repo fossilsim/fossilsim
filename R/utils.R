@@ -1,4 +1,4 @@
-# Function to calculate node ages in a non-ultramteric tree written by Liam J. Revell
+# Function to calculate node ages of a non-ultramteric tree written by Liam J. Revell
 #' @importFrom phytools nodeHeights
 n.ages<-function(tree) {
 
@@ -44,3 +44,6 @@ is.root<-function(edge,tree){
     return(FALSE)
   #eof
 }
+
+
+
