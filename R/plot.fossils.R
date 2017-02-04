@@ -15,7 +15,7 @@
 #' f<-sim.fossils.poisson(t,3)
 #' draw.fossils(t,f)
 #' @export
-draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE, add.axis = TRUE, hide.edge = FALSE,...) {
+draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE, add.axis = TRUE, hide.edge = FALSE, fcol = "darkorange",...) {
   x<-x  # tree
   fossils<-fossils
   root.edge<-root.edge
@@ -244,10 +244,10 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
     if(add.fossils){
       if(binned){
         s2 = (ba / strata)/2
-        points(max(xx)-fossils$h+s2,yy[fossils$sp],col="darkorange",pch=19,cex=1.2)
+        points(max(xx)-fossils$h+s2,yy[fossils$sp],col=fcol,pch=19,cex=1.2)
       }
       else
-        points(max(xx)-fossils$h,yy[fossils$sp],col="darkorange",pch=19,cex=1.2)
+        points(max(xx)-fossils$h,yy[fossils$sp],col=fcol,pch=19,cex=1.2)
     }
 
     if(add.ranges){
