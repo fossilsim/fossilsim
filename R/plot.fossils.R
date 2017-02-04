@@ -15,7 +15,7 @@
 #' f<-sim.fossils.poisson(t,3)
 #' draw.fossils(t,f)
 #' @export
-draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE, add.axis = TRUE, hide.edge = FALSE, fcol = "darkorange",...) {
+draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE, add.axis = TRUE, hide.edge = FALSE, fcol = "darkorange", fcex = 1.2, edge.width = 1,...) {
   x<-x  # tree
   fossils<-fossils
   root.edge<-root.edge
@@ -29,6 +29,9 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
   binned<-binned
   add.axis<-add.axis
   hide.edge<-hide.edge
+  fcol<-fcol
+  fcex<-fcex
+  edge.width<-edge.width
 
   if(!add.tree)
     align.tip.label = TRUE
@@ -36,7 +39,6 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
   # possible options
   show.node.label = FALSE
   edge.color = "black"
-  edge.width = 1
   edge.lty = 1
   font = 3
   cex = par("cex")
@@ -244,10 +246,10 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
     if(add.fossils){
       if(binned){
         s2 = (ba / strata)/2
-        points(max(xx)-fossils$h+s2,yy[fossils$sp],col=fcol,pch=19,cex=1.2)
+        points(max(xx)-fossils$h+s2,yy[fossils$sp],col=fcol,pch=19,cex=fcex)
       }
       else
-        points(max(xx)-fossils$h,yy[fossils$sp],col=fcol,pch=19,cex=1.2)
+        points(max(xx)-fossils$h,yy[fossils$sp],col=fcol,pch=19,cex=fcex)
     }
 
     if(add.ranges){
