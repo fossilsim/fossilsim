@@ -266,7 +266,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
 
         species = rep(yy[i], length(range))
 
-        lines(y = species, x = max(xx)-range+s2, lwd = 6, col="darkorange")
+        lines(y = species, x = max(xx)-range+s2, lwd = 6, col=fcol)
       }
     }
 
