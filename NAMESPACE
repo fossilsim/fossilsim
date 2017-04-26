@@ -3,6 +3,7 @@
 export(basin.age)
 export(draw.fossils)
 export(sim.fossils.non.unif)
+export(sim.fossils.non.unif.depth)
 export(sim.fossils.poisson)
 export(sim.fossils.unif)
 export(sim.water.depth)

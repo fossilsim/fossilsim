@@ -2,19 +2,23 @@
 % Please edit documentation in R/sim.fossils.R
 \name{basin.age}
 \alias{basin.age}
-\title{Select a sensible basin age based tree age}
+\title{Select a sensible basin age based on tree height}
 \usage{
-basin.age(tree, root.edge = T)
+basin.age(tree, root.edge = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{root.edge}{Boolean indicating tree inclues a root edge.}
+\item{root.edge}{If TRUE include the root edge (default = TRUE).}
 }
 \value{
 basin age
 }
 \description{
-Select a sensible basin age based tree age
+Function returns an age slightly older than the root.age or origin time.
+}
+\examples{
+tr<-ape::rtree(6)
+basin.age(tr, root.edge = FALSE)
 }
 

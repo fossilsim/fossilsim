@@ -1,44 +1,48 @@
 #' Plot simulated fossils
 #'
 #' @param tree Phylo object.
-#' @param fossils Dataframe of sampled fossils (sp = edge labels. h = ages.)
-#' @param root.edge If TRUE include the root edge (default = FALSE).
-#' @param add.fossils If TRUE plot fossils (default = FALSE).
-#' @param add.tree If TRUE plot the tree  (default = TRUE).
-#' @param add.strata If TRUE plot strata  (default = FALSE).
-#' @param add.ranges If TRUE plot ranges (default = FALSE).
-#' @param add.profile If TRUE add water depth profile (default = FALSE).
+#' @param fossils Dataframe of sampled fossils (sp = edge labels, h = ages).
+#' @param show.fossils If TRUE plot fossils (default = TRUE).
+#' @param show.tree If TRUE plot the tree  (default = TRUE).
+#' @param show.strata If TRUE plot strata  (default = FALSE).
+#' @param strata A vector of user specified interval ages or a single value specifying the number of equal length intervals.
+#' @param show.ranges If TRUE plot ranges (default = FALSE).
+#' @param show.axis If TRUE plot axis (default = TRUE).
+#' @param show.profile If TRUE add water depth profile (default = FALSE).
 #' @param depth.profile Water depth profile (default = NULL).
-#' @param binned If TRUE fossils are plotted in the mid point of each interval.
-#' @param add.axis If TRUE plot axis (default = TRUE).
-#' @param hide.edge If TRUE hide the root edge (default = FALSE).
-#' @param fcol Color for fossil occurrences.
+#' @param binned If TRUE and fossil ages correspond to max ages of equal length intervals fossils are plotted in the mid point of each interval.
+#' @param root.edge If TRUE include the root edge (default = FALSE).
+#' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
+#' @param fcol Color of fossil occurrences or ranges.
+#' @param max Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.
 #' @examples
-#' t<-ape::rtree(10)
-#' f<-sim.fossils.poisson(t,3)
-#' draw.fossils(t,f)
+#' tr<-ape::rtree(10)
+#' f<-sim.fossils.poisson(tr,3)
+#' draw.fossils(tr, f, strata = 10, show.strata = TRUE)
 #' @export
-draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE, add.strata = FALSE, add.profile = FALSE,
-                        strata = 1, depth.profile = NULL , add.ranges = FALSE, binned = FALSE, add.axis = TRUE, hide.edge = FALSE, fcol = "darkorange", fcex = 1.2, edge.width = 1,...) {
-  x<-x  # tree
+draw.fossils<-function (tree, fossils = NULL, show.fossils = TRUE, show.tree = TRUE, show.strata = FALSE, strata = 1,
+                        show.ranges = FALSE, show.axis = TRUE, show.profile = FALSE, depth.profile = NULL, binned = FALSE,
+                        hide.edge = FALSE, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, fcol = "darkorange", fcex = 1.2, edge.width = 1, max = NULL,...) {
+  x<-tree  # tree
   fossils<-fossils
   root.edge<-root.edge
   show.tip.label<-show.tip.label
   align.tip.label<-align.tip.label
-  add.fossils<-add.fossils
-  add.tree<-add.tree
-  add.strata<-add.strata
+  show.fossils<-show.fossils
+  show.tree<-show.tree
+  show.strata<-show.strata
   strata<-strata
-  add.ranges<-add.ranges
-  add.profile<-add.profile
+  show.ranges<-show.ranges
+  show.profile<-show.profile
   binned<-binned
-  add.axis<-add.axis
+  show.axis<-show.axis
   hide.edge<-hide.edge
   fcol<-fcol
   fcex<-fcex
   edge.width<-edge.width
+  ba<-max
 
-  if(!add.tree)
+  if(!show.tree)
     align.tip.label = TRUE
 
   # possible options
@@ -67,10 +71,13 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
   if (any(tabulate(x$edge[, 1]) == 1))
     stop("there are single (non-splitting) nodes in your tree; you may need to use collapse.singles()")
 
+  if(length(strata) > 1)
+    stop("I can't handle user specified strata yet")
+
   # check edge lengths != null
   # check tree is rooted
   # check root edge exists if show.root.edge = T
-  # check if add.fossils = TRUE, check fossils != NULL
+  # check if show.fossils = TRUE, check fossils != NULL
   # check tree is binary
 
   # required C fxns
@@ -148,7 +155,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
   }
 
   # the order in which you use plot and par here is very important
-  if(add.profile){
+  if(show.profile){
     old.par = par("usr", "mar", "oma", "xpd", "mgp","fig")
     par(mar=c(1, 3.5, 0, 0.5)) # to reduce the margins around each plot - bottom, left, top, right -- this is harder to manipulate
     par(oma=c(2, 0, 2, 0)) # to add an outer margin to the top and bottom of the graph -- bottom, left, top, right
@@ -165,13 +172,14 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
 
   if (plot) {
 
-    ba = basin.age(x,root.edge = root.edge)
+    if(is.null(ba))
+      ba = basin.age(x,root.edge = root.edge)
 
     # add colored strata
     # notes
     # rect(xleft, ybottom, xright, ytop)
     # ADD NOTES
-    if(add.strata || add.axis){
+    if(show.strata || show.axis){
 
       # y-axis:
       y.bottom = 0
@@ -190,7 +198,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
           col="grey90"
         else
           col="grey95"
-        if(add.strata)
+        if(show.strata)
           rect(xleft = x.left, xright = x.right, ybottom = y.bottom, ytop = y.top, col=col, border=NA)
         x.left = x.right
         x.right = x.left + s1
@@ -198,18 +206,18 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
         axis.strata = c(axis.strata, x.left)
       }
 
-      if(add.axis)
+      if(show.axis)
         axis(1, col = 'grey75', at = axis.strata, labels = FALSE, lwd = 2, line = 0.5) # PROBLEM
       #axis(1, col = 'grey75', at = axis.strata, labels = seq(ba, 0, by=-s1) )
 
     }
 
     # plot the tree
-    if(add.tree)
+    if(show.tree)
       ape::phylogram.plot(x$edge, Ntip, Nnode, xx, yy, horizontal, edge.color, edge.width, edge.lty)
 
     # format the root edge
-    if (root.edge && add.tree && !hide.edge) {
+    if (root.edge && show.tree && !hide.edge) {
       rootcol <- if (length(edge.color) == 1)
         edge.color
       else "black"
@@ -260,7 +268,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
     }
 
     # fossils
-    if(add.fossils){
+    if(show.fossils){
       if(binned){
         s2 = (ba / strata)/2
         points(max(xx)-fossils$h+s2,yy[fossils$sp],col=fcol,pch=19,cex=fcex)
@@ -270,7 +278,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
     }
 
     # ranges
-    if(add.ranges){
+    if(show.ranges){
       buffer = 0.01 * max(xx) # buffer for singletons
       s2 = 0
       if(binned)
@@ -290,8 +298,8 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
 
     # water depth profile
     add.depth.axis = TRUE
-    if(add.profile){
-      add.depth.profile(depth.profile,axis.strata,strata,add.axis,add.depth.axis)
+    if(show.profile){
+      add.depth.profile(depth.profile,axis.strata,strata,show.axis,add.depth.axis)
       par(old.par)
     }
   }
@@ -308,7 +316,7 @@ draw.fossils<-function (x, fossils=NULL, root.edge = FALSE, show.tip.label = FAL
   invisible(L)
 }
 
-add.depth.profile<-function(depth.profile,axis.strata,strata,add.axis,add.depth.axis){
+add.depth.profile<-function(depth.profile,axis.strata,strata,show.axis,add.depth.axis){
   par(fig=c(0,1,0,0.3), new = T)
   # change the y-axis scale for depth
   u = par("usr") # current scale
@@ -319,7 +327,7 @@ add.depth.profile<-function(depth.profile,axis.strata,strata,add.axis,add.depth.
   time = axis.strata[1:strata] + ((axis.strata[2] - axis.strata[1])/2)
   points(time,depth)
   lines(x = axis.strata, y = rep(1, length(axis.strata)), col = "grey75", lwd = 2, lty = 3)
-  if(add.axis){
+  if(show.axis){
     axis(1, col = 'grey75', at = axis.strata, labels = FALSE, lwd = 2)
     mtext(1, col = 'grey75', text="Time before present", line = 1)
   }

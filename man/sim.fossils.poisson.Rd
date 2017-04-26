@@ -4,14 +4,14 @@
 \alias{sim.fossils.poisson}
 \title{Simulate fossils under a Poisson sampling model}
 \usage{
-sim.fossils.poisson(tree, phi, root.edge = T)
+sim.fossils.poisson(tree, sampling, root.edge = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{phi}{Poisson sampling rate.}
+\item{sampling}{Poisson sampling rate.}
 
-\item{root.edge}{If TRUE include the root edge (default = FALSE).}
+\item{root.edge}{If TRUE include the root edge (default = TRUE).}
 }
 \value{
 dataframe of sampled fossils.
@@ -21,8 +21,10 @@ sp = edge labels. h = ages.
 Simulate fossils under a Poisson sampling model
 }
 \examples{
-t<-ape::rtree(4)
-sim.fossils.poisson(t,1)
+# simulate tree
+tr<-ape::rtree(4)
+# simulate fossils
+f<-sim.fossils.poisson(tr, 2)
 }
 \keyword{preseravtion}
 \keyword{uniform}

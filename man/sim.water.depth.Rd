@@ -7,20 +7,21 @@
 sim.water.depth(strata, depth = 2, cycles = 2)
 }
 \arguments{
-\item{strata}{Number of stratigraphic horizons.}
+\item{strata}{Number of stratigraphic intervals}
 
 \item{depth}{Maximum water depth.}
 
-\item{cycles}{Number of cycles (transgressions and regressions)}
+\item{cycles}{Number of cycles (transgressions and regressions).}
 }
 \value{
 dataframe of sampled water depths.
 }
 \description{
-Simulate water depth profile
+Function returns water depth profile using the sine wave function \eqn{y = depth*sin(cycles*pi*(x-1/4))}.
 }
 \examples{
-wd<-sim.water.depth(100)
+strata = 100
+wd<-sim.water.depth(strata)
 plot(wd, type="l")
 }
 \keyword{fossil}

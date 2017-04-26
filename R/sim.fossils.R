@@ -1,18 +1,20 @@
 #' Simulate fossils under a Poisson sampling model
 #'
 #' @param tree Phylo object.
-#' @param phi Poisson sampling rate.
-#' @param root.edge If TRUE include the root edge (default = FALSE).
+#' @param sampling Poisson sampling rate.
+#' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return dataframe of sampled fossils.
 #' sp = edge labels. h = ages.
 #' @examples
-#' t<-ape::rtree(4)
-#' sim.fossils.poisson(t,1)
+#' # simulate tree
+#' tr<-ape::rtree(4)
+#' # simulate fossils
+#' f<-sim.fossils.poisson(tr, 2)
 #' @keywords uniform preseravtion
 #' @export
-sim.fossils.poisson<-function(tree,phi,root.edge=T){
+sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
   tree<-tree
-  lambda<-phi
+  lambda<-sampling
   root.edge<-root.edge
 
   node.ages<-n.ages(tree)
@@ -67,20 +69,25 @@ sim.fossils.poisson<-function(tree,phi,root.edge=T){
   # EOF
 }
 
-#' Simulate fossils under a uniform model of preservation
+#' Simulate fossils under a uniform model of preservation for a set of equal length intervals
 #'
 #' @param tree Phylo object.
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
-#' @param strata Number of stratigraphic horizons.
+#' @param strata Number of stratigraphic intervals.
 #' @param sampling Probability of sampling/preservation.
-#' @param root.edge If TRUE include the root edge (default = FALSE).
+#' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return dataframe of sampled fossils.
-#' sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+#' sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
 #' @examples
-#' t<-ape::rtree(4)
-#' ba<-basin.age(t,root.edge=F)
-#' sim.fossils.unif(t,ba,5,0.5)
+#' # simulate tree
+#' tr<-ape::rtree(6)
+#' # assign a max age based on tree height
+#' ba<-basin.age(tr)
+#' # simulate fossils
+#' strata = 4
+#' sampling = 0.7
+#' f<-sim.fossils.unif(tr, ba, strata, sampling)
 #' @keywords uniform fossil preseravtion
 #' @export
 sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.rate=FALSE){
@@ -234,49 +241,187 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
   # EOF
 }
 
-#' Simulate water depth profile
+#' Simulate fossils under a non-uniform model of preservation
 #'
-#' @param strata Number of stratigraphic horizons.
-#' @param depth Maximum water depth.
-#' @param cycles Number of cycles (transgressions and regressions)
-#' @return dataframe of sampled water depths.
+#' @param tree Phylo object.
+#' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
+#' @param sampling Vector of Poisson sampling rates. The length of the vector should 1 less than the length of interval.ages.
+#' @param root.edge If TRUE include the root edge (default = TRUE).
+#' @return dataframe of sampled fossils.
+#' sp = edge labels. h = fossil ages.
+#' @keywords non-uniform fossil preseravtion
 #' @examples
-#' wd<-sim.water.depth(100)
-#' plot(wd, type="l")
-#' @keywords non-uniform fossil preservation
+#' # simulate tree
+#' tr<-ape::rtree(6)
+#' # assign a max age based on tree height
+#' max = basin.age(tr)
+#' # assign interval times & rates
+#' times = seq(0, max, length.out = 4)
+#' rates = c(5, 3, 1)
+#' # simulate fossils
+#' f<-sim.fossils.non.unif(tr, times, rates)
 #' @export
-sim.water.depth<-function(strata,depth=2,cycles=2){
+sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
+  tree<-tree
+  interval.ages<-interval.ages
+  rate<-sampling
+  root.edge<-root.edge
 
-  # define the x-axis values
-  x=seq(0,2,length.out=strata)
+  if(length(rate) != (length(interval.ages) - 1 ))
+    stop("something went wrong when you specified the inteval rate and times vectors")
 
-  # define y-axis values
-  # a - total depth excursion - amplitude
-  # b - number of cycles - period
-  # 1/c - defines the relative start time of each cycle - phase shift
-  # y = a * sin (b * pi * (x-1/c))
-  y=depth*sin(cycles*pi*(x-1/4))
+  horizons.min = head(interval.ages, -1)
+  horizons.max = interval.ages[-1]
 
-  return(data.frame(x=c(1:strata),y=y))
+  node.ages<-n.ages(tree)
+  root = length(tree$tip.label)+1
 
-  # EOF
+  fossils<-data.frame(h=numeric(),sp=numeric())
+
+  brl = 0 # record total branch length for debugging
+
+  for(h in 1:length(horizons.min)){
+
+    h.min<-horizons.min[h]
+    h.max<-horizons.max[h]
+    s1 = h.max - h.min # horizon length
+
+    if(rate[h]==0)
+      next
+
+    for(i in tree$edge[,2]){ # internal nodes + tips
+
+      # work out the max age of the lineage (e.g. when that lineage became extant)
+      # & get ancestor
+      row=which(tree$edge[,2]==i)
+      ancestor=tree$edge[,1][row]
+
+      # get the age of the ancestor
+      a=which(names(node.ages)==ancestor)
+      lineage.start=node.ages[[a]]
+
+      # work out the min age of the lineage (e.g. when that lineage became extinct)
+      # & get the branch length
+      b=tree$edge.length[row]
+      lineage.end=lineage.start-b # branch length
+
+      # if the lineage is extant during this horizon
+      if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
+
+        # calculate the proportion of time during each horizon the lineage is extant
+        # lineage speciates and goes extinct in interval h
+        if((lineage.end > h.min) && (lineage.start < h.max)){
+          pr = (lineage.start-lineage.end)/s1
+          f.max = lineage.start
+          f.min = lineage.end
+        }
+        # lineage goes extinct in interval h
+        else if(lineage.end > h.min){
+          pr = (h.max-lineage.end)/s1
+          f.max = h.max
+          f.min = lineage.end
+        }
+        # lineage speciates in interval h
+        else if(lineage.start < h.max){
+          pr = (lineage.start-h.min)/s1
+          f.max = lineage.start
+          f.min = h.min
+        }
+        # lineage is extant the entire duration of interval h
+        else{
+          pr = 1
+          f.max = h.max
+          f.min = h.min
+        }
+
+        brl = brl + (s1*pr) # debugging code
+
+        # generate k fossils from a poisson distribution
+        k = rpois(1,rate[h]*s1*pr)
+        if(k > 0){
+          for(j in 1:k){
+            age = runif(1,f.min,f.max)
+            fossils<-rbind(fossils,data.frame(h=age,sp=i))
+          }
+        }
+      }
+    } # end of lineage
+
+    if(root.edge && exists("root.edge",tree) ){
+
+      lineage.start = max(node.ages)+tree$root.edge
+      lineage.end = max(node.ages)
+
+      if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
+
+        # calculate the proportion of time during each horizon the lineage is extant
+        # lineage speciates and goes extinct in interval h
+        if((lineage.end > h.min) && (lineage.start < h.max)){
+          pr = (lineage.start-lineage.end)/s1
+          f.max = lineage.start
+          f.min = lineage.end
+        }
+        # lineage goes extinct in interval h
+        else if(lineage.end > h.min){
+          pr = (h.max-lineage.end)/s1
+          f.max = h.max
+          f.min = lineage.end
+        }
+        # lineage speciates in interval h
+        else if(lineage.start < h.max){
+          pr = (lineage.start-h.min)/s1
+          f.max = lineage.start
+          f.min = h.min
+        }
+        # lineage is extant the entire duration of interval h
+        else{
+          pr = 1
+          f.max = h.max
+          f.min = h.min
+        }
+
+        brl = brl + (s1*pr)
+
+        # generate k fossils from a poisson distribution
+        k = rpois(1,rate[h]*s1*pr)
+        if(k > 0){
+          for(j in 1:k){
+            age = runif(1,f.min,f.max)
+            fossils<-rbind(fossils,data.frame(h=age,sp=root))
+          }
+        }
+      }
+    } # end of root edge
+
+  } # end of horizon
+  return(fossils)
 }
 
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
 #' @param tree Phylo object.
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
-#' @param strata Number of stratigraphic horizons.
+#' @param strata Number of stratigraphic intervals.
 #' @param PA Peak adbundance parameter.
 #' @param PD Preferred depth parameter.
 #' @param DT Depth tolerance parameter.
-#' @param root.edge If TRUE include the root edge (default = FALSE).
+#' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return dataframe of sampled fossils.
-#' sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
-#' @keywords uniform fossil preseravtion
+#' sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+#' @examples
+#' # simulate tree
+#' tr<-ape::rtree(6)
+#' # assign a max age based on tree height
+#' max = basin.age(tr)
+#' # generate water depth profile
+#' strata = 4
+#' wd<-sim.water.depth(strata)
+#' # simulate fossils
+#' f<-sim.fossils.non.unif.depth(tr, max, strata, wd, PA = 1, PD = 0.5, DT = 1)
+#' @keywords non-uniform fossil preseravtion
 #' @export
-sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,root.edge=T,convert.rate=F){
+sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,root.edge=TRUE,convert.rate=FALSE){
   tree<-tree
   basin.age<-basin.age
   strata<-strata
@@ -440,13 +585,50 @@ sim.fossils.non.unif<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,r
 
 }
 
-#' Select a sensible basin age based tree age
+#' Simulate water depth profile
+#'
+#' @description
+#' Function returns water depth profile using the sine wave function \eqn{y = depth*sin(cycles*pi*(x-1/4))}.
+#'
+#' @param strata Number of stratigraphic intervals
+#' @param depth Maximum water depth.
+#' @param cycles Number of cycles (transgressions and regressions).
+#' @return dataframe of sampled water depths.
+#' @examples
+#' strata = 100
+#' wd<-sim.water.depth(strata)
+#' plot(wd, type="l")
+#' @keywords non-uniform fossil preservation
+#' @export
+sim.water.depth<-function(strata,depth=2,cycles=2){
+
+  # define the x-axis values
+  x=seq(0,2,length.out=strata)
+
+  # define y-axis values
+  # a - total depth excursion - amplitude
+  # b - number of cycles - period
+  # 1/c - defines the relative start time of each cycle - phase shift
+  # y = a * sin (b * pi * (x-1/c))
+  y=depth*sin(cycles*pi*(x-1/4))
+
+  return(data.frame(x=c(1:strata),y=y))
+
+  # EOF
+}
+
+#' Select a sensible basin age based on tree height
+#'
+#' Function returns an age slightly older than the root.age or origin time.
 #'
 #' @param tree Phylo object.
-#' @param root.edge Boolean indicating tree inclues a root edge.
+#' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return basin age
+#' @examples
+#' tr<-ape::rtree(6)
+#' basin.age(tr, root.edge = FALSE)
 #' @export
-basin.age<-function(tree,root.edge=T){
+basin.age<-function(tree,root.edge=TRUE){
   node.ages<-n.ages(tree)
   if(root.edge && exists("root.edge",tree) )
     ba = max(node.ages)+tree$root.edge
@@ -456,4 +638,3 @@ basin.age<-function(tree,root.edge=T){
   ba = round(ba,1)+0.1
   return(ba)
 }
-

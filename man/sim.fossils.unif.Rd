@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.fossils.R
 \name{sim.fossils.unif}
 \alias{sim.fossils.unif}
-\title{Simulate fossils under a uniform model of preservation}
+\title{Simulate fossils under a uniform model of preservation for a set of equal length intervals}
 \usage{
 sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T,
   convert.rate = FALSE)
@@ -12,25 +12,30 @@ sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T,
 
 \item{basin.age}{Maximum age of the oldest stratigraphic interval.}
 
-\item{strata}{Number of stratigraphic horizons.}
+\item{strata}{Number of stratigraphic intervals.}
 
 \item{sampling}{Probability of sampling/preservation.}
 
-\item{root.edge}{If TRUE include the root edge (default = FALSE).}
+\item{root.edge}{If TRUE include the root edge (default = TRUE).}
 
 \item{convert.rate}{If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).}
 }
 \value{
 dataframe of sampled fossils.
-sp = edge labels. h = fossil or horizon ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
 }
 \description{
-Simulate fossils under a uniform model of preservation
+Simulate fossils under a uniform model of preservation for a set of equal length intervals
 }
 \examples{
-t<-ape::rtree(4)
-ba<-basin.age(t,root.edge=F)
-sim.fossils.unif(t,ba,5,0.5)
+# simulate tree
+tr<-ape::rtree(6)
+# assign a max age based on tree height
+ba<-basin.age(tr)
+# simulate fossils
+strata = 4
+sampling = 0.7
+f<-sim.fossils.unif(tr, ba, strata, sampling)
 }
 \keyword{fossil}
 \keyword{preseravtion}

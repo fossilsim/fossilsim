@@ -4,38 +4,50 @@
 \alias{draw.fossils}
 \title{Plot simulated fossils}
 \usage{
-draw.fossils(x, fossils = NULL, root.edge = FALSE, show.tip.label = FALSE,
-  align.tip.label = FALSE, add.fossils = FALSE, add.tree = TRUE,
-  add.strata = FALSE, strata = 1, add.ranges = FALSE, binned = FALSE,
-  add.axis = TRUE, hide.edge = FALSE, ...)
+draw.fossils(tree, fossils = NULL, show.fossils = TRUE, show.tree = TRUE,
+  show.strata = FALSE, strata = 1, show.ranges = FALSE,
+  show.axis = TRUE, show.profile = FALSE, depth.profile = NULL,
+  binned = FALSE, hide.edge = FALSE, root.edge = FALSE,
+  show.tip.label = FALSE, align.tip.label = FALSE, fcol = "darkorange",
+  fcex = 1.2, edge.width = 1, max = NULL, ...)
 }
 \arguments{
-\item{fossils}{Dataframe of sampled fossils (sp = edge labels. h = ages.)}
+\item{tree}{Phylo object.}
+
+\item{fossils}{Dataframe of sampled fossils (sp = edge labels, h = ages).}
+
+\item{show.fossils}{If TRUE plot fossils (default = TRUE).}
+
+\item{show.tree}{If TRUE plot the tree  (default = TRUE).}
+
+\item{show.strata}{If TRUE plot strata  (default = FALSE).}
+
+\item{strata}{A vector of user specified interval ages or a single value specifying the number of equal length intervals.}
+
+\item{show.ranges}{If TRUE plot ranges (default = FALSE).}
+
+\item{show.axis}{If TRUE plot axis (default = TRUE).}
+
+\item{show.profile}{If TRUE add water depth profile (default = FALSE).}
+
+\item{depth.profile}{Water depth profile (default = NULL).}
+
+\item{binned}{If TRUE and fossil ages correspond to max ages of equal length intervals fossils are plotted in the mid point of each interval.}
+
+\item{hide.edge}{If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).}
 
 \item{root.edge}{If TRUE include the root edge (default = FALSE).}
 
-\item{add.fossils}{If TRUE plot fossils (default = FALSE).}
+\item{fcol}{Color of fossil occurrences or ranges.}
 
-\item{add.tree}{If TRUE plot the tree  (default = TRUE).}
-
-\item{add.strata}{If TRUE plot strata  (default = FALSE).}
-
-\item{add.ranges}{If TRUE plot ranges (default = FALSE).}
-
-\item{binned}{If TRUE fossils are plotted in the mid point of each interval.}
-
-\item{add.axis}{If TRUE plot axis (default = TRUE).}
-
-\item{hide.edge}{If TRUE hide the root edge (default = FALSE).}
-
-\item{tree}{Phylo object.}
+\item{max}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
 }
 \description{
 Plot simulated fossils
 }
 \examples{
-t<-ape::rtree(10)
-f<-sim.fossils.poisson(t,3)
-draw.fossils(t,f)
+tr<-ape::rtree(10)
+f<-sim.fossils.poisson(tr,3)
+draw.fossils(tr, f, strata = 10, show.strata = TRUE)
 }
 
