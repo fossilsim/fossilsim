@@ -1,13 +1,11 @@
-# Function to calculate node ages of a non-ultramteric tree written by Liam J. Revell
-#' @importFrom phytools nodeHeights
-n.ages<-function(tree) {
+# Function to calculate node ages of a non-ultramteric tree using the TreeSim function getx
+#' @importFrom TreeSim getx
+n.ages<-function(tree){
 
-  node.ages<-max(nodeHeights(tree))-nodeHeights(tree)[match(1:tree$Nnode+length(tree$tip),tree$edge[,1]),1]
-  names(node.ages)<-1:tree$Nnode+length(tree$tip)
+  node.ages <- getx(tree, sersampling = 1)[1:tree$Nnode+length(tree$tip)]
+  names(node.ages) <- 1:tree$Nnode+length(tree$tip)
 
   return(node.ages)
-
-  # EOF
 }
 
 # Identify parent nodes
