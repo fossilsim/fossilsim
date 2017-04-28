@@ -638,3 +638,47 @@ basin.age<-function(tree,root.edge=TRUE){
   ba = round(ba,1)+0.1
   return(ba)
 }
+
+#' Count the total number of fossils
+#'
+#' @param fossils Fossil dataframe.
+#' @return Number of extinct samples.
+#'
+#' @export
+count.fossils<-function(fossils){
+  k = length(fossils$sp[which(fossils$h > 0)])
+  return(k)
+}
+
+#' Count the total number of fossils per interval
+#'
+#' @param fossils Fossil dataframe.
+#' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
+#'
+#' @return Vector of extinct samples corresponding to each interval. Note the last value corresponds to the number of samples > the maximum age of the oldest interval.
+#'
+#' @export
+count.fossils.binned<-function(fossils, interval.ages){
+  intervals<-interval.ages
+  k = c()
+  for(i in 1:length(intervals)){
+    k = c(k, 0)
+  }
+  for(i in 1:length(fossils$h)){
+    if(fossils$h[i] != 0){
+      j = assign.interval(intervals, fossils$h[i])
+      k[j] = k[j] + 1
+    }
+  }
+  return(k)
+}
+
+# assign any given age to one of a set of intervals
+assign.interval<-function(intervals, t){
+  i = -1
+  for(j in 1:length(intervals)){
+    if(t >= intervals[j])
+      i = j
+  }
+  return(i)
+}
