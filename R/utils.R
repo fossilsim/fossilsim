@@ -19,6 +19,28 @@ ancestor<-function(edge,tree){
   #eof
 }
 
+# Identify tips
+#
+# @param taxa Edge label.
+# @param tree Phylo object.
+# @return Boolean (true/false).
+# @examples
+# t<-ape::rtree(6)
+# is.tip(t$edge[,2][6],t)
+is.tip<-function(taxa,phylo){
+  
+  tree<-phylo
+  
+  if (length(which(tree$edge[,1]==taxa)) < 1) {
+    return(1)
+  }
+  else {
+    return(0)
+  }
+  
+  # EOF
+}
+
 # Identify the root
 root<-function(tree){
   tree<-tree
@@ -43,5 +65,16 @@ is.root<-function(edge,tree){
   #eof
 }
 
-
-
+# fetch immediate decendants
+descendants<-function(edge,tree){
+  edge<-edge
+  tree<-tree
+  
+  if(edge %in% tree$edge[,1])
+    decs<-tree$edge[,2][which(tree$edge[,1]==edge)]
+  else
+    decs = NULL
+  
+  return(decs)
+  #eof
+}

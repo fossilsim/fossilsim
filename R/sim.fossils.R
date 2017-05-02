@@ -65,7 +65,7 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
     }
 
   }
-  fossils<-fossils(fossils, age = "continuous", speciation.mode = "asymmetric")
+  fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
   return(fossils) # in this data frame h=fossil age and sp=lineage
   # EOF
 }
@@ -246,9 +246,9 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
   }
 
   if(convert.rate)
-    fossils<-fossils(fossils, age = "continuous", speciation.mode = "asymmetric")
+    fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
   else
-    fossils<-fossils(fossils, age = "interval.max", speciation.mode = "asymmetric")
+    fossils<-fossils(fossils, age = "interval.max", speciation.mode = "symmetric")
   return(fossils) # in this data frame h=horizon and sp=lineage
   # EOF
 }
@@ -407,7 +407,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 
   } # end of horizon
 
-  fossils<-fossils(fossils, age = "continuous", speciation.mode = "asymmetric")
+  fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
   return(fossils)
 }
 
@@ -597,13 +597,12 @@ sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,D
   }
 
   if(convert.rate)
-    fossils<-fossils(fossils, age = "continuous", speciation.mode = "asymmetric")
+    fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
   else
-    fossils<-fossils(fossils, age = "interval.max", speciation.mode = "asymmetric")
+    fossils<-fossils(fossils, age = "interval.max", speciation.mode = "symmetric")
   return(fossils) # in this data frame h=horizon and sp=lineage
 
   # EOF
-
 }
 
 #' Simulate water depth profile

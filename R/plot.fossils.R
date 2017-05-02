@@ -63,7 +63,7 @@ plot.fossils<-function (fossils, tree, show.fossils = TRUE, show.tree = TRUE, sh
   srt = 0
 
   if(!(is.fossils(fossils)))
-    stop("First argument 'fossils' must be an object of class fossils")
+    stop("fossils must be an object of class \"fossils\"")
 
   # check the tree
   Ntip <- length(x$tip.label)
