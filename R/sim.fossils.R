@@ -3,13 +3,14 @@
 #' @param tree Phylo object.
 #' @param sampling Poisson sampling rate.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
-#' @return dataframe of sampled fossils.
+#' @return An object of class fossils.
 #' sp = edge labels. h = ages.
 #' @examples
 #' # simulate tree
-#' tr<-ape::rtree(4)
+#' t<-ape::rtree(4)
 #' # simulate fossils
-#' f<-sim.fossils.poisson(tr, 2)
+#' f<-sim.fossils.poisson(t, 2)
+#' plot(f, t)
 #' @keywords uniform preseravtion
 #' @export
 sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
@@ -64,7 +65,7 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
     }
 
   }
-
+  fossils<-fossils(fossils, age = "continuous", speciation.mode = "asymmetric")
   return(fossils) # in this data frame h=fossil age and sp=lineage
   # EOF
 }
@@ -77,17 +78,17 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
 #' @param sampling Probability of sampling/preservation.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
-#' @return dataframe of sampled fossils.
+#' @return An object of class fossils.
 #' sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
 #' @examples
 #' # simulate tree
-#' tr<-ape::rtree(6)
+#' t<-ape::rtree(6)
 #' # assign a max age based on tree height
-#' ba<-basin.age(tr)
+#' ba<-basin.age(t)
 #' # simulate fossils
 #' strata = 4
 #' sampling = 0.7
-#' f<-sim.fossils.unif(tr, ba, strata, sampling)
+#' f<-sim.fossils.unif(t, ba, strata, sampling)
 #' @keywords uniform fossil preseravtion
 #' @export
 sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.rate=FALSE){
@@ -96,6 +97,12 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
   strata<-strata
   sampling<-sampling
   convert.rate<-convert.rate # convert prability to rate and generate k fossils
+
+  if(!((sampling >= 0) & (sampling <= 1)))
+      stop("Sampling must be a probability between 0 and 1")
+
+  if(sampling == 1)
+    sampling = 0.9999
 
   s1=basin.age/strata # horizon length (= max age of youngest horizon)
   horizons<-seq(s1, basin.age, length=strata)
@@ -237,6 +244,11 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
       }
     }
   }
+
+  if(convert.rate)
+    fossils<-fossils(fossils, age = "continuous", speciation.mode = "asymmetric")
+  else
+    fossils<-fossils(fossils, age = "interval.max", speciation.mode = "asymmetric")
   return(fossils) # in this data frame h=horizon and sp=lineage
   # EOF
 }
@@ -247,19 +259,19 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param sampling Vector of Poisson sampling rates. The length of the vector should 1 less than the length of interval.ages.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
-#' @return dataframe of sampled fossils.
+#' @return An object of class fossils.
 #' sp = edge labels. h = fossil ages.
 #' @keywords non-uniform fossil preseravtion
 #' @examples
 #' # simulate tree
-#' tr<-ape::rtree(6)
+#' t<-ape::rtree(6)
 #' # assign a max age based on tree height
-#' max = basin.age(tr)
+#' max = basin.age(t)
 #' # assign interval times & rates
 #' times = seq(0, max, length.out = 4)
 #' rates = c(5, 3, 1)
 #' # simulate fossils
-#' f<-sim.fossils.non.unif(tr, times, rates)
+#' f<-sim.fossils.non.unif(t, times, rates)
 #' @export
 sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
   tree<-tree
@@ -394,6 +406,8 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
     } # end of root edge
 
   } # end of horizon
+
+  fossils<-fossils(fossils, age = "continuous", speciation.mode = "asymmetric")
   return(fossils)
 }
 
@@ -407,18 +421,18 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 #' @param DT Depth tolerance parameter.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
-#' @return dataframe of sampled fossils.
+#' @return An object of class fossils.
 #' sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 #' @examples
 #' # simulate tree
-#' tr<-ape::rtree(6)
+#' t<-ape::rtree(6)
 #' # assign a max age based on tree height
-#' max = basin.age(tr)
+#' max = basin.age(t)
 #' # generate water depth profile
 #' strata = 4
 #' wd<-sim.water.depth(strata)
 #' # simulate fossils
-#' f<-sim.fossils.non.unif.depth(tr, max, strata, wd, PA = 1, PD = 0.5, DT = 1)
+#' f<-sim.fossils.non.unif.depth(t, max, strata, wd, PA = 1, PD = 0.5, DT = 1)
 #' @keywords non-uniform fossil preseravtion
 #' @export
 sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,root.edge=TRUE,convert.rate=FALSE){
@@ -451,6 +465,8 @@ sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,D
 
     # calculate the interval rate
     sampling = PA * exp( (-(current.depth-PD)**2) / (2 * (DT ** 2)) )
+    if(sampling >= 1)
+      sampling = 0.9999
     rate = -log(1-sampling)/(basin.age/strata)
 
     h.min<-h-s1
@@ -579,6 +595,11 @@ sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,D
     }
 
   }
+
+  if(convert.rate)
+    fossils<-fossils(fossils, age = "continuous", speciation.mode = "asymmetric")
+  else
+    fossils<-fossils(fossils, age = "interval.max", speciation.mode = "asymmetric")
   return(fossils) # in this data frame h=horizon and sp=lineage
 
   # EOF
@@ -625,8 +646,8 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return basin age
 #' @examples
-#' tr<-ape::rtree(6)
-#' basin.age(tr, root.edge = FALSE)
+#' t<-ape::rtree(6)
+#' basin.age(t, root.edge = FALSE)
 #' @export
 basin.age<-function(tree,root.edge=TRUE){
   node.ages<-n.ages(tree)
@@ -682,3 +703,4 @@ assign.interval<-function(intervals, t){
   }
   return(i)
 }
+
