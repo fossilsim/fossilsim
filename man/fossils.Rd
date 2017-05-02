@@ -15,7 +15,7 @@ is.fossils(fossils)
 \arguments{
 \item{data}{Dataframe or list of sampled fossils (sp = edge labels, h = ages).}
 
-\item{ages}{String indicating how fossil ages are defined relative to interval ages (e.g. continuous, horizon.max)}
+\item{ages}{String indicating how fossil ages are defined relative to interval ages (e.g. continuous, interval.max)}
 
 \item{speciation.mode}{String indicating the speciation concept fossils were generated under (e.g. asymmetric/budding, symmetric/bifurcating, mixed)}
 }

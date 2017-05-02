@@ -662,7 +662,7 @@ basin.age<-function(tree,root.edge=TRUE){
 
 #' Count the total number of fossils
 #'
-#' @param fossils Fossil dataframe.
+#' @param fossils Fossils object.
 #' @return Number of extinct samples.
 #'
 #' @export
@@ -673,7 +673,7 @@ count.fossils<-function(fossils){
 
 #' Count the total number of fossils per interval
 #'
-#' @param fossils Fossil dataframe.
+#' @param fossils Fossils object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #'
 #' @return Vector of extinct samples corresponding to each interval. Note the last value corresponds to the number of samples > the maximum age of the oldest interval.

@@ -21,7 +21,7 @@ sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T,
 \item{convert.rate}{If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).}
 }
 \value{
-dataframe of sampled fossils.
+An object of class fossils.
 sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
 }
 \description{
@@ -29,13 +29,13 @@ Simulate fossils under a uniform model of preservation for a set of equal length
 }
 \examples{
 # simulate tree
-tr<-ape::rtree(6)
+t<-ape::rtree(6)
 # assign a max age based on tree height
-ba<-basin.age(tr)
+ba<-basin.age(t)
 # simulate fossils
 strata = 4
 sampling = 0.7
-f<-sim.fossils.unif(tr, ba, strata, sampling)
+f<-sim.fossils.unif(t, ba, strata, sampling)
 }
 \keyword{fossil}
 \keyword{preseravtion}

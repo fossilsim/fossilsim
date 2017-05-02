@@ -18,7 +18,7 @@ basin age
 Function returns an age slightly older than the root.age or origin time.
 }
 \examples{
-tr<-ape::rtree(6)
-basin.age(tr, root.edge = FALSE)
+t<-ape::rtree(6)
+basin.age(t, root.edge = FALSE)
 }
 

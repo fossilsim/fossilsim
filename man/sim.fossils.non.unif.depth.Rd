@@ -25,7 +25,7 @@ sim.fossils.non.unif.depth(tree, basin.age, strata, profile, PA = 0.5,
 \item{convert.rate}{If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).}
 }
 \value{
-dataframe of sampled fossils.
+An object of class fossils.
 sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 }
 \description{
@@ -33,14 +33,14 @@ Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 }
 \examples{
 # simulate tree
-tr<-ape::rtree(6)
+t<-ape::rtree(6)
 # assign a max age based on tree height
-max = basin.age(tr)
+max = basin.age(t)
 # generate water depth profile
 strata = 4
 wd<-sim.water.depth(strata)
 # simulate fossils
-f<-sim.fossils.non.unif.depth(tr, max, strata, wd, PA = 1, PD = 0.5, DT = 1)
+f<-sim.fossils.non.unif.depth(t, max, strata, wd, PA = 1, PD = 0.5, DT = 1)
 }
 \keyword{fossil}
 \keyword{non-uniform}

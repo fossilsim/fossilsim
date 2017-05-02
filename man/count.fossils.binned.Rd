@@ -7,7 +7,7 @@
 count.fossils.binned(fossils, interval.ages)
 }
 \arguments{
-\item{fossils}{Fossil dataframe.}
+\item{fossils}{Fossils object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 }

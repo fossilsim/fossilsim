@@ -14,7 +14,7 @@ sim.fossils.poisson(tree, sampling, root.edge = TRUE)
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 }
 \value{
-dataframe of sampled fossils.
+An object of class fossils.
 sp = edge labels. h = ages.
 }
 \description{
@@ -22,9 +22,10 @@ Simulate fossils under a Poisson sampling model
 }
 \examples{
 # simulate tree
-tr<-ape::rtree(4)
+t<-ape::rtree(4)
 # simulate fossils
-f<-sim.fossils.poisson(tr, 2)
+f<-sim.fossils.poisson(t, 2)
+plot(f, t)
 }
 \keyword{preseravtion}
 \keyword{uniform}

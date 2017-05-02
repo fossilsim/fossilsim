@@ -16,7 +16,7 @@ sim.fossils.non.unif(tree, interval.ages, sampling, root.edge = TRUE)
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 }
 \value{
-dataframe of sampled fossils.
+An object of class fossils.
 sp = edge labels. h = fossil ages.
 }
 \description{
@@ -24,14 +24,14 @@ Simulate fossils under a non-uniform model of preservation
 }
 \examples{
 # simulate tree
-tr<-ape::rtree(6)
+t<-ape::rtree(6)
 # assign a max age based on tree height
-max = basin.age(tr)
+max = basin.age(t)
 # assign interval times & rates
 times = seq(0, max, length.out = 4)
 rates = c(5, 3, 1)
 # simulate fossils
-f<-sim.fossils.non.unif(tr, times, rates)
+f<-sim.fossils.non.unif(t, times, rates)
 }
 \keyword{fossil}
 \keyword{non-uniform}

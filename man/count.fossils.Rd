@@ -7,7 +7,7 @@
 count.fossils(fossils)
 }
 \arguments{
-\item{fossils}{Fossil dataframe.}
+\item{fossils}{Fossils object.}
 }
 \value{
 Number of extinct samples.
