@@ -46,8 +46,8 @@
 Plot simulated fossils
 }
 \examples{
-tr<-ape::rtree(10)
-f<-sim.fossils.poisson(tr,3)
-draw.fossils(tr, f, strata = 10, show.strata = TRUE)
+t<-ape::rtree(10)
+f<-sim.fossils.poisson(t,3)
+plot(f, t, strata = 10, show.strata = TRUE)
 }
 

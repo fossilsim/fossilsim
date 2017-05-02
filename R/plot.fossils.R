@@ -16,9 +16,9 @@
 #' @param fcol Color of fossil occurrences or ranges.
 #' @param max Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.
 #' @examples
-#' tr<-ape::rtree(10)
-#' f<-sim.fossils.poisson(tr,3)
-#' draw.fossils(tr, f, strata = 10, show.strata = TRUE)
+#' t<-ape::rtree(10)
+#' f<-sim.fossils.poisson(t,3)
+#' plot(f, t, strata = 10, show.strata = TRUE)
 #' @export
 plot.fossils<-function (fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.strata = FALSE, strata = 1,
                         show.ranges = FALSE, show.axis = TRUE, show.profile = FALSE, depth.profile = NULL, binned = FALSE,
@@ -61,6 +61,9 @@ plot.fossils<-function (fossils, tree, show.fossils = TRUE, show.tree = TRUE, sh
   y.lim = NULL
   adj = NULL
   srt = 0
+
+  if(!(is.fossils(fossils)))
+    stop("First argument 'fossils' must be an object of class fossils")
 
   # check the tree
   Ntip <- length(x$tip.label)
