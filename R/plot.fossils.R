@@ -1,7 +1,7 @@
 #' Plot simulated fossils
 #'
-#' @param tree Phylo object.
 #' @param fossils Dataframe of sampled fossils (sp = edge labels, h = ages).
+#' @param tree Phylo object.
 #' @param show.fossils If TRUE plot fossils (default = TRUE).
 #' @param show.tree If TRUE plot the tree  (default = TRUE).
 #' @param show.strata If TRUE plot strata  (default = FALSE).
@@ -20,7 +20,7 @@
 #' f<-sim.fossils.poisson(tr,3)
 #' draw.fossils(tr, f, strata = 10, show.strata = TRUE)
 #' @export
-draw.fossils<-function (tree, fossils = NULL, show.fossils = TRUE, show.tree = TRUE, show.strata = FALSE, strata = 1,
+plot.fossils<-function (fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.strata = FALSE, strata = 1,
                         show.ranges = FALSE, show.axis = TRUE, show.profile = FALSE, depth.profile = NULL, binned = FALSE,
                         hide.edge = FALSE, root.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, fcol = "darkorange", fcex = 1.2, edge.width = 1, max = NULL,...) {
   x<-tree  # tree
