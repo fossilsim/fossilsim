@@ -48,7 +48,7 @@ add.tip.samples<-function(tree, fossils, rho = 1) {
 #' @param rho Extant species sampling.
 #' @return An object of class fossils.
 #' sp = edge labels. h = ages.
-#' @examples 
+#' @examples
 #' # simulate tree
 #' lambda = 0.1
 #' mu = 0.05
@@ -65,35 +65,35 @@ add.extant.occ<-function(tree, fossils, rho = 1){
   tree<-tree
   fossils<-fossils
   rho<-rho
-  
+
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!"fossils" %in% class(fossils))
     stop("fossils must be an object of class \"fossils\"")
   if(!(rho >= 0 && rho <= 1))
     stop("rho must be a probability between 0 and 1")
-  
+
   # work out node ages
   node.ages<-n.ages(tree)
-  
+
   for (i in tree$edge[,2]){ # internal nodes + tips
-    
+
     # work out the max age of the lineage (e.g. when that lineage became extant)
     # & get ancestor
     row=which(tree$edge[,2]==i)
     ancestor=tree$edge[,1][row]
-    
+
     # get the age of the ancestor
     a=which(names(node.ages)==ancestor)
     lineage.start=node.ages[[a]]
-    
+
     # work out the min age of the lineage (e.g. when that lineage became extinct)
     # & get the branch length
     b=tree$edge.length[row]
     lineage.end=lineage.start-b # branch length
-    
+
     lineage.end=round(lineage.end,7)
-    
+
     if(lineage.end==0){
       if(runif(1) < rho)
         fossils<-rbind(fossils,data.frame(h=0,sp=i))
@@ -106,10 +106,10 @@ add.extant.occ<-function(tree, fossils, rho = 1){
 #' Sample asymmetric fossil lineages
 #'
 #' Sample fossils assuming asymmetric (budding) speciation.
-#' 
+#'
 #' @param tree Phylo object.
 #' @param fossil Fossils object.
-#' @return An object of class fossils. 
+#' @return An object of class fossils.
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(6)
@@ -123,26 +123,26 @@ add.extant.occ<-function(tree, fossils, rho = 1){
 asymmetric.fossil.samp<-function(tree,fossils){
   tree<-tree
   fossils<-fossils
-  
+
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!"fossils" %in% class(fossils))
     stop("fossils must be an object of class \"fossils\"")
-  
+
   if(attr(fossils, "speciation") == "asymmetric")
     stop("Species have already been asymmetrically sampled")
-  
+
   p<-asymmetric.identities(tree)
-  
+
   af<-data.frame(h=numeric(),sp=numeric()) # h=horizon, sp=node
-  
+
   for (i in 1:length(fossils[,2])) {
-    
+
     f=fossils$sp[i]
     h=fossils$h[i]
     ai=p$equivalent.to[which(p$parent==f)] # asym identity
     af<-rbind(af,data.frame(h=h,sp=ai))
-    
+
   }
   af<-fossils(af, speciation.mode = "asymmetric", ages = attr(fossils, "ages"))
   return(af)
@@ -151,18 +151,18 @@ asymmetric.fossil.samp<-function(tree,fossils){
 
 #' Identify attachment ages and extinction times in an incompletely sampled tree
 #'
-#' The age at which a species attaches to a tree may not be equivalent to the time of origin of a species 
+#' The age at which a species attaches to a tree may not be equivalent to the time of origin of a species
 #' if sampling is incomplete.
-#' This function takes an object of class fossils and the corresponding phylo object and calculates 
+#' This function takes an object of class fossils and the corresponding phylo object and calculates
 #' the speciation (= attachment) times taking into account incomplete sampling.
-#' 
+#'
 #' @param tree Phylo object.
 #' @param fossils Fossils object.
-#' @param asymmetric.sampling If TRUE fossil sampling is assymmetric. 
+#' @param asymmetric.sampling If TRUE fossil sampling is assymmetric.
 #' If speciation is "symmetric" and asymmetric.sampling = TRUE, the function calls asymmetric.fossil.samp.
 #' If speciation is "asymmetric" and asymmetric.sampling = FALSE, the function returns an error.
 #' @return Dataframe containing the speciation & extinction times in an incompletely sampled tree.
-#' @examples 
+#' @examples
 #' t<-ape::rtree(6)
 #' # simulate fossils
 #' f<-sim.fossils.poisson(t, 2)
@@ -177,12 +177,12 @@ attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
   tree<-tree
   fossils<-fossils
   asymmetric.sampling<-asymmetric.sampling
-  
+
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!"fossils" %in% class(fossils))
     stop("fossils must be an object of class \"fossils\"")
-  
+
   # attachment identities & asymmetric / symmetric ages
   if(asymmetric.sampling){
     if(attr(fossils, "speciation") == "symmetric")
@@ -197,26 +197,26 @@ attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
     ages<-symmetric.ages(tree)
     nages<-n.ages(tree)
   }
-  
+
   a<-data.frame(sp=numeric(),lineage.starts=numeric(),lineage.ends=numeric(),first.appearance=numeric())
-  
+
   for(i in unique(fossils$sp)){
-    
+
     # find the extinction time of i
     lineage.end=ages$end[which(ages$sp==i)]
-    
+
     # find the attachment identity of i
     attaches=attach.ident$attaches[which(attach.ident$sp==i)]
-    
+
     # find the speciation time of a
     if(asymmetric.sampling)
       lineage.start=ages$start[which(ages$sp==attaches)]
-    else 
+    else
       lineage.start=nages[which(names(nages)==attaches)]
-    
+
     # Find the first appearance
     fa=max(fossils$h[which(fossils$sp==i)])
-    
+
     a<-rbind(a,data.frame(sp=i,lineage.starts=lineage.start,lineage.ends=lineage.end,first.appearance=fa))
   }
   return(a)
@@ -242,62 +242,62 @@ attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
 mixed.speciation<-function(tree, f){
   tree<-tree
   f<-f # fraction of asymmetric speciation events
-  
+
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!(f >= 0 && f <= 1))
     stop("f must be a probability between 0 and 1")
- 
+
   # sp = species; p = ancestor
   p<-data.frame(sp=numeric(),p=numeric(),equivalent.to=numeric(),mode=character())
-  
+
   done<-data.frame(a=numeric())
-  
+
   # identify the root
   root=length(tree$tip.label)+1
-  
+
   p<-rbind(p,data.frame(sp=root,p=root,equivalent.to=root,mode="o"))
-  
+
   ancestor = root
-  
+
   process.complete = 0
-  
+
   while(process.complete==0) {
-    
+
     # fetch the two descendents
     row=which(tree$edge[,1]==ancestor)
     descendents=tree$edge[,2][row]
     d1<-descendents[1]
     d2<-descendents[2]
-    
+
     if(runif(1) > f){
       # speciation event is symmetric
-      
+
       if(!d2 %in% p[[1]]) {
         ai=p$equivalent.to[which(p$sp==ancestor)]
         p<-rbind(p,data.frame(sp=d1,p=ai,equivalent.to=d1,mode="s"))
         p<-rbind(p,data.frame(sp=d2,p=ai,equivalent.to=d2,mode="s"))
       }
-      
+
     }
     else{
       # speciation event is asymmetric
-      
+
       # unless d2 is not in the table (d1 also won't be in the table)
       if(!d2 %in% p[[1]]) {
-        
+
         # find out how the parent of d1 is defined (e.g. as itself, or by an older ancestor)
         row=which(p$sp==ancestor) # one step ai=p$equivalent.to[which(p$sp==ancestor)]
         ai=p$equivalent.to[row] # asymmetric identity
         ap=p$p[which(p$sp==ai)]
         p<-rbind(p,data.frame(sp=d1,p=ap,equivalent.to=ai,mode="NA"))
-        
+
         # define d2 its itself (e.g the budding champion)
         p<-rbind(p,data.frame(sp=d2,p=ai,equivalent.to=d2,mode="b"))
-        
+
       }
     }
-    
+
     # the following is simply a way of tranversing the tree in a particular order
     if(!d1 %in% done[[1]]) {
       if ((is.tip(d1,tree)) == 1) {
@@ -347,55 +347,55 @@ mixed.ages<-function(tree,f,root.edge=T){
   tree<-tree
   f<-f
   root.edge<-root.edge
-  
+
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!(f >= 0 && f <= 1))
     stop("f must be a probability between 0 and 1")
-  
+
   sym.ages<-symmetric.ages(tree)
   mixed.ident<-mixed.speciation(tree,f=f)
   origin=root(tree) # identify the root
-  
+
   ages<-data.frame(sp=numeric(),p=numeric(),start=numeric(),end=numeric(),mode=character())
-  
+
   for(i in unique(mixed.ident$equivalent.to)){
-    
+
     # record the mode of speciation
     mode=mixed.ident$mode[which(mixed.ident$equivalent.to==i)][1]
-    
+
     # record the parent
     parent=mixed.ident$p[which(mixed.ident$equivalent.to==i)][1]
-    
+
     # identify all equivalent asymmetric lineages
     lineages=mixed.ident$sp[which(mixed.ident$equivalent.to==i)]
-    
+
     # if i is the root and has no asymmetric descendents
     if ((length(lineages) < 2 ) && (!is.element(lineages, sym.ages$sp))){
-      
+
       lineage.start=max(sym.ages$start)
-      
+
       lineage.end=lineage.start
-      
+
     }
     else {
-      
+
       # find the oldest start time
       lineage.start=max(subset(sym.ages,sp %in% lineages)$start)
-      
+
       # find the youngest end time
       lineage.end=min(subset(sym.ages,sp %in% lineages)$end)
-      
+
     }
-    
+
     ages<-rbind(ages,data.frame(sp=i,p=parent,start=lineage.start,end=lineage.end,mode=mode))
-    
+
   }
-  
+
   if(root.edge && exists("root.edge",tree) ){
     ages$start[which(ages$sp==origin)] = ages$start[which(ages$sp==origin)] + tree$root.edge
   }
-  
+
   return(ages)
   #eof
 }
@@ -407,7 +407,7 @@ mixed.ages<-function(tree,f,root.edge=T){
 #' @param parent.labels If TRUE print out parent edge labels.
 #' @return Dataframe containing species labels, (morpho)species speciation & extinction times, and mode of speciation.
 #' "a" = anagenic speciation, s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
-#' @examples 
+#' @examples
 #' t<-ape::rtree(6)
 #' sp<-mixed.ages(t, 0.5)
 #' sp<-anagenic.species(sp, 0.1)
@@ -416,53 +416,53 @@ anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
   ages<-ages
   lambda.a<-lambda.a
   parent.labels<-parent.labels
-  
+
   # identify the start of the new species id count
   species.count = max(ages$sp) + 1
-  
+
   # sp = species id, p = parent, b = branch
   all.species<-data.frame(sp=numeric(),p=numeric(),b=numeric(),start=numeric(),end=numeric(),mode=character())
-  
+
   for(i in 1:length(ages$sp)){
-    
+
     sp = ages$sp[i]
     branch = ages$sp[i]
     parent = ages$p[i]
     mode = ages$mode[i]
     lineage.start = ages$start[i]
     lineage.end = ages$end[i]
-    
+
     # work out total branch duration
     b = lineage.start - lineage.end
-    
+
     # sample random number from a poisson distribution with rate = branch duriation x lambda.a
     rand = rpois(1, b * lambda.a)
-    
+
     if (rand > 0) {
       # sample anageic speciation times from the branch duration
       h = runif(rand, min = lineage.end, max = lineage.start)
-      
+
       # order and label the new species
       h = sort(h,decreasing = T)
-      
+
       # deal with the original lineage
       all.species<-rbind(all.species,data.frame(sp=sp,p=parent,b=branch,start=lineage.start,end=h[1],mode=mode))
-      
+
       for(i in 1:length(h)){
-        
+
         start = h[i]
         if(i == length(h))
           end = lineage.end
         else
           end = h[i+1]
-        
+
         if(i == 1)
           parent = sp
         else
           parent = species.count-1
-        
+
         all.species<-rbind(all.species,data.frame(sp=species.count,p=parent,b=branch,start=start,end=end,mode="a"))
-        
+
         species.count = species.count + 1
       }
     }
@@ -470,7 +470,7 @@ anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
       all.species<-rbind(all.species,data.frame(sp=sp,p=parent,b=branch,start=lineage.start,end=lineage.end,mode=mode))
     }
   }
-  
+
   # note at this stage the parent labels for sym and asym speciation events may be incorrect
   # the following loop assigns the correct labels if parent.labels = T
   # I made it optional because this might be slow for large trees
@@ -484,19 +484,19 @@ anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
       }
       else if(mode == "b") {
         birth.time = all.species$start[i]
-        
+
         # identify parent branch members
         bm = all.species$sp[which(all.species$b==parent)]
-        
+
         for(j in bm){
           bm.birth.time = all.species$start[which(all.species$sp==j)]
           bm.death.time = all.species$end[which(all.species$sp==j)]
-          
+
           if((bm.birth.time > birth.time) && (bm.death.time < birth.time)){
             all.species$p[i] = j
           }
         }
-        
+
       }
     }
   }
@@ -529,19 +529,19 @@ anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
 attachment.identities<-function(tree,fossils) {
   tree<-tree
   fossils<-fossils
-  
+
   if(attr(fossils, "speciation") != "asymmetric")
     stop("Fossils speciation mode != asymmetric")
-  
+
   api<-asymmetric.parent.identities(tree)
-  
+
   # identify the root
   root=length(tree$tip.label)+1
-  
+
   p<-data.frame(sp=numeric(),attaches=numeric())
-  
+
   for(i in unique(fossils$sp)){
-    
+
     # if am I the root
     if(i == root){
       p<-rbind(p,data.frame(sp=i,attaches=i))
@@ -550,29 +550,29 @@ attachment.identities<-function(tree,fossils) {
       # identify the asymmetric parent
       parent=api$parent[which(api$species==i)]
       j=i
-      
+
       process=0
       while(process==0){
-        
+
         if(parent == root){
           # if the root has been sampled
           if(root %in% fossils$sp){
             p<-rbind(p,data.frame(sp=i,attaches=j))
           }
           else{
-            
+
             # fetch the root descendents
             root.decs=fetch.asymmetric.descendants(root,tree)
             # if i is not the only other sampled descendant
             if(length(which(root.decs[!root.decs==i] %in% fossils$sp)) > 0){
-              
+
               # identify decs also sampled
               decs=root.decs[which(root.decs %in% fossils$sp)]
-              
+
               # identify the right most sample
               row=min(which(tree$edge[,2] %in% decs))
               right=tree$edge[,2][row]
-              
+
               # if i/j is not the right most sample in the sym tree
               if(i != right){
                 p<-rbind(p,data.frame(sp=i,attaches=j))
@@ -587,27 +587,27 @@ attachment.identities<-function(tree,fossils) {
           }
           process=1
         }
-        
+
         # if parent is sampled
         # -> attachment identity = self (i) or nearest ancestor (j)
         else if(parent %in% fossils$sp){
           p<-rbind(p,data.frame(sp=i,attaches=j))
           process=1
         }
-        
+
         else {
           decs=fetch.asymmetric.descendants(parent,tree)
           # if i is not the only other sampled descendant
           if ( length(which(decs[!decs==i] %in% fossils$sp)) > 0 ){
-            
+
             # identify decs also sampled
             decs=decs[which(decs %in% fossils$sp)]
-            
+
             # identify the right most sample
             # it will appear highest in the table
             row=min(which(tree$edge[,2] %in% decs))
             right=tree$edge[,2][row]
-            
+
             # if i/j is not the right most sample in the sym tree
             # -> attachment identity = self i/j
             #if(i == left){
@@ -640,9 +640,9 @@ attachment.identities<-function(tree,fossils) {
 symmetric.attachment.identities<-function(tree, fossils){
   tree<-tree
   fossils<-fossils
-  
+
   p<-data.frame(sp=numeric(),attaches=numeric())
-  
+
   for(i in unique(fossils$sp)){
     if(i == root(tree)){
       p<-rbind(p,data.frame(sp=i,attaches=i))
@@ -697,42 +697,42 @@ symmetric.attachment.identities<-function(tree, fossils){
 # asymmetric.identities(t)
 asymmetric.identities<-function(tree){
   tree<-tree
-  
+
   # parent = species
   p<-data.frame(parent=numeric(),equivalent.to=numeric())
-  
+
   done<-data.frame(a=numeric())
-  
+
   # identify the root
   root=length(tree$tip.label)+1
-  
+
   p<-rbind(p,data.frame(parent=root,equivalent.to=root))
-  
+
   ancestor=root
-  
+
   process.complete=0
-  
+
   while(process.complete==0) {
-    
+
     # fetch the two descendents
     row=which(tree$edge[,1]==ancestor)
     descendents=tree$edge[,2][row]
     d1<-descendents[1]
     d2<-descendents[2]
-    
+
     # unless d2 is not in the table (d1 also won't be in the table)
     if(!d2 %in% p[[1]]) {
-      
+
       # find out how the parent of d1 is define (e.g. as itself, or by an older ancestor)
       row=which(p$parent==ancestor) # one step ai=p$equivalent.to[which(p$parent==ancestor)]
       ai=p$equivalent.to[row] # asymmetric identity
       p<-rbind(p,data.frame(parent=d1,equivalent.to=ai))
-      
+
       # define d2 its itself (e.g the budding champion)
       p<-rbind(p,data.frame(parent=d2,equivalent.to=d2))
-      
+
     }
-    
+
     # the following is simply a way of tranversing the tree in a particular order
     if(!d1 %in% done[[1]]) {
       if ((is.tip(d1,tree)) == 1) {
@@ -741,7 +741,7 @@ asymmetric.identities<-function(tree){
       else {
         ancestor=d1
       }
-      
+
     }
     else if (!d2 %in% done[[1]]) {
       if ((is.tip(d2,tree)) == 1) {
@@ -760,15 +760,15 @@ asymmetric.identities<-function(tree){
         row=which(tree$edge[,2]==ancestor)
         ancestor=tree$edge[,1][row]
       }
-      
+
     }
     #	if (count==100) {
     #		process.complete=1
     #	}
-    
+
     # count=count+1
   }
-  
+
   #eof  # the number of asym lineages should be 2n
   return(p)
 }
@@ -784,32 +784,32 @@ asymmetric.identities<-function(tree){
 # Function required by attachment.identities
 asymmetric.parent.identities<-function(tree){
   tree<-tree
-  
+
   p<-data.frame(species=numeric(),equivalent.to=numeric(),parent=numeric())
-  
+
   done<-data.frame(a=numeric())
-  
+
   # identify the root
   root=length(tree$tip.label)+1
   parent=NA
-  
+
   p<-rbind(p,data.frame(species=root,equivalent.to=root,parent=parent))
-  
+
   ancestor=root
-  
+
   process.complete=0
-  
+
   while(process.complete==0) {
-    
+
     # fetch the two descendents
     row=which(tree$edge[,1]==ancestor)
     descendents=tree$edge[,2][row]
     d1<-descendents[1]
     d2<-descendents[2]
-    
+
     # unless d2 is not in the table (d1 also won't be in the table)
     if(!d2 %in% p[[1]]) {
-      
+
       # find out how the parent of d1 is defined (e.g. as itself, or by an older ancestor)
       row=which(p$species==ancestor) # one step ai=p$equivalent.to[which(p$species==ancestor)]
       ai=p$equivalent.to[row] # asymmetric identity
@@ -820,12 +820,12 @@ asymmetric.parent.identities<-function(tree){
         pi=p$equivalent.to[which(p$species==pi)]
       }
       p<-rbind(p,data.frame(species=d1,equivalent.to=ai,parent=pi)) # this is incorrect
-      
+
       # define d2 as its itself (e.g the budding champion = new species)
       p<-rbind(p,data.frame(species=d2,equivalent.to=d2,parent=ai)) # this is correct
-      
+
     }
-    
+
     # the following is simply a way of tranversing the tree in a particular order
     if(!d1 %in% done[[1]]) {
       if ((is.tip(d1,tree)) == 1) {
@@ -852,101 +852,103 @@ asymmetric.parent.identities<-function(tree){
         row=which(tree$edge[,2]==ancestor)
         ancestor=tree$edge[,1][row]
       }
-      
+
     }
     #	if (count==100) {
     #		process.complete=1
     #	}
-    
+
     # count=count+1
   }
-  
+
   #eof  # the number of asym lineages should be 2n
   return(p)
 }
 
-# Print out a data.frame with symmetric species durations (not node ages)
+#' Create a data.frame with symmetric species durations (not node ages)
 #
-# @param tree Phylo object.
-# @param root.edge If TRUE include root edge. Root edge takes the root label.
-# @return Dataframe with internal branch ages (min and max).
-# @examples
-# t<-ape::rtree(6)
-# symmetric.ages(t)
+#' @param tree Phylo object.
+#' @param root.edge If TRUE include root edge. Root edge takes the root label.
+#' @return Dataframe with internal branch ages (min and max).
+#' @examples
+#' t<-ape::rtree(6)
+#' symmetric.ages(t)
+#' @export
 # Function required by asymmetric.ages
 symmetric.ages<-function(tree, root.edge=TRUE){
   tree<-tree
-  
+
   node.ages=n.ages(tree)
   origin=root(tree) # identify the root
-  
+
   ages<-data.frame(sp=numeric(),start=numeric(),end=numeric())
-  
+
   for (i in tree$edge[,2]){ # internal nodes + tips
-    
+
     # work out the max age of the lineage (e.g. when that lineage became extant)
     # & get ancestor
     row=which(tree$edge[,2]==i)
     ancestor=tree$edge[,1][row]
-    
+
     # get the age of the ancestor
     a=which(names(node.ages)==ancestor)
     lineage.start=round(node.ages[[a]],7)
-    
+
     # work out the min age of the lineage (e.g. when that lineage became extinct)
     # & get the branch length
     b=tree$edge.length[row]
     lineage.end=round(lineage.start-b,7) # branch length
-    
+
     ages<-rbind(ages,data.frame(sp=i,start=lineage.start,end=lineage.end))
   }
-  
+
   if(root.edge && exists("root.edge",tree) ){
     end = max(node.ages)
     start = end + tree$root.edge
     ages<-rbind(ages,data.frame(sp=origin,start=start,end=end))
   }
-  
+
   return(ages)
   #eof
 }
 
-# Print out a data.frame with asymmetric species durations
+#' Create a data.frame with asymmetric species durations
 #
-# @param tree Phylo object.
-# @param root.edge If TRUE include root edge.
-# @return Dataframe with internal asymmetric branch ages (min and max). Note that if root edge = TRUE the oldest lineage incorporates the origin.
-# @examples
-# t<-ape::rtree(6)
-# asymmetric.ages(t)
+#' @param tree Phylo object.
+#' @param root.edge If TRUE include root edge.
+#' @return Dataframe with internal asymmetric branch ages (min and max). Note that if root edge = TRUE the oldest lineage incorporates the origin.
+#' @examples
+#' t<-ape::rtree(6)
+#' asymmetric.ages(t)
+#' @export
 asymmetric.ages<-function(tree,root.edge=TRUE){
   tree<-tree
   root.edge<-root.edge
-  
+
   sym.ages<-symmetric.ages(tree, root.edge = FALSE) # note if root.edge = TRUE, the origin is handled below
   asym.ident<-asymmetric.identities(tree)
   origin=root(tree) # identify the root
-  
+
   ages<-data.frame(sp=numeric(),start=numeric(),end=numeric())
-  
+
   for(i in unique(asym.ident$equivalent.to)){
-    
+
     # identify all equivalent asymmetric lineages
     lineages=asym.ident$parent[which(asym.ident$equivalent.to==i)]
-    
+
     # find the oldest start time
     lineage.start=max(subset(sym.ages,sp %in% lineages)$start)
-    
+
     # find the youngest end time
     lineage.end=min(subset(sym.ages,sp %in% lineages)$end)
-    
+
     ages<-rbind(ages,data.frame(sp=i,start=lineage.start,end=lineage.end))
   }
-  
+
   if(root.edge && exists("root.edge",tree) ){
     ages$start[which(ages$sp==origin)] = ages$start[which(ages$sp==origin)] + tree$root.edge
   }
-  
+
   return(ages)
   #eof
 }
@@ -965,32 +967,32 @@ asymmetric.ages<-function(tree,root.edge=TRUE){
 fetch.descendents<-function(edge,tree,return.edge.labels=F){
   ancestor<-edge
   tree<-tree
-  
+
   if(is.tip(edge, tree))
     return(NULL)
-  
+
   # create a vector for nodes, tips & tracking descendent
   tips<-c()
   done<-data.frame(a=numeric()) # this data frame contains descendents (nodes+tips)
-  
+
   coi=ancestor # clade of interest
   process.complete=0
   # count=0 # debugging code
-  
+
   if(is.tip(ancestor,tree)){
     tip.label=tree$tip[ancestor]
     tips<-c(tips,tip.label)
   }
   else{
-    
+
     while(process.complete==0) {
-      
+
       # fetch the two descendents
       row=which(tree$edge[,1]==ancestor)
       descendents=tree$edge[,2][row]
       d1<-descendents[1]
       d2<-descendents[2]
-      
+
       if(!d1 %in% done[[1]]) {
         if ((is.tip(d1,tree)) == 1) {
           done<-rbind(done,data.frame(a=d1))
@@ -1024,7 +1026,7 @@ fetch.descendents<-function(edge,tree,return.edge.labels=F){
       #	if (count==100) {
       #		process.complete=1
       #	}
-      
+
       # count=count+1
     }
   }
@@ -1047,25 +1049,25 @@ fetch.descendents<-function(edge,tree,return.edge.labels=F){
 fetch.asymmetric.descendants<-function(edge,tree){
   edge<-edge
   tree<-tree
-  
+
   api<-asymmetric.parent.identities(tree)
-  
+
   p<-data.frame(dec=numeric(),done=numeric())
-  
+
   rows=which(api$parent==edge)
   if(length(rows)==0)
     return(NA) # no descendents
   decs=unique(api$equivalent.to[rows])
-  
+
   p<-rbind(p,data.frame(dec=decs,done=0))
-  
+
   process=0
   while(process==0){
-    
+
     rows=which(p$done==0)
     if(length(rows)==0)
       process=1
-    
+
     ancs=p$dec[rows]
     for(a in ancs){
       rows=which(api$parent==a)
@@ -1075,7 +1077,7 @@ fetch.asymmetric.descendants<-function(edge,tree){
       }
       p$done[which(p$dec==a)]=1
     }
-    
+
   }
   return(p$dec)
   #eof

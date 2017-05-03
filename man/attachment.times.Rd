@@ -11,7 +11,7 @@ attachment.times(tree, fossils, asymmetric.sampling = TRUE)
 
 \item{fossils}{Fossils object.}
 
-\item{asymmetric.sampling}{If TRUE fossil sampling is assymmetric. 
+\item{asymmetric.sampling}{If TRUE fossil sampling is assymmetric.
 If speciation is "symmetric" and asymmetric.sampling = TRUE, the function calls asymmetric.fossil.samp.
 If speciation is "asymmetric" and asymmetric.sampling = FALSE, the function returns an error.}
 }
@@ -19,9 +19,9 @@ If speciation is "asymmetric" and asymmetric.sampling = FALSE, the function retu
 Dataframe containing the speciation & extinction times in an incompletely sampled tree.
 }
 \description{
-The age at which a species attaches to a tree may not be equivalent to the time of origin of a species 
+The age at which a species attaches to a tree may not be equivalent to the time of origin of a species
 if sampling is incomplete.
-This function takes an object of class fossils and the corresponding phylo object and calculates 
+This function takes an object of class fossils and the corresponding phylo object and calculates
 the speciation (= attachment) times taking into account incomplete sampling.
 }
 \examples{
