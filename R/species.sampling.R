@@ -953,17 +953,18 @@ asymmetric.ages<-function(tree,root.edge=TRUE){
   #eof
 }
 
-# Fetch descendant lineages in a symmetric tree
+#' Fetch descendant lineages in a symmetric tree
 #
-# @param edge Edge label.
-# @param tree Phylo object.
-# @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
-# @examples
-# t<-ape::rtree(6)
-# fetch.descendents(7,t)
-# fetch.descendents(7,t,return.edge.labels=TRUE)
-# @return
-# List of asymmetric descendants
+#' @param edge Edge label.
+#' @param tree Phylo object.
+#' @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
+#' @examples
+#' t<-ape::rtree(6)
+#' fetch.descendents(7,t)
+#' fetch.descendents(7,t,return.edge.labels=TRUE)
+#' @return
+#' List of symmetric descendants
+#' @export
 fetch.descendents<-function(edge,tree,return.edge.labels=F){
   ancestor<-edge
   tree<-tree
