@@ -274,7 +274,7 @@ mixed.speciation<-function(tree, f){
       # speciation event is symmetric
 
       if(!d2 %in% p[[1]]) {
-        ai=p$equivalent.to[which(p$sp==ancestor)]
+        ai=p$equivalent.to[which(p$sp==ancestor)] # asymmetric identity
         p<-rbind(p,data.frame(sp=d1,p=ai,equivalent.to=d1,mode="s"))
         p<-rbind(p,data.frame(sp=d2,p=ai,equivalent.to=d2,mode="s"))
       }
