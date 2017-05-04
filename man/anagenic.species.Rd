@@ -21,8 +21,11 @@ Dataframe containing species labels, (morpho)species speciation & extinction tim
 Simulate anagenic species along branches
 }
 \examples{
+# simulate tree
 t<-ape::rtree(6)
-sp<-mixed.ages(t, 0.5)
-sp<-anagenic.species(sp, 0.1)
+# assign symmetric and asymmetric species
+sp1<-mixed.ages(t, 0.5)
+# simulate anagenic species
+sp2<-anagenic.species(sp1, 0.1)
 }
 

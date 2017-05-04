@@ -18,7 +18,7 @@ Dataframe with internal asymmetric or symmetric branch ages (min and max). Note 
 "s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
 }
 \description{
-Function uses mixed.speciation() to sample asymmetric & symmetric lineages.
+Function uses mixed.speciation() to assign asymmetric & symmetric lineages.
 }
 \examples{
 t<-ape::rtree(6)
