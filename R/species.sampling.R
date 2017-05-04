@@ -332,7 +332,7 @@ mixed.speciation<-function(tree, f){
 
 #' Print out a data.frame with mixed speciation (asymmetric and symmetric) ages
 #'
-#' Function uses mixed.speciation() to sample asymmetric & symmetric lineages.
+#' Function uses mixed.speciation() to assign asymmetric & symmetric lineages.
 #'
 #' @param tree Phylo object.
 #' @param f Probability of asymmetric speciation.
@@ -408,9 +408,12 @@ mixed.ages<-function(tree,f,root.edge=T){
 #' @return Dataframe containing species labels, (morpho)species speciation & extinction times, and mode of speciation.
 #' "a" = anagenic speciation, s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
 #' @examples
+#' # simulate tree
 #' t<-ape::rtree(6)
-#' sp<-mixed.ages(t, 0.5)
-#' sp<-anagenic.species(sp, 0.1)
+#' # assign symmetric and asymmetric species
+#' sp1<-mixed.ages(t, 0.5)
+#' # simulate anagenic species
+#' sp2<-anagenic.species(sp1, 0.1)
 #' @export
 anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
   ages<-ages
@@ -504,6 +507,267 @@ anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
     all.species$p<-NULL
   }
   return(all.species)
+  #eof
+}
+
+#' Generate datasets of cryptic species
+#'
+#' @param ages Dataframe of branching times for mixed species (asymmetric, symmetric, anagenic).
+#' @param kappa Probability that a speciation event generates a cryptic species.
+#'
+#' @return Dataframe containing species labels, (morpho)species speciation & extinction times, mode of speciation, cryptic indicator, and corresponding cryptic speciation lables.
+#' "a" = anagenic speciation, s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
+#' @export
+cryptic.specaition<-function(ages, kappa){
+  ages<-ages
+  kappa<-kappa
+
+  ages$cryptic = 0
+  ages$cryptic.id = 0
+
+  for(i in 1:length(ages$sp)){
+    sp = ages$sp[i]
+    if(runif(1) < kappa){
+      # origin id is always = sp
+      if(ages$mode[i] == "o")
+        ages$cryptic.id[i] = sp
+      else{
+        # speciation event is cryptic
+        ages$cryptic[i] = 1
+        # identify parent
+        parent = ages$p[i]
+        # identify parent cryptic label
+        parent.c = ages$cryptic.id[which(ages$sp == parent)]
+        # assign cryptic species id
+        ages$cryptic.id[i] = parent.c
+        # and all other species that share the same cryptic id
+        ages$cryptic.id[which(ages$cryptic.id == sp)] = parent.c
+      }
+    }else{
+      ages$cryptic.id[i] = sp
+    }
+  }
+  return(ages)
+}
+
+### tree functions
+
+#' Create a data.frame with symmetric species durations (not node ages)
+#
+#' @param tree Phylo object.
+#' @param root.edge If TRUE include root edge. Root edge takes the root label.
+#' @return Dataframe with internal branch ages (min and max).
+#' @examples
+#' t<-ape::rtree(6)
+#' symmetric.ages(t)
+#' @export
+# Function required by asymmetric.ages
+symmetric.ages<-function(tree, root.edge=TRUE){
+  tree<-tree
+
+  node.ages=n.ages(tree)
+  origin=root(tree) # identify the root
+
+  ages<-data.frame(sp=numeric(),start=numeric(),end=numeric())
+
+  for (i in tree$edge[,2]){ # internal nodes + tips
+
+    # work out the max age of the lineage (e.g. when that lineage became extant)
+    # & get ancestor
+    row=which(tree$edge[,2]==i)
+    ancestor=tree$edge[,1][row]
+
+    # get the age of the ancestor
+    a=which(names(node.ages)==ancestor)
+    lineage.start=round(node.ages[[a]],7)
+
+    # work out the min age of the lineage (e.g. when that lineage became extinct)
+    # & get the branch length
+    b=tree$edge.length[row]
+    lineage.end=round(lineage.start-b,7) # branch length
+
+    ages<-rbind(ages,data.frame(sp=i,start=lineage.start,end=lineage.end))
+  }
+
+  if(root.edge && exists("root.edge",tree) ){
+    end = max(node.ages)
+    start = end + tree$root.edge
+    ages<-rbind(ages,data.frame(sp=origin,start=start,end=end))
+  }
+
+  return(ages)
+  #eof
+}
+
+#' Create a data.frame with asymmetric species durations
+#
+#' @param tree Phylo object.
+#' @param root.edge If TRUE include root edge.
+#' @return Dataframe with internal asymmetric branch ages (min and max). Note that if root edge = TRUE the oldest lineage incorporates the origin.
+#' @examples
+#' t<-ape::rtree(6)
+#' asymmetric.ages(t)
+#' @export
+asymmetric.ages<-function(tree,root.edge=TRUE){
+  tree<-tree
+  root.edge<-root.edge
+
+  sym.ages<-symmetric.ages(tree, root.edge = FALSE) # note if root.edge = TRUE, the origin is handled below
+  asym.ident<-asymmetric.identities(tree)
+  origin=root(tree) # identify the root
+
+  ages<-data.frame(sp=numeric(),start=numeric(),end=numeric())
+
+  for(i in unique(asym.ident$equivalent.to)){
+
+    # identify all equivalent asymmetric lineages
+    lineages=asym.ident$parent[which(asym.ident$equivalent.to==i)]
+
+    # find the oldest start time
+    lineage.start=max(subset(sym.ages,sp %in% lineages)$start)
+
+    # find the youngest end time
+    lineage.end=min(subset(sym.ages,sp %in% lineages)$end)
+
+    ages<-rbind(ages,data.frame(sp=i,start=lineage.start,end=lineage.end))
+  }
+
+  if(root.edge && exists("root.edge",tree) ){
+    ages$start[which(ages$sp==origin)] = ages$start[which(ages$sp==origin)] + tree$root.edge
+  }
+
+  return(ages)
+  #eof
+}
+
+#' Fetch descendant lineages in a symmetric tree
+#
+#' @param edge Edge label.
+#' @param tree Phylo object.
+#' @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
+#' @examples
+#' t<-ape::rtree(6)
+#' fetch.descendents(7,t)
+#' fetch.descendents(7,t,return.edge.labels=TRUE)
+#' @return
+#' List of symmetric descendants
+#' @export
+fetch.descendents<-function(edge,tree,return.edge.labels=F){
+  ancestor<-edge
+  tree<-tree
+
+  if(is.tip(edge, tree))
+    return(NULL)
+
+  # create a vector for nodes, tips & tracking descendent
+  tips<-c()
+  done<-data.frame(a=numeric()) # this data frame contains descendents (nodes+tips)
+
+  coi=ancestor # clade of interest
+  process.complete=0
+  # count=0 # debugging code
+
+  if(is.tip(ancestor,tree)){
+    tip.label=tree$tip[ancestor]
+    tips<-c(tips,tip.label)
+  }
+  else{
+
+    while(process.complete==0) {
+
+      # fetch the two descendents
+      row=which(tree$edge[,1]==ancestor)
+      descendents=tree$edge[,2][row]
+      d1<-descendents[1]
+      d2<-descendents[2]
+
+      if(!d1 %in% done[[1]]) {
+        if ((is.tip(d1,tree)) == 1) {
+          done<-rbind(done,data.frame(a=d1))
+          tip.label=tree$tip[d1]
+          tips<-c(tips,tip.label)
+        }
+        else {
+          ancestor=d1
+        }
+      }
+      else if (!d2 %in% done[[1]]) {
+        if ((is.tip(d2,tree)) == 1) {
+          done<-rbind(done,data.frame(a=d2))
+          tip.label=tree$tip[d2]
+          tips<-c(tips,tip.label)
+        }
+        else {
+          ancestor=d2
+        }
+      }
+      else {
+        if(ancestor==coi){
+          process.complete=1
+        }
+        else {
+          done<-rbind(done,data.frame(a=ancestor))
+          row=which(tree$edge[,2]==ancestor)
+          ancestor=tree$edge[,1][row]
+        }
+      }
+      #	if (count==100) {
+      #		process.complete=1
+      #	}
+
+      # count=count+1
+    }
+  }
+  if(return.edge.labels)
+    return(done$a)
+  else
+    return(tips)
+  # EOF
+}
+
+# Fetch descendent lineages in an asymmetric tree
+#
+# @param tree Phylo object.
+# @examples
+# t<-ape::rtree(6)
+# fetch.asymmetric.descendants(7,t)
+# @return
+# List of asymmetric descendants
+# Function required by attachment.identities
+fetch.asymmetric.descendants<-function(edge,tree){
+  edge<-edge
+  tree<-tree
+
+  api<-asymmetric.parent.identities(tree)
+
+  p<-data.frame(dec=numeric(),done=numeric())
+
+  rows=which(api$parent==edge)
+  if(length(rows)==0)
+    return(NA) # no descendents
+  decs=unique(api$equivalent.to[rows])
+
+  p<-rbind(p,data.frame(dec=decs,done=0))
+
+  process=0
+  while(process==0){
+
+    rows=which(p$done==0)
+    if(length(rows)==0)
+      process=1
+
+    ancs=p$dec[rows]
+    for(a in ancs){
+      rows=which(api$parent==a)
+      if(length(rows) > 0) {
+        decs=unique(api$equivalent.to[rows])
+        p<-rbind(p,data.frame(dec=decs,done=0))
+      }
+      p$done[which(p$dec==a)]=1
+    }
+
+  }
+  return(p$dec)
   #eof
 }
 
@@ -865,222 +1129,4 @@ asymmetric.parent.identities<-function(tree){
   return(p)
 }
 
-#' Create a data.frame with symmetric species durations (not node ages)
-#
-#' @param tree Phylo object.
-#' @param root.edge If TRUE include root edge. Root edge takes the root label.
-#' @return Dataframe with internal branch ages (min and max).
-#' @examples
-#' t<-ape::rtree(6)
-#' symmetric.ages(t)
-#' @export
-# Function required by asymmetric.ages
-symmetric.ages<-function(tree, root.edge=TRUE){
-  tree<-tree
-
-  node.ages=n.ages(tree)
-  origin=root(tree) # identify the root
-
-  ages<-data.frame(sp=numeric(),start=numeric(),end=numeric())
-
-  for (i in tree$edge[,2]){ # internal nodes + tips
-
-    # work out the max age of the lineage (e.g. when that lineage became extant)
-    # & get ancestor
-    row=which(tree$edge[,2]==i)
-    ancestor=tree$edge[,1][row]
-
-    # get the age of the ancestor
-    a=which(names(node.ages)==ancestor)
-    lineage.start=round(node.ages[[a]],7)
-
-    # work out the min age of the lineage (e.g. when that lineage became extinct)
-    # & get the branch length
-    b=tree$edge.length[row]
-    lineage.end=round(lineage.start-b,7) # branch length
-
-    ages<-rbind(ages,data.frame(sp=i,start=lineage.start,end=lineage.end))
-  }
-
-  if(root.edge && exists("root.edge",tree) ){
-    end = max(node.ages)
-    start = end + tree$root.edge
-    ages<-rbind(ages,data.frame(sp=origin,start=start,end=end))
-  }
-
-  return(ages)
-  #eof
-}
-
-#' Create a data.frame with asymmetric species durations
-#
-#' @param tree Phylo object.
-#' @param root.edge If TRUE include root edge.
-#' @return Dataframe with internal asymmetric branch ages (min and max). Note that if root edge = TRUE the oldest lineage incorporates the origin.
-#' @examples
-#' t<-ape::rtree(6)
-#' asymmetric.ages(t)
-#' @export
-asymmetric.ages<-function(tree,root.edge=TRUE){
-  tree<-tree
-  root.edge<-root.edge
-
-  sym.ages<-symmetric.ages(tree, root.edge = FALSE) # note if root.edge = TRUE, the origin is handled below
-  asym.ident<-asymmetric.identities(tree)
-  origin=root(tree) # identify the root
-
-  ages<-data.frame(sp=numeric(),start=numeric(),end=numeric())
-
-  for(i in unique(asym.ident$equivalent.to)){
-
-    # identify all equivalent asymmetric lineages
-    lineages=asym.ident$parent[which(asym.ident$equivalent.to==i)]
-
-    # find the oldest start time
-    lineage.start=max(subset(sym.ages,sp %in% lineages)$start)
-
-    # find the youngest end time
-    lineage.end=min(subset(sym.ages,sp %in% lineages)$end)
-
-    ages<-rbind(ages,data.frame(sp=i,start=lineage.start,end=lineage.end))
-  }
-
-  if(root.edge && exists("root.edge",tree) ){
-    ages$start[which(ages$sp==origin)] = ages$start[which(ages$sp==origin)] + tree$root.edge
-  }
-
-  return(ages)
-  #eof
-}
-
-#' Fetch descendant lineages in a symmetric tree
-#
-#' @param edge Edge label.
-#' @param tree Phylo object.
-#' @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
-#' @examples
-#' t<-ape::rtree(6)
-#' fetch.descendents(7,t)
-#' fetch.descendents(7,t,return.edge.labels=TRUE)
-#' @return
-#' List of symmetric descendants
-#' @export
-fetch.descendents<-function(edge,tree,return.edge.labels=F){
-  ancestor<-edge
-  tree<-tree
-
-  if(is.tip(edge, tree))
-    return(NULL)
-
-  # create a vector for nodes, tips & tracking descendent
-  tips<-c()
-  done<-data.frame(a=numeric()) # this data frame contains descendents (nodes+tips)
-
-  coi=ancestor # clade of interest
-  process.complete=0
-  # count=0 # debugging code
-
-  if(is.tip(ancestor,tree)){
-    tip.label=tree$tip[ancestor]
-    tips<-c(tips,tip.label)
-  }
-  else{
-
-    while(process.complete==0) {
-
-      # fetch the two descendents
-      row=which(tree$edge[,1]==ancestor)
-      descendents=tree$edge[,2][row]
-      d1<-descendents[1]
-      d2<-descendents[2]
-
-      if(!d1 %in% done[[1]]) {
-        if ((is.tip(d1,tree)) == 1) {
-          done<-rbind(done,data.frame(a=d1))
-          tip.label=tree$tip[d1]
-          tips<-c(tips,tip.label)
-        }
-        else {
-          ancestor=d1
-        }
-      }
-      else if (!d2 %in% done[[1]]) {
-        if ((is.tip(d2,tree)) == 1) {
-          done<-rbind(done,data.frame(a=d2))
-          tip.label=tree$tip[d2]
-          tips<-c(tips,tip.label)
-        }
-        else {
-          ancestor=d2
-        }
-      }
-      else {
-        if(ancestor==coi){
-          process.complete=1
-        }
-        else {
-          done<-rbind(done,data.frame(a=ancestor))
-          row=which(tree$edge[,2]==ancestor)
-          ancestor=tree$edge[,1][row]
-        }
-      }
-      #	if (count==100) {
-      #		process.complete=1
-      #	}
-
-      # count=count+1
-    }
-  }
-  if(return.edge.labels)
-    return(done$a)
-  else
-    return(tips)
-  # EOF
-}
-
-# Fetch descendent lineages in an asymmetric tree
-#
-# @param tree Phylo object.
-# @examples
-# t<-ape::rtree(6)
-# fetch.asymmetric.descendants(7,t)
-# @return
-# List of asymmetric descendants
-# Function required by attachment.identities
-fetch.asymmetric.descendants<-function(edge,tree){
-  edge<-edge
-  tree<-tree
-
-  api<-asymmetric.parent.identities(tree)
-
-  p<-data.frame(dec=numeric(),done=numeric())
-
-  rows=which(api$parent==edge)
-  if(length(rows)==0)
-    return(NA) # no descendents
-  decs=unique(api$equivalent.to[rows])
-
-  p<-rbind(p,data.frame(dec=decs,done=0))
-
-  process=0
-  while(process==0){
-
-    rows=which(p$done==0)
-    if(length(rows)==0)
-      process=1
-
-    ancs=p$dec[rows]
-    for(a in ancs){
-      rows=which(api$parent==a)
-      if(length(rows) > 0) {
-        decs=unique(api$equivalent.to[rows])
-        p<-rbind(p,data.frame(dec=decs,done=0))
-      }
-      p$done[which(p$dec==a)]=1
-    }
-
-  }
-  return(p$dec)
-  #eof
-}
 
