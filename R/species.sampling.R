@@ -353,7 +353,7 @@ mixed.ages<-function(tree,f,root.edge=T){
   if(!(f >= 0 && f <= 1))
     stop("f must be a probability between 0 and 1")
 
-  sym.ages<-symmetric.ages(tree)
+  sym.ages<-symmetric.ages(tree, root.edge = root.edge)
   mixed.ident<-mixed.speciation(tree,f=f)
   origin=root(tree) # identify the root
 
@@ -392,9 +392,10 @@ mixed.ages<-function(tree,f,root.edge=T){
 
   }
 
-  if(root.edge && exists("root.edge",tree) ){
-    ages$start[which(ages$sp==origin)] = ages$start[which(ages$sp==origin)] + tree$root.edge
-  }
+  # this is handled by the function symmetric.ages
+  # if(root.edge && exists("root.edge",tree) ){
+  #  ages$start[which(ages$sp==origin)] = ages$start[which(ages$sp==origin)] + tree$root.edge
+  # }
 
   return(ages)
   #eof
