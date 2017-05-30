@@ -16,7 +16,7 @@ Dataframe of asymmetric or symmetric edge labels, parent edge labels and the mod
 "s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
 }
 \description{
-Asymmetric (or budding) speciation occurs with probability \eqn{f}. Asymmetric specaition gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
+Asymmetric (or budding) speciation occurs with probability \eqn{f}. Asymmetric speciation gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
 Note that if \eqn{f = 1} all speciation events will be asymmetric and if \eqn{f = 0} all speciation events will be symmetric.
 }
 \examples{

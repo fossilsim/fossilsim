@@ -227,7 +227,7 @@ attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
 
 #' Sample asymmetric & symmetric lineages
 #'
-#' Asymmetric (or budding) speciation occurs with probability \eqn{f}. Asymmetric specaition gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
+#' Asymmetric (or budding) speciation occurs with probability \eqn{f}. Asymmetric speciation gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
 #' Note that if \eqn{f = 1} all speciation events will be asymmetric and if \eqn{f = 0} all speciation events will be symmetric.
 #'
 #' @param tree Phylo object.
@@ -518,10 +518,22 @@ anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
 #'
 #' @return Dataframe containing species labels, (morpho)species speciation & extinction times, mode of speciation, cryptic indicator, and corresponding cryptic speciation lables.
 #' "a" = anagenic speciation, s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
+#' @examples
+#' # simulate tree
+#' t<-ape::rtree(6)
+#' # assign symmetric and asymmetric species
+#' sp1<-mixed.ages(t, 0.5)
+#' # simulate anagenic species
+#' sp2<-anagenic.species(sp1, 0.1, parent.labels = T)
+#' assign cryptic speciation events
+#' sp3<-cryptic.speciation(frs, 0.5)
 #' @export
-cryptic.specaition<-function(ages, kappa){
+cryptic.speciation<-function(ages, kappa){
   ages<-ages
   kappa<-kappa
+
+  if(is.null(ages$p))
+    stop("For cryptic speciation you must include parent labels")
 
   ages$cryptic = 0
   ages$cryptic.id = 0
