@@ -5,5 +5,5 @@ R package for simulating fossil data on phylogenetic trees under mechanistic mod
 The latest version can be installed in R using the package devtools:
 
     library(devtools)
-    intall_github("rachelwarnock/fossilsim")
+    install_github("rachelwarnock/fossilsim")
 
