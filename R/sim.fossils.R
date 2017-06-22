@@ -415,6 +415,16 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
+#' This function uses a three parameter Guassion model to simulate non-uniform fossil preservation along a specified phylogeny.
+#' Preservation varies with respect to water depth, which is used as a proxy for changes in sedimentary environment.
+#' The per interval probability of sampling is \deqn{P(collection) = PA e ^ (-(d - PD)^2 / 2*DT^2 ) }
+#' where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{DT} is depth tolerance and \emph{d} is current water depth.
+#' \emph{PD} is the depth at which the species is most likely to be found and is equivalent to the mean of the distribution.
+#' \emph{PA} is the probability of sampling an occurrence at this depth.
+#' \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
+#' Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
+#' maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}).
+#'
 #' @param tree Phylo object.
 #' @param profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.
 #' @param PA Peak adbundance parameter.

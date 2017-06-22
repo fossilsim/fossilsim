@@ -36,6 +36,7 @@ ba<-basin.age(t)
 strata = 4
 sampling = 0.7
 f<-sim.fossils.unif(t, ba, strata, sampling)
+plot(f, t, binned = TRUE, strata = strata)
 }
 \keyword{fossil}
 \keyword{preseravtion}

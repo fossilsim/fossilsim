@@ -11,7 +11,7 @@ sim.fossils.non.unif(tree, interval.ages, sampling, root.edge = TRUE)
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
-\item{sampling}{Vector of Poisson sampling rates. The length of the vector should 1 less than the length of interval.ages.}
+\item{sampling}{Vector of Poisson sampling rates. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 }
@@ -32,6 +32,7 @@ times = seq(0, max, length.out = 4)
 rates = c(5, 3, 1)
 # simulate fossils
 f<-sim.fossils.non.unif(t, times, rates)
+plot(f, t)
 }
 \keyword{fossil}
 \keyword{non-uniform}
