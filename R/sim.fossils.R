@@ -89,6 +89,7 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
 #' strata = 4
 #' sampling = 0.7
 #' f<-sim.fossils.unif(t, ba, strata, sampling)
+#' plot(f, t, binned = TRUE, strata = strata)
 #' @keywords uniform fossil preseravtion
 #' @export
 sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.rate=FALSE){
@@ -257,7 +258,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
 #'
 #' @param tree Phylo object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
-#' @param sampling Vector of Poisson sampling rates. The length of the vector should 1 less than the length of interval.ages.
+#' @param sampling Vector of Poisson sampling rates. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return An object of class fossils.
 #' sp = edge labels. h = fossil ages.
@@ -272,6 +273,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
 #' rates = c(5, 3, 1)
 #' # simulate fossils
 #' f<-sim.fossils.non.unif(t, times, rates)
+#' plot(f, t)
 #' @export
 sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
   tree<-tree
@@ -414,15 +416,18 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
 #' @param tree Phylo object.
-#' @param basin.age Maximum age of the oldest stratigraphic interval.
-#' @param strata Number of stratigraphic intervals.
+#' @param profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.
 #' @param PA Peak adbundance parameter.
 #' @param PD Preferred depth parameter.
 #' @param DT Depth tolerance parameter.
+#' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
+#' @param basin.age Maximum age of the oldest stratigraphic interval.
+#' @param strata Number of stratigraphic intervals.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return An object of class fossils.
 #' sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+#'
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(6)
@@ -433,21 +438,37 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 #' wd<-sim.water.depth(strata)
 #' # simulate fossils
 #' f<-sim.fossils.non.unif.depth(t, max, strata, wd, PA = 1, PD = 0.5, DT = 1)
+#'
 #' @keywords non-uniform fossil preseravtion
 #' @export
-sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,DT=.5,root.edge=TRUE,convert.rate=FALSE){
+sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interval.ages = NULL, basin.age = NULL, strata = NULL, root.edge = TRUE, convert.rate = FALSE){
   tree<-tree
-  basin.age<-basin.age
-  strata<-strata
   profile<-profile
   PA<-PA
   PD<-PD
-  PA<-PA
+  DT<-DT
+  interval.ages<-interval.ages
+  basin.age<-basin.age
+  strata<-strata
   root.edge<-root.edge
   convert.rate<-convert.rate
 
-  s1=basin.age/strata # horizon length (= max age of youngest horizon)
-  horizons<-seq(s1, basin.age, length=strata)
+  if( (is.null(interval.ages)) && (is.null(basin.age)) && (is.null(strata)) )
+    stop("Specify interval.ages OR basin.age and number of strata")
+  else if ( (is.null(interval.ages)) && (is.null(basin.age)) )
+    stop("Specify interval.ages OR basin.age and number of strata")
+  else if ( (is.null(interval.ages)) && (is.null(strata)) )
+    stop("Specify interval.ages OR basin.age and number of strata")
+  # add warning about conflicting info
+
+  if( (is.null(interval.ages)) ){
+    s1 = basin.age/strata # horizon length (= max age of youngest horizon)
+    horizons.max = seq(s1, basin.age, length = strata)
+    horizons.min = horizons.max - s1
+  } else {
+    horizons.min = head(interval.ages, -1)
+    horizons.max = interval.ages[-1]
+  }
 
   node.ages<-n.ages(tree)
   root=length(tree$tip.label)+1
@@ -456,21 +477,21 @@ sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,D
 
   brl = 0 # record total branch length for debugging
 
-  depth.counter=0
+  depth.counter = 0
 
-  for(h in horizons){
+  for(h in 1:length(horizons.min)){
 
-    depth.counter=depth.counter+1
-    current.depth=profile$y[depth.counter]
+    h.min<-horizons.min[h]
+    h.max<-horizons.max[h]
+    s1 = h.max - h.min # horizon length
+
+    current.depth = profile[h]
 
     # calculate the interval rate
     sampling = PA * exp( (-(current.depth-PD)**2) / (2 * (DT ** 2)) )
     if(sampling >= 1)
       sampling = 0.9999
     rate = -log(1-sampling)/(basin.age/strata)
-
-    h.min<-h-s1
-    h.max<-h
 
     for(i in tree$edge[,2]){ # internal nodes + tips
 
@@ -533,7 +554,7 @@ sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,D
           pr = pr * sampling
           # if random.number < pr { record fossil as collected }
           if (runif(1) <= pr) {
-            fossils<-rbind(fossils,data.frame(h=h,sp=i))
+            fossils<-rbind(fossils,data.frame(h=h.max,sp=i))
           }
         }
       }
@@ -593,7 +614,7 @@ sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,D
         }
       }
     }
-
+    #eol
   }
 
   if(convert.rate)
@@ -602,7 +623,7 @@ sim.fossils.non.unif.depth<-function(tree,basin.age,strata,profile,PA=.5,PD=.5,D
     fossils<-fossils(fossils, age = "interval.max", speciation.mode = "symmetric")
   return(fossils) # in this data frame h=horizon and sp=lineage
 
-  # EOF
+  #eof
 }
 
 #' Simulate water depth profile
@@ -632,7 +653,8 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
   # y = a * sin (b * pi * (x-1/c))
   y=depth*sin(cycles*pi*(x-1/4))
 
-  return(data.frame(x=c(1:strata),y=y))
+  #return(data.frame(x=c(1:strata),y=y))
+  return(y)
 
   # EOF
 }
