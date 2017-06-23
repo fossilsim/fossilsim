@@ -423,7 +423,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 #' \emph{PA} is the probability of sampling an occurrence at this depth.
 #' \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 #' Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
-#' maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}).
+#' maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}.
 #'
 #' @param tree Phylo object.
 #' @param profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.
@@ -480,6 +480,9 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
     horizons.max = interval.ages[-1]
   }
 
+  if(length(wd) < length(horizons.max))
+    stop("Water depth values < the number of intervals!")
+
   node.ages<-n.ages(tree)
   root=length(tree$tip.label)+1
 
@@ -501,7 +504,7 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
     sampling = PA * exp( (-(current.depth-PD)**2) / (2 * (DT ** 2)) )
     if(sampling >= 1)
       sampling = 0.9999
-    rate = -log(1-sampling)/(basin.age/strata)
+    rate = -log(1-sampling)/s1
 
     for(i in tree$edge[,2]){ # internal nodes + tips
 

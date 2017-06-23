@@ -42,7 +42,7 @@ where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{D
 \emph{PA} is the probability of sampling an occurrence at this depth.
 \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
-maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}).
+maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}.
 }
 \examples{
 # simulate tree

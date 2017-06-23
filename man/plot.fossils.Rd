@@ -5,11 +5,11 @@
 \title{Plot simulated fossils}
 \usage{
 \method{plot}{fossils}(fossils, tree, show.fossils = TRUE, show.tree = TRUE,
-  show.strata = FALSE, strata = 1, show.ranges = FALSE,
-  show.axis = TRUE, show.profile = FALSE, depth.profile = NULL,
-  binned = FALSE, hide.edge = FALSE, root.edge = FALSE,
-  show.tip.label = FALSE, align.tip.label = FALSE, fcol = "darkorange",
-  fcex = 1.2, edge.width = 1, max = NULL, ...)
+  show.ranges = FALSE, show.strata = FALSE, strata = 1, max = NULL,
+  interval.ages = NULL, show.axis = TRUE, show.proxy = FALSE,
+  proxy.data = NULL, binned = FALSE, root.edge = TRUE,
+  hide.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE,
+  fcol = "darkorange", fcex = 1.2, edge.width = 1, ...)
 }
 \arguments{
 \item{fossils}{Dataframe of sampled fossils (sp = edge labels, h = ages).}
@@ -20,34 +20,52 @@
 
 \item{show.tree}{If TRUE plot the tree  (default = TRUE).}
 
+\item{show.ranges}{If TRUE plot stratigraphic ranges (default = FALSE).}
+
 \item{show.strata}{If TRUE plot strata  (default = FALSE).}
 
-\item{strata}{A vector of user specified interval ages or a single value specifying the number of equal length intervals.}
+\item{strata}{Number of stratigraphic intervals.}
 
-\item{show.ranges}{If TRUE plot ranges (default = FALSE).}
+\item{max}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
 
-\item{show.axis}{If TRUE plot axis (default = TRUE).}
+\item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
-\item{show.profile}{If TRUE add water depth profile (default = FALSE).}
+\item{show.axis}{If TRUE plot x-axis (default = TRUE).}
 
-\item{depth.profile}{Water depth profile (default = NULL).}
+\item{show.proxy}{If TRUE add water depth profile (default = FALSE).}
 
-\item{binned}{If TRUE and fossil ages correspond to max ages of equal length intervals fossils are plotted in the mid point of each interval.}
+\item{proxy.data}{Vector of sampling proxy data (default = NULL).}
+
+\item{binned}{If TRUE fossils are plotted at the mid point of each interval.}
+
+\item{root.edge}{If TRUE include the root edge (default = TRUE).}
 
 \item{hide.edge}{If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).}
 
-\item{root.edge}{If TRUE include the root edge (default = FALSE).}
-
 \item{fcol}{Color of fossil occurrences or ranges.}
-
-\item{max}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
 }
 \description{
 Plot simulated fossils
 }
 \examples{
-t<-ape::rtree(10)
+# simulate tree
+t<-TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
+
+# simulate fossils under a Poisson sampling process
 f<-sim.fossils.poisson(t,3)
-plot(f, t, strata = 10, show.strata = TRUE)
+plot(f, t)
+# add a set of equal length strata
+plot(f, t, show.strata = TRUE, strata = 4)
+
+# simulate fossils under a non-uniform model of preservation
+# assign a max interval based on tree height
+max = basin.age(t)
+times = c(0, 0.3, 1, max)
+rates = c(4, 1, 0.1)
+f<-sim.fossils.non.unif(t, times, rates)
+plot(f, t, show.strata = TRUE, interval.ages = times)
+# add proxy data
+plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = rates)
+
 }
 
