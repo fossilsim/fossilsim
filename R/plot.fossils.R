@@ -57,8 +57,8 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   show.axis<-show.axis
   binned<-binned
   # proxy stuff
-  show.profile<-show.proxy
-  depth.profile<-proxy.data
+  show.proxy<-show.proxy
+  proxy.data<-proxy.data
   # tree appearance
   root.edge<-root.edge
   hide.edge<-hide.edge
@@ -101,11 +101,6 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   if (any(tabulate(x$edge[, 1]) == 1))
     stop("there are single (non-splitting) nodes in your tree; you may need to use collapse.singles()")
 
-  if(show.strata){
-    if( (is.null(interval.ages)) && (is.null(strata)) )
-      stop("To plot intervals specify interval.ages OR number of strata, else use show.strata = FALSE")
-  }
-
   # check edge lengths != null
   # check tree is rooted
   # check tree is binary
@@ -113,8 +108,26 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   if(is.null(x$root.edge))
     root.edge = FALSE
 
-  if(show.profile && is.null(depth.profile))
+  if(show.strata || show.proxy){
+    if( (is.null(interval.ages)) && (is.null(strata)) )
+      stop("To plot interval info specify interval.ages OR number of strata, else use show.strata = FALSE")
+  }
+
+  if(show.proxy && is.null(proxy.data))
     stop("Specify sampling profile")
+
+  # is there a more elegant way of doing this?
+  if(show.proxy){
+    if(!is.null(interval.ages)){
+      if( (length(interval.ages) - 1) != length(proxy.data) )
+        stop("Make sure number of sampling proxy data points matches the number of intervals")
+    } else {
+      if(strata != length(proxy.data))
+        stop("Make sure number of sampling proxy data points matches the number of intervals")
+    }
+    if(any(is.na(proxy.data)))
+      stop("I can't handle NA proxy values right now, please use 0 for the time being")
+  }
 
   # required C fxns
   .nodeHeight <- function(Ntip, Nnode, edge, Nedge, yy) .C(ape::node_height,as.integer(Ntip), as.integer(Nnode), as.integer(edge[,1]), as.integer(edge[, 2]), as.integer(Nedge), as.double(yy))[[6]]
@@ -191,7 +204,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   }
 
   # the order in which you use plot and par here is very important
-  if(show.profile){
+  if(show.proxy){
     old.par = par("usr", "mar", "oma", "xpd", "mgp","fig")
     par(mar=c(1, 3.5, 0, 0.5)) # to reduce the margins around each plot - bottom, left, top, right -- this is harder to manipulate
     par(oma=c(2, 0, 2, 0)) # to add an outer margin to the top and bottom of the graph -- bottom, left, top, right
@@ -355,8 +368,8 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
     # water depth profile
     add.depth.axis = TRUE
-    if(show.profile){
-      add.depth.profile(depth.profile,axis.strata,strata,show.axis,add.depth.axis)
+    if(show.proxy){
+      add.depth.profile(proxy.data,axis.strata,strata,show.axis,add.depth.axis)
     }
   }
 
