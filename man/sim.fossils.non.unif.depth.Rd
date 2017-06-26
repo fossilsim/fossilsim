@@ -53,7 +53,7 @@ max = basin.age(t)
 strata = 4
 wd<-sim.water.depth(strata)
 # simulate fossils
-f<-sim.fossils.non.unif.depth(t, max, strata, wd, PA = 1, PD = 0.5, DT = 1)
+f<-sim.fossils.non.unif.depth(t, wd, PA = 1, PD = 0.5, DT = 1, basin.age = max, strata = strata)
 
 }
 \keyword{fossil}

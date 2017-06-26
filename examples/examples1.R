@@ -40,6 +40,6 @@ f <- FossilSim::sim.fossils.non.unif.depth(t, wd, times, PA = 1, PD = 0.5, DT = 
 plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = wd)
 
 ## count the number of fossils per intervals
-count.fossils.binned(f, times)
+FossilSim::count.fossils.binned(f, times)
 
 #END
