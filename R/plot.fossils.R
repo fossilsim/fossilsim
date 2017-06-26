@@ -1,5 +1,13 @@
 #' Plot simulated fossils
 #'
+#' This function is adapted from the \emph{ape} function \code{plot.phylo} used to phylogenetic trees.
+#' The function can be used to plot simulated fossils (\code{show.fossils = TRUE}), with or without the corresponding tree (\code{show.tree = TRUE}),
+#' stratigraphic intervals (\code{show.strata = TRUE}), stratigraphic ranges (\code{show.ranges = TRUE}) and sampling proxy data (\code{show.proxy = TRUE}).
+#' Interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using the
+#' number of intervals (\code{strata}) and maximum interval age (\code{max}), where interval length \eqn{= basin.age/strata}.
+#' If no maximum age is specified, the function calculates a maximum interval age slightly older than the root edge (or root age if \code{root.edge = FALSE}),
+#' using the function \code{basin.age}.
+#'
 #' @param fossils Dataframe of sampled fossils (sp = edge labels, h = ages).
 #' @param tree Phylo object.
 #' @param show.fossils If TRUE plot fossils (default = TRUE).
@@ -13,22 +21,25 @@
 #' @param binned If TRUE fossils are plotted at the mid point of each interval.
 #' @param show.proxy If TRUE add water depth profile (default = FALSE).
 #' @param proxy.data Vector of sampling proxy data (default = NULL).
+#' @param show.preferred.environ If TRUE add species prefferred environmental value (e.g. water depth) (default = FALSE).
+#' @param preferred.environ Prefferred environmental value (e.g. water depth).
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param fcol Color of fossil occurrences or ranges.
 #'
 #' @examples
 #' set.seed(123)
-#' # simulate tree
+#'
+#' ## simulate tree
 #' t<-TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 #'
-#' # simulate fossils under a Poisson sampling process
+#' ## simulate fossils under a Poisson sampling process
 #' f<-sim.fossils.poisson(t,3)
 #' plot(f, t)
 #' # add a set of equal length strata
 #' plot(f, t, show.strata = TRUE, strata = 4)
 #'
-#' # simulate fossils under an alternative non-uniform model of preservation
+#' ## simulate fossils under a non-uniform model of preservation
 #' # assign a max interval based on tree height
 #' max = basin.age(t)
 #' times = c(0, 0.3, 1, max)
@@ -40,8 +51,9 @@
 #'
 #' @export
 plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
-                       show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL,
-                       show.axis = TRUE, show.proxy = FALSE, proxy.data = NULL, binned = FALSE,
+                       show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE,
+                       show.axis = TRUE, show.proxy = FALSE, proxy.data = NULL,
+                       show.preferred.environ = FALSE, preferred.environ = NULL,
                        root.edge = TRUE, hide.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, fcol = "darkorange",
                        fcex = 1.2, edge.width = 1, ...) {
   fossils<-fossils
@@ -59,6 +71,8 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   # proxy stuff
   show.proxy<-show.proxy
   proxy.data<-proxy.data
+  show.preferred.environ<-show.preferred.environ
+  preferred.environ<-preferred.environ
   # tree appearance
   root.edge<-root.edge
   hide.edge<-hide.edge
@@ -116,7 +130,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   if(show.proxy && is.null(proxy.data))
     stop("Specify sampling profile")
 
-  # is there a more elegant way of doing this?
+  # is there a better way of doing this?
   if(show.proxy){
     if(!is.null(interval.ages)){
       if( (length(interval.ages) - 1) != length(proxy.data) )
@@ -271,10 +285,15 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         axis.strata = c(axis.strata, x.left)
       }
 
-      if(show.axis)
-        axis(1, col = 'grey75', at = axis.strata, labels = FALSE, lwd = 2, line = 0.5)
-      #axis(1, col = 'grey75', at = axis.strata, labels = seq(ba, 0, by=-s1) )
+      x.labs = rev(round(c(0, horizons.max),2))
 
+      if(show.proxy)
+        labs = FALSE
+      else
+        labs = x.labs
+
+      if(show.axis)
+        axis(1, col = 'grey75', at = axis.strata, labels = labs, lwd = 2, line = 0.5, col.axis = 'grey75', cex.axis = .7)
     }
 
     # plot the tree
@@ -369,7 +388,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     # water depth profile
     add.depth.axis = TRUE
     if(show.proxy){
-      add.depth.profile(proxy.data,axis.strata,strata,show.axis,add.depth.axis)
+      add.depth.profile(proxy.data,axis.strata,strata,show.axis,add.depth.axis,show.preferred.depth=show.preferred.environ,PD=preferred.environ,x.labs=x.labs)
     }
   }
 
@@ -386,7 +405,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   invisible(L)
 }
 
-add.depth.profile<-function(depth.profile,axis.strata,strata,show.axis,add.depth.axis,show.preferred.depth=TRUE,PD=1){
+add.depth.profile<-function(depth.profile,axis.strata,strata,show.axis,add.depth.axis,show.preferred.depth=TRUE,PD=NULL,x.labs=FALSE){
   par(fig=c(0,1,0,0.4), new = T)
   # change the y-axis scale for depth
   u = par("usr") # current scale
@@ -408,14 +427,14 @@ add.depth.profile<-function(depth.profile,axis.strata,strata,show.axis,add.depth
   # plot proxy
   lines(time,depth)
   if(show.preferred.depth)
-    lines(x = axis.strata, y = rep(100, length(axis.strata)), col = "grey75", lwd = 2, lty = 3)
+    lines(x = axis.strata, y = rep(PD, length(axis.strata)), col = "grey75", lwd = 2, lty = 3)
   if(show.axis){
-    axis(1, col = 'grey75', at = axis.strata, labels = FALSE, lwd = 2)
-    mtext(1, col = 'grey75', text="Time before present", line = 1)
+    axis(1, col = 'grey75', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey75', cex.axis = .7)
+    mtext(1, col = 'grey75', text="Time before present", line = 1.5)
   }
   if(add.depth.axis){
     axis(2, col = 'grey75', labels = TRUE, lwd = 2, las = 2, col.axis = 'grey75', line = 0.5, cex.axis = .7)
-    mtext(2, col = 'grey75', text="Sampling proxy", line= 2)
+    mtext(2, col = 'grey75', text="Sampling proxy", line = 2)
   }
 }
 

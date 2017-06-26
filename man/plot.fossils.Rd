@@ -45,20 +45,27 @@
 \item{fcol}{Color of fossil occurrences or ranges.}
 }
 \description{
-Plot simulated fossils
+This function is adapted from the \emph{ape} function \code{plot.phylo} used to phylogenetic trees.
+The function can be used to plot simulated fossils (\code{show.fossils = TRUE}), with or without the corresponding tree (\code{show.tree = TRUE}),
+stratigraphic intervals (\code{show.strata = TRUE}), stratigraphic ranges (\code{show.ranges = TRUE}) and sampling proxy data (\code{show.proxy = TRUE}).
+Interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using the
+number of intervals (\code{strata}) and maximum interval age (\code{max}), where interval length \eqn{= basin.age/strata}.
+If no maximum age is specified, the function calculates a maximum interval age slightly older than the root edge (or root age if \code{root.edge = FALSE}),
+using the function \code{basin.age}.
 }
 \examples{
 set.seed(123)
-# simulate tree
+
+## simulate tree
 t<-TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 
-# simulate fossils under a Poisson sampling process
+## simulate fossils under a Poisson sampling process
 f<-sim.fossils.poisson(t,3)
 plot(f, t)
 # add a set of equal length strata
 plot(f, t, show.strata = TRUE, strata = 4)
 
-# simulate fossils under an alternative non-uniform model of preservation
+## simulate fossils under a non-uniform model of preservation
 # assign a max interval based on tree height
 max = basin.age(t)
 times = c(0, 0.3, 1, max)

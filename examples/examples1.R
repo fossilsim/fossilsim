@@ -13,7 +13,7 @@ sampling = 3
 f <- FossilSim::sim.fossils.poisson(t, sampling)
 plot(f, t)
 
-## simulate fossils under a unifom sampling model with equal length intervals
+## simulate fossils under a unifom sampling model for a set of equal length intervals
 # pick a sensible age for the max interval age
 max<-FossilSim::basin.age(t)
 # number of intervals
@@ -31,7 +31,7 @@ rates = c(4, 1, 0, 1)
 f <- FossilSim::sim.fossils.non.unif(t, times, rates)
 plot(f, t, show.strata = TRUE, interval.ages = times)
 # also plot proxy data
-plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = rates)
+plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)
 
 ## simulate fossils under Steve Holland's non-uniform preservation model
 # simulate water depth
@@ -43,4 +43,3 @@ plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data
 count.fossils.binned(f, times)
 
 #END
-
