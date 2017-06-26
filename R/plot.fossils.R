@@ -321,9 +321,13 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
     # fossils
     if(show.fossils){
-      # use attr(f, "ages"); confirm the age assignment below is also correct
       if(binned){
-        y = sapply(f$h, function(x) max(which(horizons.min <= x)) )
+        if(attr(f, "ages") == "interval.max"){
+          y = sapply(f$h, function(x) max(which(horizons.max == x)) )
+        } else {
+          # treat fossil data as continuous
+          y = sapply(f$h, function(x) max(which(horizons.min <= x)) )
+        }
         points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$sp] , col = fcol, pch = 19, cex = fcex)
       }
       else

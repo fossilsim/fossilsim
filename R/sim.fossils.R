@@ -9,7 +9,8 @@
 #' # simulate tree
 #' t<-ape::rtree(4)
 #' # simulate fossils
-#' f<-sim.fossils.poisson(t, 2)
+#' sampling = 2
+#' f<-sim.fossils.poisson(t, sampling)
 #' plot(f, t)
 #' @keywords uniform preseravtion
 #' @export

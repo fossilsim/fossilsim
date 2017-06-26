@@ -9,17 +9,17 @@ t<-TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 ## simulate fossils under a Poisson sampling process
 # Poisson sampling rate
 sampling = 3
-f<-sim.fossils.poisson(t, sampling)
+f<-FossilSim::sim.fossils.poisson(t, sampling)
 plot(f, t)
 
 ## simulate fossils under a unifom sampling model with equal length intervals
 # pick a sensible age for the max interval age
-max<-basin.age(t)
+max<-FossilSim::basin.age(t)
 # number of intervals
 strata = 4
 # sampling probability
 sampling = 0.7
-f <- sim.fossils.unif(t, max, strata, sampling)
+f <- FossilSim::sim.fossils.unif(t, max, strata, sampling)
 plot(f, t, binned = TRUE, strata = strata)
 
 ## simulate fossils under a user-specified non-uniform preservation model
