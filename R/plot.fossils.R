@@ -130,7 +130,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   if(show.proxy && is.null(proxy.data))
     stop("Specify sampling profile")
 
-  # is there a better way of doing this?
+  # is there a more efficient way of doing this?
   if(show.proxy){
     if(!is.null(interval.ages)){
       if( (length(interval.ages) - 1) != length(proxy.data) )
@@ -354,11 +354,11 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     # fossils
     if(show.fossils){
       if(binned){
-        if(attr(f, "ages") == "interval.max"){
-          y = sapply(f$h, function(x) max(which(horizons.max == x)) )
+        if(attr(fossils, "ages") == "interval.max"){
+          y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
         } else {
           # treat fossil data as continuous
-          y = sapply(f$h, function(x) max(which(horizons.min <= x)) )
+          y = sapply(fossils$h, function(x) max(which(horizons.min <= x)) )
         }
         points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$sp] , col = fcol, pch = 19, cex = fcex)
       }
@@ -369,20 +369,32 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     # ranges
     if(show.ranges){
       buffer = 0.01 * max(xx) # buffer for singletons
-      s2 = 0
-      if(binned)
-        s2 = (ba / strata)/2
+      
+      if(binned){
+        if(attr(fossils, "ages") == "interval.max"){
+          y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
+        } else {
+          # treat fossil data as continuous
+          y = sapply(fossils$h, function(x) max(which(horizons.min <= x)) )
+        }
+        fossils$r = max(xx) - horizons.max[y] + (rev(s1)[y]/2)
+      } else {
+        fossils$r = max(xx) - fossils$h
+      }
 
       for(i in unique(fossils$sp)) {
 
-        range = fossils$h[which(fossils$sp==i)]
+        range = fossils$r[which(fossils$sp==i)]
+        
         if(length(range) == 1)
           range = c(range-buffer,range+buffer)
 
         species = rep(yy[i], length(range))
 
-        lines(y = species, x = max(xx)-range+s2, lwd = 6, col=fcol)
+        lines(y = species, x = range, lwd = 6, col=fcol)
+        
       }
+      fossils$r = NULL
     }
 
     # water depth profile

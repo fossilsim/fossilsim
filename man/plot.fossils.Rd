@@ -6,10 +6,11 @@
 \usage{
 \method{plot}{fossils}(fossils, tree, show.fossils = TRUE, show.tree = TRUE,
   show.ranges = FALSE, show.strata = FALSE, strata = 1, max = NULL,
-  interval.ages = NULL, show.axis = TRUE, show.proxy = FALSE,
-  proxy.data = NULL, binned = FALSE, root.edge = TRUE,
-  hide.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE,
-  fcol = "darkorange", fcex = 1.2, edge.width = 1, ...)
+  interval.ages = NULL, binned = FALSE, show.axis = TRUE,
+  show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
+  preferred.environ = NULL, root.edge = TRUE, hide.edge = FALSE,
+  show.tip.label = FALSE, align.tip.label = FALSE, fcol = "darkorange",
+  fcex = 1.2, edge.width = 1, ...)
 }
 \arguments{
 \item{fossils}{Dataframe of sampled fossils (sp = edge labels, h = ages).}
@@ -30,13 +31,17 @@
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
+\item{binned}{If TRUE fossils are plotted at the mid point of each interval.}
+
 \item{show.axis}{If TRUE plot x-axis (default = TRUE).}
 
 \item{show.proxy}{If TRUE add water depth profile (default = FALSE).}
 
 \item{proxy.data}{Vector of sampling proxy data (default = NULL).}
 
-\item{binned}{If TRUE fossils are plotted at the mid point of each interval.}
+\item{show.preferred.environ}{If TRUE add species prefferred environmental value (e.g. water depth) (default = FALSE).}
+
+\item{preferred.environ}{Prefferred environmental value (e.g. water depth).}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 
