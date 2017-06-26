@@ -48,6 +48,7 @@
 Plot simulated fossils
 }
 \examples{
+set.seed(123)
 # simulate tree
 t<-TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 
@@ -57,7 +58,7 @@ plot(f, t)
 # add a set of equal length strata
 plot(f, t, show.strata = TRUE, strata = 4)
 
-# simulate fossils under a non-uniform model of preservation
+# simulate fossils under an alternative non-uniform model of preservation
 # assign a max interval based on tree height
 max = basin.age(t)
 times = c(0, 0.3, 1, max)

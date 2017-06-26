@@ -18,6 +18,7 @@
 #' @param fcol Color of fossil occurrences or ranges.
 #'
 #' @examples
+#' set.seed(123)
 #' # simulate tree
 #' t<-TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 #'
@@ -27,7 +28,7 @@
 #' # add a set of equal length strata
 #' plot(f, t, show.strata = TRUE, strata = 4)
 #'
-#' # simulate fossils under a non-uniform model of preservation
+#' # simulate fossils under an alternative non-uniform model of preservation
 #' # assign a max interval based on tree height
 #' max = basin.age(t)
 #' times = c(0, 0.3, 1, max)
@@ -201,6 +202,8 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     par(fig=c(0,1,0.4,1))
   }
   else{
+    old.par = par("xpd")
+    par(xpd=NA)
     # open a new plot window
     plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)
   }
@@ -350,10 +353,10 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     add.depth.axis = TRUE
     if(show.profile){
       add.depth.profile(depth.profile,axis.strata,strata,show.axis,add.depth.axis)
-      par(old.par)
     }
   }
 
+  par(old.par)
   L <- list(type = type, use.edge.length = TRUE,
             node.pos = NULL, node.depth = node.depth, show.tip.label = show.tip.label,
             show.node.label = show.node.label, font = font, cex = cex,
@@ -368,7 +371,6 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
 add.depth.profile<-function(depth.profile,axis.strata,strata,show.axis,add.depth.axis,show.preferred.depth=TRUE,PD=1){
   par(fig=c(0,1,0,0.4), new = T)
-  par(xpd=NA) # allow content to protrude into outer margin (and beyond)
   # change the y-axis scale for depth
   u = par("usr") # current scale
   depth.profile = rev(depth.profile)

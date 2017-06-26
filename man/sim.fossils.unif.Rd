@@ -31,11 +31,11 @@ Simulate fossils under a uniform model of preservation for a set of equal length
 # simulate tree
 t<-ape::rtree(6)
 # assign a max age based on tree height
-ba<-basin.age(t)
+max<-basin.age(t)
 # simulate fossils
 strata = 4
 sampling = 0.7
-f<-sim.fossils.unif(t, ba, strata, sampling)
+f<-sim.fossils.unif(t, max, strata, sampling)
 plot(f, t, binned = TRUE, strata = strata)
 }
 \keyword{fossil}
