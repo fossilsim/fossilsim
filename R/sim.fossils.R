@@ -445,11 +445,11 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 #' # assign a max age based on tree height
 #' max = basin.age(t)
 #' # generate water depth profile
-#' strata = 4
+#' strata = 7
 #' wd<-sim.water.depth(strata)
 #' # simulate fossils
-#' f<-sim.fossils.non.unif.depth(t, wd, PA = 1, PD = 0.5, DT = 1, basin.age = max, strata = strata)
-#'
+#' f<-sim.fossils.non.unif.depth(t, wd, PA = 1, PD = 0.5, DT = 1, basin.age = max, strata = strata, convert.rate = TRUE)
+#' plot(f,t, show.proxy = T, proxy.data = wd, strata = strata, show.strata = T)
 #' @keywords non-uniform fossil preseravtion
 #' @export
 sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interval.ages = NULL, basin.age = NULL, strata = NULL, root.edge = TRUE, convert.rate = FALSE){
