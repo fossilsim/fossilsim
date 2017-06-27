@@ -1,5 +1,6 @@
 #' Plot simulated fossils
 #'
+#' @description
 #' This function is adapted from the \emph{ape} function \code{plot.phylo} used to phylogenetic trees.
 #' The function can be used to plot simulated fossils (\code{show.fossils = TRUE}), with or without the corresponding tree (\code{show.tree = TRUE}),
 #' stratigraphic intervals (\code{show.strata = TRUE}), stratigraphic ranges (\code{show.ranges = TRUE}) and sampling proxy data (\code{show.proxy = TRUE}).
@@ -26,6 +27,7 @@
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param fcol Color of fossil occurrences or ranges.
+#'
 #'
 #' @examples
 #' set.seed(123)
@@ -369,7 +371,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     # ranges
     if(show.ranges){
       buffer = 0.01 * max(xx) # buffer for singletons
-      
+
       if(binned){
         if(attr(fossils, "ages") == "interval.max"){
           y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
@@ -385,14 +387,14 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
       for(i in unique(fossils$sp)) {
 
         range = fossils$r[which(fossils$sp==i)]
-        
+
         if(length(range) == 1)
           range = c(range-buffer,range+buffer)
 
         species = rep(yy[i], length(range))
 
         lines(y = species, x = range, lwd = 6, col=fcol)
-        
+
       }
       fossils$r = NULL
     }
