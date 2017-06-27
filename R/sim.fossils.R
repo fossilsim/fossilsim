@@ -416,6 +416,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
+#' @description
 #' This function uses a three parameter Guassion model to simulate non-uniform fossil preservation along a specified phylogeny.
 #' Preservation varies with respect to water depth, which is used as a proxy for changes in sedimentary environment.
 #' The per interval probability of sampling is \deqn{P(collection) = PA e ^ (-(d - PD)^2 / 2*DT^2 ) }
@@ -438,6 +439,9 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return An object of class fossils.
 #' sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+#'
+#' @references
+#' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92–109.
 #'
 #' @examples
 #' # simulate tree
@@ -675,6 +679,7 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 
 #' Select a sensible basin age based on tree height
 #'
+#' @description
 #' Function returns an age slightly older than the root.age or origin time.
 #'
 #' @param tree Phylo object.
