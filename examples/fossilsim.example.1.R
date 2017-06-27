@@ -31,7 +31,7 @@ plot(f, t, show.strata = TRUE, strata = strata) # plot 2
 # add proxy data
 plot(f, t, show.strata = TRUE, strata = strata, show.proxy = T, proxy.data = wd) # plot 3
 # plot stratigraphic ranges
-plot(f, t, show.strata = TRUE, strata = strata, show.proxy = T, proxy.data = wd, show.ranges = T, show.fossils = F) # plot 4
+plot(f, t, show.strata = TRUE, strata = strata, show.proxy = T, proxy.data = wd, show.ranges = T, show.fossils = F, show.tree = F) # plot 4
 
 ## simulate fossils under a user-specified non-uniform preservation model & non-uniform intervals
 # interval boundaries
