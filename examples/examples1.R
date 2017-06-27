@@ -17,7 +17,7 @@ plot(f, t)
 # pick a sensible age for the max interval age
 max<-FossilSim::basin.age(t)
 # number of intervals
-strata = 4
+strata = 7
 # sampling probability
 sampling = 0.7
 f <- FossilSim::sim.fossils.unif(t, max, strata, sampling)
@@ -36,8 +36,10 @@ plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.d
 ## simulate fossils under Steve Holland's non-uniform preservation model
 # simulate water depth
 wd <- FossilSim::sim.water.depth(strata)
-f <- FossilSim::sim.fossils.non.unif.depth(t, wd, times, PA = 1, PD = 0.5, DT = 1, convert.rate = T)
-plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = wd)
+f <- FossilSim::sim.fossils.non.unif.depth(t, wd, basin.age = max, strata = strata, PA = 1, PD = 0.5, DT = 1, convert.rate = TRUE)
+plot(f, t, show.strata = TRUE, strata = strata, show.proxy = T, proxy.data = wd)
+# plot ranges
+plot(f, t, show.strata = TRUE, strata = strata, show.proxy = T, proxy.data = wd, show.ranges = T, show.fossils = F)
 
 ## count the number of fossils per intervals
 FossilSim::count.fossils.binned(f, times)
