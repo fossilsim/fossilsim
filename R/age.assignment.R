@@ -26,12 +26,6 @@
 #' reassign.ages(t,f,max,strata)
 #' @export
 reassign.ages<-function(tree,fossils,basin.age,strata,poisson=FALSE,root.edge=TRUE) {
-  tree<-tree
-  fossils<-fossils
-  basin.age<-basin.age
-  strata<-strata
-  poisson<-poisson
-  root.edge<-root.edge
 
   interval.length = basin.age/strata
   interval.md = interval.length/2

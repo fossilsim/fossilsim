@@ -15,9 +15,7 @@
 #' @keywords uniform preseravtion
 #' @export
 sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
-  tree<-tree
   lambda<-sampling
-  root.edge<-root.edge
 
   node.ages<-n.ages(tree)
 
@@ -94,11 +92,6 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
 #' @keywords uniform fossil preseravtion
 #' @export
 sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.rate=FALSE){
-  tree<-tree
-  basin.age<-basin.age
-  strata<-strata
-  sampling<-sampling
-  convert.rate<-convert.rate # convert prability to rate and generate k fossils
 
   if(!((sampling >= 0) & (sampling <= 1)))
       stop("Sampling must be a probability between 0 and 1")
@@ -277,10 +270,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
 #' plot(f, t)
 #' @export
 sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
-  tree<-tree
-  interval.ages<-interval.ages
   rate<-sampling
-  root.edge<-root.edge
 
   if(length(rate) != (length(interval.ages) - 1 ))
     stop("something went wrong when you specified the inteval rate and times vectors")
@@ -457,16 +447,6 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 #' @keywords non-uniform fossil preseravtion
 #' @export
 sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interval.ages = NULL, basin.age = NULL, strata = NULL, root.edge = TRUE, convert.rate = FALSE){
-  tree<-tree
-  profile<-profile
-  PA<-PA
-  PD<-PD
-  DT<-DT
-  interval.ages<-interval.ages
-  basin.age<-basin.age
-  strata<-strata
-  root.edge<-root.edge
-  convert.rate<-convert.rate
 
   if( (is.null(interval.ages)) && (is.null(basin.age)) && (is.null(strata)) )
     stop("Specify interval.ages OR basin.age and number of strata")

@@ -10,8 +10,6 @@ n.ages<-function(tree){
 
 # Identify parent nodes
 ancestor<-function(edge,tree){
-  edge<-edge
-  tree<-tree
 
   parent<-tree$edge[,1][which(tree$edge[,2]==edge)]
 
@@ -28,22 +26,21 @@ ancestor<-function(edge,tree){
 # t<-ape::rtree(6)
 # is.tip(t$edge[,2][6],t)
 is.tip<-function(taxa,phylo){
-  
+
   tree<-phylo
-  
+
   if (length(which(tree$edge[,1]==taxa)) < 1) {
     return(1)
   }
   else {
     return(0)
   }
-  
+
   # EOF
 }
 
 # Identify the root
 root<-function(tree){
-  tree<-tree
 
   root=length(tree$tip.label)+1
 
@@ -53,8 +50,6 @@ root<-function(tree){
 
 # Test is root
 is.root<-function(edge,tree){
-  edge<-edge
-  tree<-tree
 
   root=length(tree$tip.label)+1
 
@@ -67,14 +62,12 @@ is.root<-function(edge,tree){
 
 # fetch immediate decendants
 descendants<-function(edge,tree){
-  edge<-edge
-  tree<-tree
-  
+
   if(edge %in% tree$edge[,1])
     decs<-tree$edge[,2][which(tree$edge[,1]==edge)]
   else
     decs = NULL
-  
+
   return(decs)
   #eof
 }

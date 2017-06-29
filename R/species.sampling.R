@@ -15,9 +15,7 @@
 #' plot(f, t)
 #' @export
 add.tip.samples<-function(tree, fossils, rho = 1) {
-  tree <- tree
-  fossils <- fossils
-  rho <- rho
+
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!"fossils" %in% class(fossils))
@@ -62,9 +60,6 @@ add.tip.samples<-function(tree, fossils, rho = 1) {
 #' plot(f, t)
 #' @export
 add.extant.occ<-function(tree, fossils, rho = 1){
-  tree<-tree
-  fossils<-fossils
-  rho<-rho
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -121,8 +116,6 @@ add.extant.occ<-function(tree, fossils, rho = 1){
 #' f<-asymmetric.fossil.samp(t, f)
 #' @export
 asymmetric.fossil.samp<-function(tree,fossils){
-  tree<-tree
-  fossils<-fossils
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -174,9 +167,6 @@ asymmetric.fossil.samp<-function(tree,fossils){
 #' attachment.times(t, f)
 #' @export
 attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
-  tree<-tree
-  fossils<-fossils
-  asymmetric.sampling<-asymmetric.sampling
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -240,8 +230,6 @@ attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
 #' "s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
 #' @export
 mixed.speciation<-function(tree, f){
-  tree<-tree
-  f<-f # fraction of asymmetric speciation events
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -344,9 +332,6 @@ mixed.speciation<-function(tree, f){
 #' mixed.ages(t, 0.5)
 #' @export
 mixed.ages<-function(tree,f,root.edge=T){
-  tree<-tree
-  f<-f
-  root.edge<-root.edge
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -417,9 +402,6 @@ mixed.ages<-function(tree,f,root.edge=T){
 #' sp2<-anagenic.species(sp1, 0.1)
 #' @export
 anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
-  ages<-ages
-  lambda.a<-lambda.a
-  parent.labels<-parent.labels
 
   # identify the start of the new species id count
   species.count = max(ages$sp) + 1
@@ -529,8 +511,6 @@ anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
 #' sp3<-cryptic.speciation(frs, 0.5)
 #' @export
 cryptic.speciation<-function(ages, kappa){
-  ages<-ages
-  kappa<-kappa
 
   if(is.null(ages$p))
     stop("For cryptic speciation you must include parent labels")
@@ -576,7 +556,6 @@ cryptic.speciation<-function(ages, kappa){
 #' @export
 # Function required by asymmetric.ages
 symmetric.ages<-function(tree, root.edge=TRUE){
-  tree<-tree
 
   node.ages=n.ages(tree)
   origin=root(tree) # identify the root
@@ -622,8 +601,6 @@ symmetric.ages<-function(tree, root.edge=TRUE){
 #' asymmetric.ages(t)
 #' @export
 asymmetric.ages<-function(tree,root.edge=TRUE){
-  tree<-tree
-  root.edge<-root.edge
 
   sym.ages<-symmetric.ages(tree, root.edge = FALSE) # note if root.edge = TRUE, the origin is handled below
   asym.ident<-asymmetric.identities(tree)
@@ -667,7 +644,6 @@ asymmetric.ages<-function(tree,root.edge=TRUE){
 #' @export
 fetch.descendents<-function(edge,tree,return.edge.labels=F){
   ancestor<-edge
-  tree<-tree
 
   if(is.tip(edge, tree))
     return(NULL)
@@ -748,8 +724,6 @@ fetch.descendents<-function(edge,tree,return.edge.labels=F){
 # List of asymmetric descendants
 # Function required by attachment.identities
 fetch.asymmetric.descendants<-function(edge,tree){
-  edge<-edge
-  tree<-tree
 
   api<-asymmetric.parent.identities(tree)
 
@@ -804,8 +778,6 @@ fetch.asymmetric.descendants<-function(edge,tree){
 # attachment.identities(t, f)
 # Function required by attachment.times
 attachment.identities<-function(tree,fossils) {
-  tree<-tree
-  fossils<-fossils
 
   if(attr(fossils, "speciation") != "asymmetric")
     stop("Fossils speciation mode != asymmetric")
@@ -915,8 +887,6 @@ attachment.identities<-function(tree,fossils) {
 # @param fossils Fossil dataframe.
 #
 symmetric.attachment.identities<-function(tree, fossils){
-  tree<-tree
-  fossils<-fossils
 
   p<-data.frame(sp=numeric(),attaches=numeric())
 
@@ -973,7 +943,6 @@ symmetric.attachment.identities<-function(tree, fossils){
 # t<-ape::rtree(6)
 # asymmetric.identities(t)
 asymmetric.identities<-function(tree){
-  tree<-tree
 
   # parent = species
   p<-data.frame(parent=numeric(),equivalent.to=numeric())
@@ -1060,7 +1029,6 @@ asymmetric.identities<-function(tree){
 # Dataframe of asymmetric parent labels.
 # Function required by attachment.identities
 asymmetric.parent.identities<-function(tree){
-  tree<-tree
 
   p<-data.frame(species=numeric(),equivalent.to=numeric(),parent=numeric())
 

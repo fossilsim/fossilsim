@@ -53,37 +53,18 @@
 #'
 #' @export
 plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
-                       show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE,
-                       show.axis = TRUE, show.proxy = FALSE, proxy.data = NULL,
+                       # age info/options
+                       show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
+                       # proxy stuff
+                       show.proxy = FALSE, proxy.data = NULL,
                        show.preferred.environ = FALSE, preferred.environ = NULL,
-                       root.edge = TRUE, hide.edge = FALSE, show.tip.label = FALSE, align.tip.label = FALSE, fcol = "darkorange",
-                       fcex = 1.2, edge.width = 1, ...) {
-  fossils<-fossils
+                       # tree appearance
+                       root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
+                       # fossil appearance
+                       fcex = 1.2, fcol = "darkorange", ...) {
+
   x<-tree  # tree
-  show.fossils<-show.fossils
-  show.tree<-show.tree
-  show.ranges<-show.ranges
-  # age info/options
-  show.strata<-show.strata
-  interval.ages<-interval.ages
-  strata<-strata
   ba<-max
-  show.axis<-show.axis
-  binned<-binned
-  # proxy stuff
-  show.proxy<-show.proxy
-  proxy.data<-proxy.data
-  show.preferred.environ<-show.preferred.environ
-  preferred.environ<-preferred.environ
-  # tree appearance
-  root.edge<-root.edge
-  hide.edge<-hide.edge
-  show.tip.label<-show.tip.label
-  align.tip.label<-align.tip.label
-  edge.width<-edge.width
-  # fossil appearance
-  fcol<-fcol
-  fcex<-fcex
 
   if(!show.tree)
     align.tip.label = TRUE
