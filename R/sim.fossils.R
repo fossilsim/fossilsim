@@ -465,7 +465,7 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
     horizons.max = interval.ages[-1]
   }
 
-  if(length(wd) < length(horizons.max))
+  if(length(profile) < length(horizons.max))
     stop("Water depth values < the number of intervals!")
 
   node.ages<-n.ages(tree)
