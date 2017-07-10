@@ -1,7 +1,7 @@
 #' Simulate fossils under a Poisson sampling model
 #'
 #' @param tree Phylo object.
-#' @param sampling Poisson sampling rate.
+#' @param rate Poisson sampling rate.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return An object of class fossils.
 #' sp = edge labels. h = ages.
@@ -9,13 +9,12 @@
 #' # simulate tree
 #' t<-ape::rtree(4)
 #' # simulate fossils
-#' sampling = 2
-#' f<-sim.fossils.poisson(t, sampling)
+#' rate = 2
+#' f<-sim.fossils.poisson(t, rate)
 #' plot(f, t)
 #' @keywords uniform preseravtion
 #' @export
-sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
-  lambda<-sampling
+sim.fossils.poisson<-function(tree,rate,root.edge=TRUE){
 
   node.ages<-n.ages(tree)
 
@@ -38,7 +37,7 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
     lineage.end=lineage.start-b # branch length
 
     # sample fossil numbers from the Poisson distribution
-    rand=rpois(1,b*lambda)
+    rand=rpois(1,b*rate)
 
     if(rand > 0){
       h=runif(rand,min=lineage.end,max=lineage.start)
@@ -56,7 +55,7 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
     lineage.start=lineage.end+b
 
     # sample fossil numbers from the Poisson distribution
-    rand=rpois(1,b*lambda)
+    rand=rpois(1,b*rate)
 
     if(rand > 0){
       h=runif(rand,min=lineage.end,max=lineage.start)
@@ -74,7 +73,7 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
 #' @param tree Phylo object.
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
-#' @param sampling Probability of sampling/preservation.
+#' @param probability Probability of sampling/preservation.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return An object of class fossils.
@@ -86,24 +85,26 @@ sim.fossils.poisson<-function(tree,sampling,root.edge=TRUE){
 #' max<-basin.age(t)
 #' # simulate fossils
 #' strata = 4
-#' sampling = 0.7
-#' f<-sim.fossils.unif(t, max, strata, sampling)
+#' probability = 0.7
+#' f<-sim.fossils.unif(t, max, strata, probability)
 #' plot(f, t, binned = TRUE, strata = strata)
 #' @keywords uniform fossil preseravtion
 #' @export
-sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.rate=FALSE){
+sim.fossils.unif<-function(tree,basin.age,strata,probability,root.edge=T,convert.rate=FALSE){
 
-  if(!((sampling >= 0) & (sampling <= 1)))
-      stop("Sampling must be a probability between 0 and 1")
+  if(!((probability >= 0) & (probability <= 1)))
+    stop("Sampling probability must be a probability between 0 and 1")
 
-  if(sampling == 1)
-    sampling = 0.9999
+  if((probability == 1) & (convert.rate)){
+    warn("Can not convert probability to a rate if pr = 1, using pr = 0.9999 instead")
+    probability = 0.9999
+  }
 
   s1=basin.age/strata # horizon length (= max age of youngest horizon)
   horizons<-seq(s1, basin.age, length=strata)
 
   # poisson rate under constant model
-  rate = -log(1-sampling)/(basin.age/strata)
+  rate = -log(1-probability)/(basin.age/strata)
 
   node.ages<-n.ages(tree)
   root=length(tree$tip.label)+1
@@ -175,7 +176,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
           }
         } else {
           # define the probabilty
-          pr = pr * sampling
+          pr = pr * probability
           # if random.number < pr { record fossil as collected }
           if (runif(1) <= pr) {
             fossils<-rbind(fossils,data.frame(h=h,sp=i))
@@ -230,7 +231,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
           }
         } else {
           # define the probabilty
-          pr = pr * sampling
+          pr = pr * probability
           # if random.number < pr { record fossil as collected }
           if (runif(1) <= pr) {
             fossils<-rbind(fossils,data.frame(h=h,sp=root))
@@ -252,7 +253,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
 #'
 #' @param tree Phylo object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
-#' @param sampling Vector of Poisson sampling rates. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.
+#' @param rates Vector of Poisson sampling rates. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return An object of class fossils.
 #' sp = edge labels. h = fossil ages.
@@ -269,11 +270,10 @@ sim.fossils.unif<-function(tree,basin.age,strata,sampling,root.edge=T,convert.ra
 #' f<-sim.fossils.non.unif(t, times, rates)
 #' plot(f, t)
 #' @export
-sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
-  rate<-sampling
+sim.fossils.non.unif<-function(tree, interval.ages, rates, root.edge = TRUE){
 
-  if(length(rate) != (length(interval.ages) - 1 ))
-    stop("something went wrong when you specified the inteval rate and times vectors")
+  if(length(rates) != (length(interval.ages) - 1 ))
+    stop("Length mismatch between interval ages and sampling rates")
 
   horizons.min = head(interval.ages, -1)
   horizons.max = interval.ages[-1]
@@ -291,7 +291,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
     h.max<-horizons.max[h]
     s1 = h.max - h.min # horizon length
 
-    if(rate[h]==0)
+    if(rates[h]==0)
       next
 
     for(i in tree$edge[,2]){ # internal nodes + tips
@@ -342,7 +342,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
         brl = brl + (s1*pr) # debugging code
 
         # generate k fossils from a poisson distribution
-        k = rpois(1,rate[h]*s1*pr)
+        k = rpois(1,rates[h]*s1*pr)
         if(k > 0){
           for(j in 1:k){
             age = runif(1,f.min,f.max)
@@ -388,7 +388,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
         brl = brl + (s1*pr)
 
         # generate k fossils from a poisson distribution
-        k = rpois(1,rate[h]*s1*pr)
+        k = rpois(1,rates[h]*s1*pr)
         if(k > 0){
           for(j in 1:k){
             age = runif(1,f.min,f.max)
@@ -407,7 +407,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, sampling, root.edge = TRUE){
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
 #' @description
-#' This function uses a three parameter Guassion model to simulate non-uniform fossil preservation along a specified phylogeny.
+#' This function uses a three parameter Guassian model to simulate non-uniform fossil preservation along a specified phylogeny.
 #' Preservation varies with respect to water depth, which is used as a proxy for changes in sedimentary environment.
 #' The per interval probability of sampling is \deqn{P(collection) = PA e ^ (-(d - PD)^2 / 2*DT^2 ) }
 #' where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{DT} is depth tolerance and \emph{d} is current water depth.
@@ -486,10 +486,10 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
     current.depth = profile[h]
 
     # calculate the interval rate
-    sampling = PA * exp( (-(current.depth-PD)**2) / (2 * (DT ** 2)) )
-    if(sampling >= 1)
-      sampling = 0.9999
-    rate = -log(1-sampling)/s1
+    probability = PA * exp( (-(current.depth-PD)**2) / (2 * (DT ** 2)) )
+    if(probability >= 1)
+      probability = 0.9999
+    rate = -log(1-probability)/s1
 
     for(i in tree$edge[,2]){ # internal nodes + tips
 
@@ -549,7 +549,7 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
           }
         } else {
           # define the probabilty
-          pr = pr * sampling
+          pr = pr * probability
           # if random.number < pr { record fossil as collected }
           if (runif(1) <= pr) {
             fossils<-rbind(fossils,data.frame(h=h.max,sp=i))
@@ -604,7 +604,7 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
           }
         } else {
           # define the probabilty
-          pr = pr * sampling
+          pr = pr * probability
           # if random.number < pr { record fossil as collected }
           if (runif(1) <= pr) {
             fossils<-rbind(fossils,data.frame(h=h,sp=root))
@@ -657,10 +657,11 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
   # EOF
 }
 
-#' Select a sensible basin age based on tree height
+#' Define a basin age based on tree height
 #'
 #' @description
-#' Function returns an age slightly older than the root.age or origin time.
+#' Function returns an age slightly older than the root.age or origin time using the formula
+#' \eqn{round(max,1) + 0.1}, where max is the root.age or origin time.
 #'
 #' @param tree Phylo object.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
@@ -701,10 +702,9 @@ count.fossils<-function(fossils){
 #' @export
 count.fossils.binned<-function(fossils, interval.ages){
   intervals<-interval.ages
-  k = c()
-  for(i in 1:length(intervals)){
-    k = c(k, 0)
-  }
+
+  k = rep(0, length(intervals))
+
   for(i in 1:length(fossils$h)){
     if(fossils$h[i] != 0){
       j = assign.interval(intervals, fossils$h[i])

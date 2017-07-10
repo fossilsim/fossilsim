@@ -4,14 +4,14 @@
 \alias{sim.fossils.non.unif}
 \title{Simulate fossils under a non-uniform model of preservation}
 \usage{
-sim.fossils.non.unif(tree, interval.ages, sampling, root.edge = TRUE)
+sim.fossils.non.unif(tree, interval.ages, rates, root.edge = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
-\item{sampling}{Vector of Poisson sampling rates. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.}
+\item{rates}{Vector of Poisson sampling rates. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 }

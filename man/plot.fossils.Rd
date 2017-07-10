@@ -9,8 +9,8 @@
   interval.ages = NULL, binned = FALSE, show.axis = TRUE,
   show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
   preferred.environ = NULL, root.edge = TRUE, hide.edge = FALSE,
-  show.tip.label = FALSE, align.tip.label = FALSE, fcol = "darkorange",
-  fcex = 1.2, edge.width = 1, ...)
+  edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
+  fcex = 1.2, fcol = "darkorange", ...)
 }
 \arguments{
 \item{fossils}{Dataframe of sampled fossils (sp = edge labels, h = ages).}

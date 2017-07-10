@@ -4,7 +4,7 @@
 \alias{sim.fossils.unif}
 \title{Simulate fossils under a uniform model of preservation for a set of equal length intervals}
 \usage{
-sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T,
+sim.fossils.unif(tree, basin.age, strata, probability, root.edge = T,
   convert.rate = FALSE)
 }
 \arguments{
@@ -14,7 +14,7 @@ sim.fossils.unif(tree, basin.age, strata, sampling, root.edge = T,
 
 \item{strata}{Number of stratigraphic intervals.}
 
-\item{sampling}{Probability of sampling/preservation.}
+\item{probability}{Probability of sampling/preservation.}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 
@@ -34,8 +34,8 @@ t<-ape::rtree(6)
 max<-basin.age(t)
 # simulate fossils
 strata = 4
-sampling = 0.7
-f<-sim.fossils.unif(t, max, strata, sampling)
+probability = 0.7
+f<-sim.fossils.unif(t, max, strata, probability)
 plot(f, t, binned = TRUE, strata = strata)
 }
 \keyword{fossil}
