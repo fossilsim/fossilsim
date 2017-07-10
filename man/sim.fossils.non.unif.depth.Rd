@@ -34,7 +34,7 @@ An object of class fossils.
 sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
 }
 \description{
-This function uses a three parameter Guassion model to simulate non-uniform fossil preservation along a specified phylogeny.
+This function uses a three parameter Guassian model to simulate non-uniform fossil preservation along a specified phylogeny.
 Preservation varies with respect to water depth, which is used as a proxy for changes in sedimentary environment.
 The per interval probability of sampling is \deqn{P(collection) = PA e ^ (-(d - PD)^2 / 2*DT^2 ) }
 where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{DT} is depth tolerance and \emph{d} is current water depth.

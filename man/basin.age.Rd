@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.fossils.R
 \name{basin.age}
 \alias{basin.age}
-\title{Select a sensible basin age based on tree height}
+\title{Define a basin age based on tree height}
 \usage{
 basin.age(tree, root.edge = TRUE)
 }
@@ -15,7 +15,8 @@ basin.age(tree, root.edge = TRUE)
 basin age
 }
 \description{
-Function returns an age slightly older than the root.age or origin time.
+Function returns an age slightly older than the root.age or origin time using the formula
+\eqn{round(max,1) + 0.1}, where max is the root.age or origin time.
 }
 \examples{
 t<-ape::rtree(6)
