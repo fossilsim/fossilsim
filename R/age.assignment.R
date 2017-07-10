@@ -33,7 +33,7 @@ reassign.ages<-function(tree,fossils,basin.age,strata,poisson=FALSE,root.edge=TR
   node.ages<-n.ages(tree)
   ld<-data.frame(lineage=numeric(),start=numeric(),end=numeric())
 
-  speciation.mode = attr(f, "speciation")
+  speciation.mode = attr(fossils, "speciation")
 
   for (i in c(tree$edge[,2])){ # internal nodes + tips
 
