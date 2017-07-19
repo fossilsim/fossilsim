@@ -94,6 +94,8 @@ add.extant.occ<-function(tree, fossils, rho = 1){
         fossils<-rbind(fossils,data.frame(h=0,sp=i))
     }
   }
+  if(!is.fossils(fossils))
+    fossils = as.fossils(fossils)
   return(fossils)
   #eof
 }
