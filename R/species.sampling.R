@@ -68,6 +68,9 @@ add.extant.occ<-function(tree, fossils, rho = 1){
   if(!(rho >= 0 && rho <= 1))
     stop("rho must be a probability between 0 and 1")
 
+  # store speciation mode
+  speciation = attr(fossils, "speciation")
+
   # work out node ages
   node.ages<-n.ages(tree)
 
@@ -95,7 +98,7 @@ add.extant.occ<-function(tree, fossils, rho = 1){
     }
   }
   if(!is.fossils(fossils))
-    fossils = as.fossils(fossils)
+    fossils = as.fossils(fossils, speciation.mode = speciation)
   return(fossils)
   #eof
 }
