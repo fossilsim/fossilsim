@@ -705,6 +705,9 @@ count.fossils.binned<-function(fossils, interval.ages){
 
   k = rep(0, length(intervals))
 
+  if(length(fossils$sp) == 0)
+    return(k)
+
   for(i in 1:length(fossils$h)){
     if(fossils$h[i] != 0){
       j = assign.interval(intervals, fossils$h[i])
