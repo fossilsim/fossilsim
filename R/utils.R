@@ -1,4 +1,4 @@
-# Function to calculate node ages of a non-ultramteric tree using the TreeSim function getx
+# Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
 #' @importFrom TreeSim getx
 n.ages<-function(tree){
 
@@ -60,7 +60,7 @@ is.root<-function(edge,tree){
   #eof
 }
 
-# fetch immediate decendants
+# fetch immediate descendants
 descendants<-function(edge,tree){
 
   if(edge %in% tree$edge[,1])
