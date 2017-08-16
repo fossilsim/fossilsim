@@ -138,7 +138,7 @@ asymmetric.fossil.samp<-function(tree,fossils){
 
     f=fossils$sp[i]
     h=fossils$h[i]
-    ai=p$equivalent.to[which(p$parent==f)] # asym identity
+    ai=p[f] # asym identity
     af<-rbind(af,data.frame(h=h,sp=ai))
 
   }
@@ -613,10 +613,10 @@ asymmetric.ages<-function(tree,root.edge=TRUE){
 
   ages<-data.frame(sp=numeric(),start=numeric(),end=numeric())
 
-  for(i in unique(asym.ident$equivalent.to)){
+  for(i in unique(asym.ident)){
 
     # identify all equivalent asymmetric lineages
-    lineages=asym.ident$parent[which(asym.ident$equivalent.to==i)]
+    lineages=which(asym.ident==i)
 
     # find the oldest start time
     lineage.start=max(subset(sym.ages,sp %in% lineages)$start)
@@ -943,85 +943,29 @@ symmetric.attachment.identities<-function(tree, fossils){
 #
 # @param tree Phylo object.
 # @return
-# Dataframe of asymmetric edge labels.
+# Vector of asymmetric edge labels.
 # @examples
 # t<-ape::rtree(6)
 # asymmetric.identities(t)
 asymmetric.identities<-function(tree){
-
-  # parent = species
-  p<-data.frame(parent=numeric(),equivalent.to=numeric())
-
-  done<-data.frame(a=numeric())
-
+  
+  parents = rep(0, length(tree$tip.label)+tree$Nnode)
   # identify the root
   root=length(tree$tip.label)+1
-
-  p<-rbind(p,data.frame(parent=root,equivalent.to=root))
-
-  ancestor=root
-
-  process.complete=0
-
-  while(process.complete==0) {
-
-    # fetch the two descendents
-    row=which(tree$edge[,1]==ancestor)
-    descendents=tree$edge[,2][row]
-    d1<-descendents[1]
-    d2<-descendents[2]
-
-    # unless d2 is not in the table (d1 also won't be in the table)
-    if(!d2 %in% p[[1]]) {
-
-      # find out how the parent of d1 is define (e.g. as itself, or by an older ancestor)
-      row=which(p$parent==ancestor) # one step ai=p$equivalent.to[which(p$parent==ancestor)]
-      ai=p$equivalent.to[row] # asymmetric identity
-      p<-rbind(p,data.frame(parent=d1,equivalent.to=ai))
-
-      # define d2 its itself (e.g the budding champion)
-      p<-rbind(p,data.frame(parent=d2,equivalent.to=d2))
-
-    }
-
-    # the following is simply a way of tranversing the tree in a particular order
-    if(!d1 %in% done[[1]]) {
-      if ((is.tip(d1,tree)) == 1) {
-        done<-rbind(done,data.frame(a=d1))
-      }
-      else {
-        ancestor=d1
-      }
-
-    }
-    else if (!d2 %in% done[[1]]) {
-      if ((is.tip(d2,tree)) == 1) {
-        done<-rbind(done,data.frame(a=d2))
-      }
-      else {
-        ancestor=d2
-      }
-    }
-    else {
-      if(ancestor==root){
-        process.complete=1
-      }
-      else {
-        done<-rbind(done,data.frame(a=ancestor))
-        row=which(tree$edge[,2]==ancestor)
-        ancestor=tree$edge[,1][row]
-      }
-
-    }
-    #	if (count==100) {
-    #		process.complete=1
-    #	}
-
-    # count=count+1
+  parents[root] = root
+  
+  aux = function(node, par) {
+    desc = tree$edge[which(tree$edge[,1] == node), 2]
+    if(length(desc) == 0) return(par)
+    par[desc[1]] = par[node]
+    par = aux(desc[1], par)
+    par[desc[2]] = desc[2]
+    par = aux(desc[2], par)
+    par
   }
-
-  #eof  # the number of asym lineages should be 2n
-  return(p)
+  
+  parents = aux(root, parents)
+  parents
 }
 
 # Identify parent lineages in an asymmetric tree
@@ -1116,3 +1060,32 @@ asymmetric.parent.identities<-function(tree){
 }
 
 
+# Assign species labels to asymmetric lineages
+#
+# @param tree Phylo object.
+# @return
+# Vector of asymmetric species labels.
+# @examples
+# t<-ape::rtree(6)
+# asymmetric.species.identities(t)
+asymmetric.species.identities<-function(tree){
+  
+  children = rep(0, length(tree$tip.label)+tree$Nnode)
+  # identify the root
+  root=length(tree$tip.label)+1
+  
+  aux = function(node, par) {
+    desc = tree$edge[which(tree$edge[,1] == node), 2]
+    if(length(desc) == 0) {
+      par[node] = node
+      return(par)
+    }
+    par = aux(desc[1], par)
+    par = aux(desc[2], par)
+    par[node] = par[desc[1]]
+    par
+  }
+  
+  children = aux(root, children)
+  children
+}
