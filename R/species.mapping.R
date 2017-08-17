@@ -103,9 +103,9 @@ add.extant.occ<-function(tree, fossils, rho = 1){
   #eof
 }
 
-#' Sample asymmetric fossil lineages
+#' Map asymmetric fossil lineages
 #'
-#' Sample fossils assuming asymmetric (budding) speciation.
+#' Map fossils assuming asymmetric (budding) speciation.
 #'
 #' @param tree Phylo object.
 #' @param fossil Fossils object.
@@ -117,10 +117,10 @@ add.extant.occ<-function(tree, fossils, rho = 1){
 #' f<-sim.fossils.poisson(t, 2)
 #' # add extant samples
 #' f<-add.extant.occ(t, f, rho = 0.5)
-#' # asymmetric sampling
-#' f<-asymmetric.fossil.samp(t, f)
+#' # asymmetric mapping
+#' f<-asymmetric.fossil.mapping(t, f)
 #' @export
-asymmetric.fossil.samp<-function(tree,fossils){
+asymmetric.fossil.mapping<-function(tree,fossils){
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -128,7 +128,7 @@ asymmetric.fossil.samp<-function(tree,fossils){
     stop("fossils must be an object of class \"fossils\"")
 
   if(attr(fossils, "speciation") == "asymmetric")
-    stop("Species have already been asymmetrically sampled")
+    stop("Species have already been asymmetrically mapped")
 
   p<-asymmetric.identities(tree)
 
@@ -156,9 +156,9 @@ asymmetric.fossil.samp<-function(tree,fossils){
 #'
 #' @param tree Phylo object.
 #' @param fossils Fossils object.
-#' @param asymmetric.sampling If TRUE fossil sampling is assymmetric.
-#' If speciation is "symmetric" and asymmetric.sampling = TRUE, the function calls asymmetric.fossil.samp.
-#' If speciation is "asymmetric" and asymmetric.sampling = FALSE, the function returns an error.
+#' @param asymmetric.mapping If TRUE fossil sampling is assymmetric.
+#' If speciation is "symmetric" and asymmetric.mapping = TRUE, the function calls asymmetric.fossil.mapping.
+#' If speciation is "asymmetric" and asymmetric.mapping = FALSE, the function returns an error.
 #' @return Dataframe containing the speciation & extinction times in an incompletely sampled tree.
 #' @examples
 #' t<-ape::rtree(6)
@@ -166,12 +166,12 @@ asymmetric.fossil.samp<-function(tree,fossils){
 #' f<-sim.fossils.poisson(t, 2)
 #' # add extant samples
 #' f<-add.extant.occ(t, f, rho = 0.5)
-#' # asymmetric sampling
-#' f<-asymmetric.fossil.samp(t, f)
+#' # asymmetric mapping
+#' f<-asymmetric.fossil.mapping(t, f)
 #' # calculate attachment times
 #' attachment.times(t, f)
 #' @export
-attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
+attachment.times<-function(tree,fossils,asymmetric.mapping=TRUE){
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -179,14 +179,14 @@ attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
     stop("fossils must be an object of class \"fossils\"")
 
   # attachment identities & asymmetric / symmetric ages
-  if(asymmetric.sampling){
+  if(asymmetric.mapping){
     if(attr(fossils, "speciation") == "symmetric")
-      fossils<-asymmetric.fossil.samp(tree, fossils)
+      fossils<-asymmetric.fossil.mapping(tree, fossils)
     attach.ident<-attachment.identities(tree,fossils)
     ages<-asymmetric.ages(tree)
   } else{
     if(attr(fossils, "speciation") == "asymmetric")
-      stop("asymmetric.sampling = FALSE but speciation = \"asymmetric\"")
+      stop("asymmetric.mapping = FALSE but speciation = \"asymmetric\"")
     cat("Warning: generating symmetric attachment times - this is experimental!\n")
     attach.ident<-symmetric.attachment.identities(tree,fossils)
     ages<-symmetric.ages(tree)
@@ -204,7 +204,7 @@ attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
     attaches=attach.ident$attaches[which(attach.ident$sp==i)]
 
     # find the speciation time of a
-    if(asymmetric.sampling)
+    if(asymmetric.mapping)
       lineage.start=ages$start[which(ages$sp==attaches)]
     else
       lineage.start=nages[which(names(nages)==attaches)]
@@ -220,7 +220,7 @@ attachment.times<-function(tree,fossils,asymmetric.sampling=TRUE){
 
 ### mixed speciation
 
-#' Sample asymmetric & symmetric lineages
+#' Map asymmetric & symmetric lineages
 #'
 #' Asymmetric (or budding) speciation occurs with probability \eqn{f}. Asymmetric speciation gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
 #' Note that if \eqn{f = 1} all speciation events will be asymmetric and if \eqn{f = 0} all speciation events will be symmetric.
@@ -382,11 +382,6 @@ mixed.ages<-function(tree,f,root.edge=T){
 
   }
 
-  # this is handled by the function symmetric.ages
-  # if(root.edge && exists("root.edge",tree) ){
-  #  ages$start[which(ages$sp==origin)] = ages$start[which(ages$sp==origin)] + tree$root.edge
-  # }
-
   return(ages)
   #eof
 }
@@ -513,7 +508,7 @@ anagenic.species<-function(ages,lambda.a=0.1,parent.labels=FALSE){
 #' # simulate anagenic species
 #' sp2<-anagenic.species(sp1, 0.1, parent.labels = T)
 #' assign cryptic speciation events
-#' sp3<-cryptic.speciation(frs, 0.5)
+#' sp3<-cryptic.speciation(sp2, 0.5)
 #' @export
 cryptic.speciation<-function(ages, kappa){
 
@@ -767,7 +762,7 @@ fetch.asymmetric.descendants<-function(edge,tree){
 
 ### tree + fossils
 
-# Identify attachment lineages in an incomplete asymmetrically sampled tree
+# Identify attachment lineages in an incomplete asymmetrically mapped tree
 #
 # @param tree Phylo object.
 # @param fossils Fossils object.
@@ -777,8 +772,8 @@ fetch.asymmetric.descendants<-function(edge,tree){
 # t<-ape::rtree(6)
 # # simulate fossils
 # f<-sim.fossils.poisson(t, 2)
-# # asymmetric fossil sampling
-# f<-asymmetric.fossil.samp(t, f)
+# # asymmetric fossil mapping
+# f<-asymmetric.fossil.mapping(t, f)
 # # asymmetric attachment identities
 # attachment.identities(t, f)
 # Function required by attachment.times
@@ -886,7 +881,7 @@ attachment.identities<-function(tree,fossils) {
   #eof
 }
 
-# Identify attachment lineages in an incomplete symmetrically sampled tree
+# Identify attachment lineages in an incomplete symmetrically mapped tree
 #
 # @param tree Phylo object.
 # @param fossils Fossil dataframe.
@@ -948,12 +943,12 @@ symmetric.attachment.identities<-function(tree, fossils){
 # t<-ape::rtree(6)
 # asymmetric.identities(t)
 asymmetric.identities<-function(tree){
-  
+
   parents = rep(0, length(tree$tip.label)+tree$Nnode)
   # identify the root
   root=length(tree$tip.label)+1
   parents[root] = root
-  
+
   aux = function(node, par) {
     desc = tree$edge[which(tree$edge[,1] == node), 2]
     if(length(desc) == 0) return(par)
@@ -963,7 +958,7 @@ asymmetric.identities<-function(tree){
     par = aux(desc[2], par)
     par
   }
-  
+
   parents = aux(root, parents)
   parents
 }
@@ -1069,11 +1064,11 @@ asymmetric.parent.identities<-function(tree){
 # t<-ape::rtree(6)
 # asymmetric.species.identities(t)
 asymmetric.species.identities<-function(tree){
-  
+
   children = rep(0, length(tree$tip.label)+tree$Nnode)
   # identify the root
   root=length(tree$tip.label)+1
-  
+
   aux = function(node, par) {
     desc = tree$edge[which(tree$edge[,1] == node), 2]
     if(length(desc) == 0) {
@@ -1085,7 +1080,7 @@ asymmetric.species.identities<-function(tree){
     par[node] = par[desc[1]]
     par
   }
-  
+
   children = aux(root, children)
   children
 }
