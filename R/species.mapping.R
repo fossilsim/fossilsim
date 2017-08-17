@@ -187,7 +187,7 @@ attachment.times<-function(tree,fossils,asymmetric.mapping=TRUE){
   } else{
     if(attr(fossils, "speciation") == "asymmetric")
       stop("asymmetric.mapping = FALSE but speciation = \"asymmetric\"")
-    cat("Warning: generating symmetric attachment times - this is experimental!\n")
+    warning("generating symmetric attachment times - this is experimental!\n")
     attach.ident<-symmetric.attachment.identities(tree,fossils)
     ages<-symmetric.ages(tree)
     nages<-n.ages(tree)
@@ -244,7 +244,7 @@ mixed.speciation<-function(tree, f){
   # sp = species; p = ancestor
   p<-data.frame(sp=numeric(),p=numeric(),equivalent.to=numeric(),mode=character())
 
-  done<-data.frame(a=numeric())
+  done = c()
 
   # identify the root
   root=length(tree$tip.label)+1
@@ -292,17 +292,17 @@ mixed.speciation<-function(tree, f){
     }
 
     # the following is simply a way of tranversing the tree in a particular order
-    if(!d1 %in% done[[1]]) {
+    if(!d1 %in% done) {
       if ((is.tip(d1,tree)) == 1) {
-        done<-rbind(done,data.frame(a=d1))
+        done<-c(done, d1)
       }
       else {
         ancestor=d1
       }
     }
-    else if (!d2 %in% done[[1]]) {
+    else if (!d2 %in% done) {
       if ((is.tip(d2,tree)) == 1) {
-        done<-rbind(done,data.frame(a=d2))
+        done<-c(done, d2)
       }
       else {
         ancestor=d2
@@ -313,7 +313,7 @@ mixed.speciation<-function(tree, f){
         process.complete=1
       }
       else {
-        done<-rbind(done,data.frame(a=ancestor))
+        done<-c(done, ancestor)
         row=which(tree$edge[,2]==ancestor)
         ancestor=tree$edge[,1][row]
       }
