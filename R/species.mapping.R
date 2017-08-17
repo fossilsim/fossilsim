@@ -24,14 +24,14 @@ add.tip.samples<-function(tree, fossils, rho = 1) {
     stop("rho must be a probability between 0 and 1")
   node.ages <- n.ages(tree)
   for (i in tree$edge[, 2]) {
-    row = which(tree$edge[, 2] == i)
-    ancestor = tree$edge[, 1][row]
-    a = which(names(node.ages) == ancestor)
-    lineage.start = node.ages[[a]]
-    b = tree$edge.length[row]
-    lineage.end = lineage.start - b
-    lineage.end = round(lineage.end, 7)
     if(is.tip(i,tree)){
+      row = which(tree$edge[, 2] == i)
+      ancestor = tree$edge[, 1][row]
+      a = which(names(node.ages) == ancestor)
+      lineage.start = node.ages[[a]]
+      b = tree$edge.length[row]
+      lineage.end = lineage.start - b
+      lineage.end = round(lineage.end, 7)
       if (runif(1) < rho)
         fossils <- rbind(fossils, data.frame(h = lineage.end, sp = i))
     }
@@ -187,7 +187,7 @@ attachment.times<-function(tree,fossils,asymmetric.mapping=TRUE){
   } else{
     if(attr(fossils, "speciation") == "asymmetric")
       stop("asymmetric.mapping = FALSE but speciation = \"asymmetric\"")
-    cat("Warning: generating symmetric attachment times - this is experimental!\n")
+    warning("generating symmetric attachment times - this is experimental!\n")
     attach.ident<-symmetric.attachment.identities(tree,fossils)
     ages<-symmetric.ages(tree)
     nages<-n.ages(tree)
@@ -244,7 +244,7 @@ mixed.speciation<-function(tree, f){
   # sp = species; p = ancestor
   p<-data.frame(sp=numeric(),p=numeric(),equivalent.to=numeric(),mode=character())
 
-  done<-data.frame(a=numeric())
+  done = c()
 
   # identify the root
   root=length(tree$tip.label)+1
@@ -257,11 +257,11 @@ mixed.speciation<-function(tree, f){
 
   while(process.complete==0) {
 
-    # fetch the two descendents
+    # fetch the two descendants
     row=which(tree$edge[,1]==ancestor)
-    descendents=tree$edge[,2][row]
-    d1<-descendents[1]
-    d2<-descendents[2]
+    descendants=tree$edge[,2][row]
+    d1<-descendants[1]
+    d2<-descendants[2]
 
     if(runif(1) > f){
       # speciation event is symmetric
@@ -292,17 +292,17 @@ mixed.speciation<-function(tree, f){
     }
 
     # the following is simply a way of tranversing the tree in a particular order
-    if(!d1 %in% done[[1]]) {
+    if(!d1 %in% done) {
       if ((is.tip(d1,tree)) == 1) {
-        done<-rbind(done,data.frame(a=d1))
+        done<-c(done, d1)
       }
       else {
         ancestor=d1
       }
     }
-    else if (!d2 %in% done[[1]]) {
+    else if (!d2 %in% done) {
       if ((is.tip(d2,tree)) == 1) {
-        done<-rbind(done,data.frame(a=d2))
+        done<-c(done, d2)
       }
       else {
         ancestor=d2
@@ -313,7 +313,7 @@ mixed.speciation<-function(tree, f){
         process.complete=1
       }
       else {
-        done<-rbind(done,data.frame(a=ancestor))
+        done<-c(done, ancestor)
         row=which(tree$edge[,2]==ancestor)
         ancestor=tree$edge[,1][row]
       }
@@ -360,7 +360,7 @@ mixed.ages<-function(tree,f,root.edge=T){
     # identify all equivalent asymmetric lineages
     lineages=mixed.ident$sp[which(mixed.ident$equivalent.to==i)]
 
-    # if i is the root and has no asymmetric descendents
+    # if i is the root and has no asymmetric descendants
     if ((length(lineages) < 2 ) && (!is.element(lineages, sym.ages$sp))){
 
       lineage.start=max(sym.ages$start)
@@ -637,12 +637,12 @@ asymmetric.ages<-function(tree,root.edge=TRUE){
 #' @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
 #' @examples
 #' t<-ape::rtree(6)
-#' fetch.descendents(7,t)
-#' fetch.descendents(7,t,return.edge.labels=TRUE)
+#' fetch.descendants(7,t)
+#' fetch.descendants(7,t,return.edge.labels=TRUE)
 #' @return
-#' List of symmetric descendants
+#' Vector of symmetric descendants
 #' @export
-fetch.descendents<-function(edge,tree,return.edge.labels=F){
+fetch.descendants<-function(edge,tree,return.edge.labels=F){
   ancestor<-edge
 
   if(is.tip(edge, tree))
@@ -650,7 +650,7 @@ fetch.descendents<-function(edge,tree,return.edge.labels=F){
 
   # create a vector for nodes, tips & tracking descendent
   tips<-c()
-  done<-data.frame(a=numeric()) # this data frame contains descendents (nodes+tips)
+  done<-data.frame(a=numeric()) # this data frame contains descendants (nodes+tips)
 
   coi=ancestor # clade of interest
   process.complete=0
@@ -664,11 +664,11 @@ fetch.descendents<-function(edge,tree,return.edge.labels=F){
 
     while(process.complete==0) {
 
-      # fetch the two descendents
+      # fetch the two descendants
       row=which(tree$edge[,1]==ancestor)
-      descendents=tree$edge[,2][row]
-      d1<-descendents[1]
-      d2<-descendents[2]
+      descendants=tree$edge[,2][row]
+      d1<-descendants[1]
+      d2<-descendants[2]
 
       if(!d1 %in% done[[1]]) {
         if ((is.tip(d1,tree)) == 1) {
@@ -721,7 +721,7 @@ fetch.descendents<-function(edge,tree,return.edge.labels=F){
 # t<-ape::rtree(6)
 # fetch.asymmetric.descendants(7,t)
 # @return
-# List of asymmetric descendants
+# Vector of asymmetric descendants
 # Function required by attachment.identities
 fetch.asymmetric.descendants<-function(edge,tree){
 
@@ -731,7 +731,7 @@ fetch.asymmetric.descendants<-function(edge,tree){
 
   rows=which(api$parent==edge)
   if(length(rows)==0)
-    return(NA) # no descendents
+    return(NA) # no descendants
   decs=unique(api$equivalent.to[rows])
 
   p<-rbind(p,data.frame(dec=decs,done=0))
@@ -810,7 +810,7 @@ attachment.identities<-function(tree,fossils) {
           }
           else{
 
-            # fetch the root descendents
+            # fetch the root descendants
             root.decs=fetch.asymmetric.descendants(root,tree)
             # if i is not the only other sampled descendant
             if(length(which(root.decs[!root.decs==i] %in% fossils$sp)) > 0){
@@ -913,7 +913,7 @@ symmetric.attachment.identities<-function(tree, fossils){
           next
         }
         # fetch all d2 descendants
-        dd = fetch.descendents(d2, tree, return.edge.labels = T)
+        dd = fetch.descendants(d2, tree, return.edge.labels = T)
         # if any dd species are sampled, node j exists in the tree
         df = which(dd %in% fossils$sp)
         #if(any(dd == fossils$sp)){
@@ -990,11 +990,11 @@ asymmetric.parent.identities<-function(tree){
 
   while(process.complete==0) {
 
-    # fetch the two descendents
+    # fetch the two descendants
     row=which(tree$edge[,1]==ancestor)
-    descendents=tree$edge[,2][row]
-    d1<-descendents[1]
-    d2<-descendents[2]
+    descendants=tree$edge[,2][row]
+    d1<-descendants[1]
+    d2<-descendants[2]
 
     # unless d2 is not in the table (d1 also won't be in the table)
     if(!d2 %in% p[[1]]) {
