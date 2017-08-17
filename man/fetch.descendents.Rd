@@ -14,7 +14,7 @@ fetch.descendents(edge, tree, return.edge.labels = F)
 \item{return.edge.labels}{If TRUE return all descendant edge labels instead of tips.}
 }
 \value{
-List of symmetric descendants
+Vector of symmetric descendants
 }
 \description{
 Fetch descendant lineages in a symmetric tree

@@ -640,7 +640,7 @@ asymmetric.ages<-function(tree,root.edge=TRUE){
 #' fetch.descendents(7,t)
 #' fetch.descendents(7,t,return.edge.labels=TRUE)
 #' @return
-#' List of symmetric descendants
+#' Vector of symmetric descendants
 #' @export
 fetch.descendents<-function(edge,tree,return.edge.labels=F){
   ancestor<-edge
@@ -721,7 +721,7 @@ fetch.descendents<-function(edge,tree,return.edge.labels=F){
 # t<-ape::rtree(6)
 # fetch.asymmetric.descendants(7,t)
 # @return
-# List of asymmetric descendants
+# Vector of asymmetric descendants
 # Function required by attachment.identities
 fetch.asymmetric.descendants<-function(edge,tree){
 
