@@ -646,7 +646,7 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 
   # define y-axis values
   # a - total depth excursion - amplitude
-  # b - number of cycles - period
+  # b - number of cycles
   # 1/c - defines the relative start time of each cycle - phase shift
   # y = a * sin (b * pi * (x-1/c))
   y=depth*sin(cycles*pi*(x-1/4))
