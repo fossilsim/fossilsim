@@ -76,7 +76,7 @@ combined.tree.with.fossils = function(tree, fossils) {
 #' Extinct tips are only sampled if they are fossils. With default settings all extant tips are sampled.
 #'
 #' @param tree Combined tree with fossils.
-#' @param rho Sampling probability of extant tips. Default 1, will be disregarded is sampled_tips is not null.
+#' @param rho Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.
 #' @param sampled_tips List of tip labels corresponding to sampled extant tips.
 #' @return Sampled tree with fossils.
 #' @examples
@@ -150,29 +150,26 @@ prune.fossils = function(tree) {
   tree = ape::drop.tip(tree, remove_tips)
   tree
 }
-<<<<<<< HEAD
-=======
 
 #' Transforms a tree and fossils into a sampled tree in beast-usable format and writes it in Newick format.
 #' Designed to work with FBD.
 #'
-#' @param tree Complete tree
-#' @param fossils fossils dataframe
-#' @param rho Sampling probability of extant tips. Default 1, will be disregarded is sampled_tips is not null.
+#' @param tree Complete tree.
+#' @param fossils fossils dataframe.
+#' @param rho Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.
 #' @param sampled_tips List of tip labels corresponding to sampled extant tips.
 #' @param ... Additional parameters will be passed to ape::write.tree
-#' @return Output of write.tree
+#' @return Output of write.tree.
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(6)
 #' # simulate fossils
 #' f<-sim.fossils.poisson(t, 2)
 #' # output for BEAST
-#' format.for.beast(t,f) # output on the console
-#' format.for.beast(t,f, file="example.tre") # output in file
+#' format.for.beast(t, f) # output on the console
+#' format.for.beast(t, f, file="example.tre") # output in file
 #' @export
 format.for.beast = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
   proc_tree = prune.fossils(sampled.tree.from.combined(combined.tree.with.fossils(tree,fossils), rho = rho, sampled_tips = sampled_tips))
-  write.tree(proc_tree, ...)
+  ape::write.tree(proc_tree, ...)
 }
->>>>>>> f8cd2b8c39d3682c40b40d6701004827588ec4ac
