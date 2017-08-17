@@ -2,8 +2,8 @@
 % Please edit documentation in R/conversions.R
 \name{combined.tree.with.fossils}
 \alias{combined.tree.with.fossils}
-\title{Transforms a tree and fossils dataframe to combined format.
-Sampled ancestors are represented as tips on zero-length edges to keep compatibility with the ape format.}
+\title{Transforms a tree and fossils dataframe to a combined format.
+Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.}
 \usage{
 combined.tree.with.fossils(tree, fossils)
 }
@@ -13,11 +13,11 @@ combined.tree.with.fossils(tree, fossils)
 \item{fossils}{Fossils object.}
 }
 \value{
-A tree integrating the fossils
+A tree integrating the fossils.
 }
 \description{
-Transforms a tree and fossils dataframe to combined format.
-Sampled ancestors are represented as tips on zero-length edges to keep compatibility with the ape format.
+Transforms a tree and fossils dataframe to a combined format.
+Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
 }
 \examples{
 # simulate tree

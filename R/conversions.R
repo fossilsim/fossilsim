@@ -1,9 +1,9 @@
-#' Transforms a tree and fossils dataframe to combined format.
-#' Sampled ancestors are represented as tips on zero-length edges to keep compatibility with the ape format.
+#' Transforms a tree and fossils dataframe to a combined format.
+#' Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
 #'
 #' @param tree Phylo object.
 #' @param fossils Fossils object.
-#' @return A tree integrating the fossils
+#' @return A tree integrating the fossils.
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(6)
@@ -15,21 +15,21 @@
 #' @export
 combined.tree.with.fossils = function(tree, fossils) {
   if(length(fossils[,1])==0) return(tree)
-  
+
   species = asymmetric.species.identities(tree)
   fossils$species = species[fossils$sp]
   fossils = fossils[order(fossils$species, -fossils$h),]
-  
+
   #renaming all species not in fossils
   for(i in 1:length(tree$tip.label)) {
     if(!i %in% fossils$species) {
       tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
     }
   }
-  
-  depths = node.depth.edgelength(tree)
+
+  depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
-  
+
   current_spec = 0
   count_spec = 1
   totalnodes = length(tree$tip.label) + tree$Nnode
@@ -49,26 +49,26 @@ combined.tree.with.fossils = function(tree, fossils) {
     times[totalnodes+1] = fossils$h[i]
     totalnodes=totalnodes+1
     tree$Nnode=tree$Nnode+1
-    
+
     #adding fossil tip
     tree$edge = rbind(tree$edge,c(totalnodes,-i))
     tree$edge.length = c(tree$edge.length,0)
     tree$tip.label = c(tree$tip.label, paste0(tree$tip.label[current_spec], "_", count_spec))
     count_spec = count_spec +1
   }
-  
-  #renumbering all nodes to keep ape format
+
+  #renumbering all nodes to maintain ape format
   for(n in totalnodes:(ntips+1)) {
     tree$edge[which(tree$edge==n)] = n + length(fossils[,1])
   }
   for(i in 1:length(fossils[,1])) {
     tree$edge[which(tree$edge==-i)] = ntips + i
   }
-  
+
   #force reordering for nice plotting
-  attr(tree,"order") =NULL
-  tree = reorder.phylo(tree)
-  
+  attr(tree,"order")=NULL
+  tree = ape::reorder.phylo(tree)
+
   tree
 }
 
@@ -78,7 +78,7 @@ combined.tree.with.fossils = function(tree, fossils) {
 #' @param tree Combined tree with fossils.
 #' @param rho Sampling probability of extant tips. Default 1, will be disregarded is sampled_tips is not null.
 #' @param sampled_tips List of tip labels corresponding to sampled extant tips.
-#' @return Sampled tree with fossils
+#' @return Sampled tree with fossils.
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(6)
@@ -92,10 +92,10 @@ combined.tree.with.fossils = function(tree, fossils) {
 #' @export
 sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
   remove_tips = c()
-  
-  depths = node.depth.edgelength(tree)
+
+  depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
-  
+
   for(i in 1:length(tree$tip.label)) {
     if(times[i] < 1e-5 && #extant tip
        ((!is.null(sampled_tips) && !tree$tip.label[i] %in% sampled_tips) || #tip not sampled from sampled_tips
@@ -109,16 +109,16 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
       }
     }
   }
-  
-  tree = drop.tip(tree, remove_tips)
+
+  tree = ape::drop.tip(tree, remove_tips)
   tree
 }
 
-#' Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage. 
+#' Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
 #' Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labeled as first.
 #'
 #' @param tree Combined tree with fossils.
-#' @return Tree with pruned fossils
+#' @return Tree with pruned fossils.
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(6)
@@ -128,11 +128,14 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' t2 = combined.tree.with.fossils(t,f)
 #' # prune fossils
 #' t4 = prune.fossils(t2)
+#' # or transform to sampled tree first
+#' t3 = sampled.tree.from.combined(t2)
+#' t4 = prune.fossils(t3)
 #' plot(t4)
 #' @export
 prune.fossils = function(tree) {
   remove_tips = c()
-  
+
   split_names = cbind(sub("_[^_]*$","",tree$tip.label),sub("^.+_","",tree$tip.label))
   for(name in unique(split_names[,1])) {
     idx = which(split_names[,1] == name)
@@ -140,10 +143,10 @@ prune.fossils = function(tree) {
     for(id in idx) {
       if(split_names[id,2] == 1) tree$tip.label[id] = paste0(name,"_first") # 1 corresponds to oldest sample in that lineage
       else if(mx >1 && split_names[id,2] == mx) tree$tip.label[id] = paste0(name,"_last") # earliest sample
-      else remove_tips = c(remove_tips, id) # intermediate sample, to remove 
+      else remove_tips = c(remove_tips, id) # intermediate sample, to remove
     }
   }
-  
-  tree = drop.tip(tree, remove_tips)
+
+  tree = ape::drop.tip(tree, remove_tips)
   tree
 }
