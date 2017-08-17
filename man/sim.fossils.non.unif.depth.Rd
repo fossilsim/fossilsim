@@ -31,7 +31,8 @@ sim.fossils.non.unif.depth(tree, profile, PA = 0.5, PD = 0.5, DT = 0.5,
 }
 \value{
 An object of class fossils.
-sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+sp = node labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+The label is for the node just below the sampled fossil.
 }
 \description{
 This function uses a three parameter Guassian model to simulate non-uniform fossil preservation along a specified phylogeny.

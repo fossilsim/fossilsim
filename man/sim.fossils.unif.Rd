@@ -22,7 +22,8 @@ sim.fossils.unif(tree, basin.age, strata, probability, root.edge = T,
 }
 \value{
 An object of class fossils.
-sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
+sp = node labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
+The label is for the node just below the sampled fossil.
 }
 \description{
 Simulate fossils under a uniform model of preservation for a set of equal length intervals

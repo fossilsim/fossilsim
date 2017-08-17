@@ -17,7 +17,8 @@ sim.fossils.non.unif(tree, interval.ages, rates, root.edge = TRUE)
 }
 \value{
 An object of class fossils.
-sp = edge labels. h = fossil ages.
+sp = node labels. h = fossil ages.
+The label is for the node just below the sampled fossil.
 }
 \description{
 Simulate fossils under a non-uniform model of preservation

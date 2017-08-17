@@ -15,7 +15,8 @@ sim.fossils.poisson(tree, rate, root.edge = TRUE)
 }
 \value{
 An object of class fossils.
-sp = edge labels. h = ages.
+sp = node labels. h = ages.
+The label is for the node just below the sampled fossil.
 }
 \description{
 Simulate fossils under a Poisson sampling model

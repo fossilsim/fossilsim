@@ -4,7 +4,8 @@
 #' @param rate Poisson sampling rate.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return An object of class fossils.
-#' sp = edge labels. h = ages.
+#' sp = node labels. h = ages.
+#' The label is for the node just below the sampled fossil.
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(4)
@@ -77,7 +78,8 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE){
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return An object of class fossils.
-#' sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
+#' sp = node labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
+#' The label is for the node just below the sampled fossil.
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(6)
@@ -256,7 +258,8 @@ sim.fossils.unif<-function(tree,basin.age,strata,probability,root.edge=T,convert
 #' @param rates Vector of Poisson sampling rates. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return An object of class fossils.
-#' sp = edge labels. h = fossil ages.
+#' sp = node labels. h = fossil ages.
+#' The label is for the node just below the sampled fossil.
 #' @keywords non-uniform fossil preseravtion
 #' @examples
 #' # simulate tree
@@ -428,7 +431,8 @@ sim.fossils.non.unif<-function(tree, interval.ages, rates, root.edge = TRUE){
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
 #' @return An object of class fossils.
-#' sp = edge labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+#' sp = node labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
+#' The label is for the node just below the sampled fossil.
 #'
 #' @references
 #' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92–109.

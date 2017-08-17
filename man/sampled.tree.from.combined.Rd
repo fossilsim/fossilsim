@@ -10,7 +10,7 @@ sampled.tree.from.combined(tree, rho = 1, sampled_tips = NULL)
 \arguments{
 \item{tree}{Combined tree with fossils.}
 
-\item{rho}{Sampling probability of extant tips. Default 1, will be disregarded is sampled_tips is not null.}
+\item{rho}{Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.}
 
 \item{sampled_tips}{List of tip labels corresponding to sampled extant tips.}
 }
