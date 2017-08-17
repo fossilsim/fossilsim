@@ -24,14 +24,14 @@ add.tip.samples<-function(tree, fossils, rho = 1) {
     stop("rho must be a probability between 0 and 1")
   node.ages <- n.ages(tree)
   for (i in tree$edge[, 2]) {
-    row = which(tree$edge[, 2] == i)
-    ancestor = tree$edge[, 1][row]
-    a = which(names(node.ages) == ancestor)
-    lineage.start = node.ages[[a]]
-    b = tree$edge.length[row]
-    lineage.end = lineage.start - b
-    lineage.end = round(lineage.end, 7)
     if(is.tip(i,tree)){
+      row = which(tree$edge[, 2] == i)
+      ancestor = tree$edge[, 1][row]
+      a = which(names(node.ages) == ancestor)
+      lineage.start = node.ages[[a]]
+      b = tree$edge.length[row]
+      lineage.end = lineage.start - b
+      lineage.end = round(lineage.end, 7)
       if (runif(1) < rho)
         fossils <- rbind(fossils, data.frame(h = lineage.end, sp = i))
     }
