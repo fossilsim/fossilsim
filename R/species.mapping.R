@@ -222,11 +222,11 @@ attachment.times<-function(tree,fossils,asymmetric.mapping=TRUE){
 
 #' Map asymmetric & symmetric lineages
 #'
-#' Asymmetric (or budding) speciation occurs with probability \eqn{f}. Asymmetric speciation gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
-#' Note that if \eqn{f = 1} all speciation events will be asymmetric and if \eqn{f = 0} all speciation events will be symmetric.
+#' Asymmetric (or budding) speciation occurs with probability \eqn{\beta}. Asymmetric speciation gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
+#' Note that if \eqn{\beta = 0} all speciation events will be asymmetric and if \eqn{\beta = 1} all speciation events will be symmetric.
 #'
 #' @param tree Phylo object.
-#' @param f Probability of asymmetric speciation.
+#' @param beta Probability of symmetric speciation.
 #' @examples
 #' t<-ape::rtree(6)
 #' mixed.speciation(t, 0.5)
@@ -234,12 +234,12 @@ attachment.times<-function(tree,fossils,asymmetric.mapping=TRUE){
 #' Dataframe of asymmetric or symmetric edge labels, parent edge labels and the mode of speciation.
 #' "s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
 #' @export
-mixed.speciation<-function(tree, f){
+mixed.speciation<-function(tree, beta){
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
-  if(!(f >= 0 && f <= 1))
-    stop("f must be a probability between 0 and 1")
+  if(!(beta >= 0 && beta <= 1))
+    stop("beta must be a probability between 0 and 1")
 
   # sp = species; p = ancestor
   p<-data.frame(sp=numeric(),p=numeric(),equivalent.to=numeric(),mode=character())
@@ -263,7 +263,7 @@ mixed.speciation<-function(tree, f){
     d1<-descendants[1]
     d2<-descendants[2]
 
-    if(runif(1) > f){
+    if(runif(1) > (1 - beta)){
       # speciation event is symmetric
 
       if(!d2 %in% p[[1]]) {
@@ -328,7 +328,7 @@ mixed.speciation<-function(tree, f){
 #' Function uses mixed.speciation() to assign asymmetric & symmetric lineages.
 #'
 #' @param tree Phylo object.
-#' @param f Probability of asymmetric speciation.
+#' @param beta Probability of symmetric speciation.
 #' @param root.edge If TRUE include root edge.
 #' @return Dataframe with internal asymmetric or symmetric branch ages (min and max). Note that if root edge = T the oldest lineage incorporates the origin.
 #' "s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
@@ -336,15 +336,15 @@ mixed.speciation<-function(tree, f){
 #' t<-ape::rtree(6)
 #' mixed.ages(t, 0.5)
 #' @export
-mixed.ages<-function(tree,f,root.edge=T){
+mixed.ages<-function(tree,beta,root.edge=T){
 
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
-  if(!(f >= 0 && f <= 1))
+  if(!(beta >= 0 && beta <= 1))
     stop("f must be a probability between 0 and 1")
 
   sym.ages<-symmetric.ages(tree, root.edge = root.edge)
-  mixed.ident<-mixed.speciation(tree,f=f)
+  mixed.ident<-mixed.speciation(tree, beta = beta)
   origin=root(tree) # identify the root
 
   ages<-data.frame(sp=numeric(),p=numeric(),start=numeric(),end=numeric(),mode=character())

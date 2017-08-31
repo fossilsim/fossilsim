@@ -4,20 +4,20 @@
 \alias{mixed.speciation}
 \title{Map asymmetric & symmetric lineages}
 \usage{
-mixed.speciation(tree, f)
+mixed.speciation(tree, beta)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{f}{Probability of asymmetric speciation.}
+\item{beta}{Probability of symmetric speciation.}
 }
 \value{
 Dataframe of asymmetric or symmetric edge labels, parent edge labels and the mode of speciation.
 "s" = symmetric speciation, "b" = budding (asymmetric) speciation, "o" = origin.
 }
 \description{
-Asymmetric (or budding) speciation occurs with probability \eqn{f}. Asymmetric speciation gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
-Note that if \eqn{f = 1} all speciation events will be asymmetric and if \eqn{f = 0} all speciation events will be symmetric.
+Asymmetric (or budding) speciation occurs with probability \eqn{\beta}. Asymmetric speciation gives rise to one new (morpho)species, while symmetric speciation gives rise to two new species and results in the extinction of the ancestor.
+Note that if \eqn{\beta = 0} all speciation events will be asymmetric and if \eqn{\beta = 1} all speciation events will be symmetric.
 }
 \examples{
 t<-ape::rtree(6)

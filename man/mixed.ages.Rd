@@ -4,12 +4,12 @@
 \alias{mixed.ages}
 \title{Print out a data.frame with mixed speciation (asymmetric and symmetric) ages}
 \usage{
-mixed.ages(tree, f, root.edge = T)
+mixed.ages(tree, beta, root.edge = T)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{f}{Probability of asymmetric speciation.}
+\item{beta}{Probability of symmetric speciation.}
 
 \item{root.edge}{If TRUE include root edge.}
 }
