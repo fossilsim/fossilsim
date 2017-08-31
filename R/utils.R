@@ -2,7 +2,7 @@
 #' @importFrom TreeSim getx
 n.ages<-function(tree){
 
-  node.ages <- getx(tree, sersampling = 1)[1:tree$Nnode+length(tree$tip)]
+  node.ages <- TreeSim::getx(tree, sersampling = 1)[1:tree$Nnode+length(tree$tip)]
   names(node.ages) <- 1:tree$Nnode+length(tree$tip)
 
   return(node.ages)
