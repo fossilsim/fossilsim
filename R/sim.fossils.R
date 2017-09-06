@@ -21,21 +21,42 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE){
 
   fossils<-data.frame(h=numeric(),sp=numeric())
 
-  for (i in tree$edge[,2]){ # internal nodes + tips
+  root = length(tree$tip.label) + 1
 
-    # work out the max age of the lineage (e.g. when that lineage became extant)
-    # & get ancestor
-    row=which(tree$edge[,2]==i)
-    ancestor=tree$edge[,1][row]
+  if(root.edge && exists("root.edge",tree) ){
 
-    # get the age of the ancestor
-    a=which(names(node.ages)==ancestor)
-    lineage.start=node.ages[[a]]
+    lineages = c(tree$edge[,2], root)
 
-    # work out the min age of the lineage (e.g. when that lineage became extinct)
-    # & get the branch length
-    b=tree$edge.length[row]
-    lineage.end=lineage.start-b # branch length
+  } else lineages = tree$edge[,2]
+
+  for (i in lineages){ # internal nodes + tips
+
+    if(i == root){
+
+      # root age
+      a=which(names(node.ages)==root)
+      lineage.end=node.ages[[a]]
+
+      # origin time
+      b=tree$root.edge
+      lineage.start=lineage.end+b
+
+    } else {
+
+      # work out the max age of the lineage (e.g. when that lineage became extant)
+      # & get ancestor
+      row=which(tree$edge[,2]==i)
+      ancestor=tree$edge[,1][row]
+
+      # get the age of the ancestor
+      a=which(names(node.ages)==ancestor)
+      lineage.start=node.ages[[a]]
+
+      # work out the min age of the lineage (e.g. when that lineage became extinct)
+      # & get the branch length
+      b=tree$edge.length[row]
+      lineage.end=lineage.start-b # branch length
+    }
 
     # sample fossil numbers from the Poisson distribution
     rand=rpois(1,b*rate)
@@ -46,24 +67,6 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE){
     }
   }
 
-  if(root.edge && exists("root.edge",tree) ){
-
-    root=length(tree$tip.label)+1
-    a=which(names(node.ages)==root)
-    lineage.end=node.ages[[a]]
-
-    b=tree$root.edge
-    lineage.start=lineage.end+b
-
-    # sample fossil numbers from the Poisson distribution
-    rand=rpois(1,b*rate)
-
-    if(rand > 0){
-      h=runif(rand,min=lineage.end,max=lineage.start)
-      fossils<-rbind(fossils,data.frame(h=h,sp=root))
-    }
-
-  }
   fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
   return(fossils) # in this data frame h=fossil age and sp=lineage
   # EOF
@@ -115,131 +118,89 @@ sim.fossils.unif<-function(tree,basin.age,strata,probability,root.edge=T,convert
 
   brl = 0 # record total branch length for debugging
 
+  if(root.edge && exists("root.edge",tree) ){
+    lineages = c(tree$edge[,2], root)
+  } else lineages = tree$edge[,2]
+
   for(h in horizons){
 
     h.min<-h-s1
     h.max<-h
 
-    for(i in tree$edge[,2]){ # internal nodes + tips
+    for(i in lineages){ # internal nodes + tips
 
-      # work out the max age of the lineage (e.g. when that lineage became extant)
-      # & get ancestor
-      row=which(tree$edge[,2]==i)
-      ancestor=tree$edge[,1][row]
+      if(i == root){
 
-      # get the age of the ancestor
-      a=which(names(node.ages)==ancestor)
-      lineage.start=node.ages[[a]]
+        lineage.start = max(node.ages)+tree$root.edge
+        lineage.end = max(node.ages)
 
-      # work out the min age of the lineage (e.g. when that lineage became extinct)
-      # & get the branch length
-      b=tree$edge.length[row]
-      lineage.end=lineage.start-b # branch length
+      } else {
+
+        # work out the max age of the lineage (e.g. when that lineage became extant)
+        # & get ancestor
+        row=which(tree$edge[,2]==i)
+        ancestor=tree$edge[,1][row]
+
+        # get the age of the ancestor
+        a=which(names(node.ages)==ancestor)
+        lineage.start=node.ages[[a]]
+
+        # work out the min age of the lineage (e.g. when that lineage became extinct)
+        # & get the branch length
+        b=tree$edge.length[row]
+        lineage.end=lineage.start-b # branch length
+      }
 
       # if the lineage is extant during this horizon
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
 
-        # calculate the proportion of time during each horizon the lineage is extant
-        # lineage speciates and goes extinct in interval h
-        if((lineage.end > h.min) && (lineage.start < h.max)){
-          pr = (lineage.start-lineage.end)/s1
-          f.max = lineage.start
-          f.min = lineage.end
-        }
-        # lineage goes extinct in interval h
-        else if(lineage.end > h.min){
-          pr = (h.max-lineage.end)/s1
-          f.max = h.max
-          f.min = lineage.end
-        }
-        # lineage speciates in interval h
-        else if(lineage.start < h.max){
-          pr = (lineage.start-h.min)/s1
-          f.max = lineage.start
-          f.min = h.min
-        }
-        # lineage is extant the entire duration of interval h
-        else{
-          pr = 1
-          f.max = h.max
-          f.min = h.min
-        }
+          # calculate the proportion of time during each horizon the lineage is extant
+          # lineage speciates and goes extinct in interval h
+          if((lineage.end > h.min) && (lineage.start < h.max)){
+            pr = (lineage.start-lineage.end)/s1
+            f.max = lineage.start
+            f.min = lineage.end
+          }
+          # lineage goes extinct in interval h
+          else if(lineage.end > h.min){
+            pr = (h.max-lineage.end)/s1
+            f.max = h.max
+            f.min = lineage.end
+          }
+          # lineage speciates in interval h
+          else if(lineage.start < h.max){
+            pr = (lineage.start-h.min)/s1
+            f.max = lineage.start
+            f.min = h.min
+          }
+          # lineage is extant the entire duration of interval h
+          else{
+            pr = 1
+            f.max = h.max
+            f.min = h.min
+          }
 
-        brl = brl + (s1*pr)
+          brl = brl + (s1*pr)
 
-        if(convert.rate){
-          # generate k fossils from a poisson distribution
-          k = rpois(1,rate*s1*pr)
-          if(k > 0){
-            for(j in 1:k){
-              age = runif(1,f.min,f.max)
-              fossils<-rbind(fossils,data.frame(h=age,sp=i))
+          if(convert.rate){
+            # generate k fossils from a poisson distribution
+            k = rpois(1,rate*s1*pr)
+            if(k > 0){
+              for(j in 1:k){
+                age = runif(1,f.min,f.max)
+                fossils<-rbind(fossils,data.frame(h=age,sp=i))
+              }
+            }
+          } else {
+            # define the probabilty
+            pr = pr * probability
+            # if random.number < pr { record fossil as collected }
+            if (runif(1) <= pr) {
+              fossils<-rbind(fossils,data.frame(h=h,sp=i))
             }
           }
-        } else {
-          # define the probabilty
-          pr = pr * probability
-          # if random.number < pr { record fossil as collected }
-          if (runif(1) <= pr) {
-            fossils<-rbind(fossils,data.frame(h=h,sp=i))
-          }
-        }
-      }
-    }
-
-    if(root.edge && exists("root.edge",tree) ){
-
-      lineage.start = max(node.ages)+tree$root.edge
-      lineage.end = max(node.ages)
-
-      if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
-
-        # calculate the proportion of time during each horizon the lineage is extant
-        # lineage speciates and goes extinct in interval h
-        if((lineage.end > h.min) && (lineage.start < h.max)){
-          pr = (lineage.start-lineage.end)/s1
-          f.max = lineage.start
-          f.min = lineage.end
-        }
-        # lineage goes extinct in interval h
-        else if(lineage.end > h.min){
-          pr = (h.max-lineage.end)/s1
-          f.max = h.max
-          f.min = lineage.end
-        }
-        # lineage speciates in interval h
-        else if(lineage.start < h.max){
-          pr = (lineage.start-h.min)/s1
-          f.max = lineage.start
-          f.min = h.min
-        }
-        # lineage is extant the entire duration of interval h
-        else{
-          pr = 1
-          f.max = h.max
-          f.min = h.min
         }
 
-        brl = brl + (s1*pr)
-
-        if(convert.rate){
-          # generate k fossils from a poisson distribution
-          k = rpois(1,rate*s1*pr)
-          if(k > 0){
-            for(j in 1:k){
-              age = runif(1,f.min,f.max)
-              fossils<-rbind(fossils,data.frame(h=age,sp=root))
-            }
-          }
-        } else {
-          # define the probabilty
-          pr = pr * probability
-          # if random.number < pr { record fossil as collected }
-          if (runif(1) <= pr) {
-            fossils<-rbind(fossils,data.frame(h=h,sp=root))
-          }
-        }
-      }
     }
   }
 
@@ -286,6 +247,10 @@ sim.fossils.non.unif<-function(tree, interval.ages, rates, root.edge = TRUE){
 
   fossils<-data.frame(h=numeric(),sp=numeric())
 
+  if(root.edge && exists("root.edge",tree) ){
+    lineages = c(tree$edge[,2], root)
+  } else lineages = tree$edge[,2]
+
   brl = 0 # record total branch length for debugging
 
   for(h in 1:length(horizons.min)){
@@ -297,21 +262,29 @@ sim.fossils.non.unif<-function(tree, interval.ages, rates, root.edge = TRUE){
     if(rates[h]==0)
       next
 
-    for(i in tree$edge[,2]){ # internal nodes + tips
+    for(i in lineages){ # internal nodes + tips
 
-      # work out the max age of the lineage (e.g. when that lineage became extant)
-      # & get ancestor
-      row=which(tree$edge[,2]==i)
-      ancestor=tree$edge[,1][row]
+      if(i == root){
 
-      # get the age of the ancestor
-      a=which(names(node.ages)==ancestor)
-      lineage.start=node.ages[[a]]
+        lineage.start = max(node.ages)+tree$root.edge
+        lineage.end = max(node.ages)
 
-      # work out the min age of the lineage (e.g. when that lineage became extinct)
-      # & get the branch length
-      b=tree$edge.length[row]
-      lineage.end=lineage.start-b # branch length
+      } else {
+
+        # work out the max age of the lineage (e.g. when that lineage became extant)
+        # & get ancestor
+        row=which(tree$edge[,2]==i)
+        ancestor=tree$edge[,1][row]
+
+        # get the age of the ancestor
+        a=which(names(node.ages)==ancestor)
+        lineage.start=node.ages[[a]]
+
+        # work out the min age of the lineage (e.g. when that lineage became extinct)
+        # & get the branch length
+        b=tree$edge.length[row]
+        lineage.end=lineage.start-b # branch length
+      }
 
       # if the lineage is extant during this horizon
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
@@ -354,52 +327,6 @@ sim.fossils.non.unif<-function(tree, interval.ages, rates, root.edge = TRUE){
         }
       }
     } # end of lineage
-
-    if(root.edge && exists("root.edge",tree) ){
-
-      lineage.start = max(node.ages)+tree$root.edge
-      lineage.end = max(node.ages)
-
-      if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
-
-        # calculate the proportion of time during each horizon the lineage is extant
-        # lineage speciates and goes extinct in interval h
-        if((lineage.end > h.min) && (lineage.start < h.max)){
-          pr = (lineage.start-lineage.end)/s1
-          f.max = lineage.start
-          f.min = lineage.end
-        }
-        # lineage goes extinct in interval h
-        else if(lineage.end > h.min){
-          pr = (h.max-lineage.end)/s1
-          f.max = h.max
-          f.min = lineage.end
-        }
-        # lineage speciates in interval h
-        else if(lineage.start < h.max){
-          pr = (lineage.start-h.min)/s1
-          f.max = lineage.start
-          f.min = h.min
-        }
-        # lineage is extant the entire duration of interval h
-        else{
-          pr = 1
-          f.max = h.max
-          f.min = h.min
-        }
-
-        brl = brl + (s1*pr)
-
-        # generate k fossils from a poisson distribution
-        k = rpois(1,rates[h]*s1*pr)
-        if(k > 0){
-          for(j in 1:k){
-            age = runif(1,f.min,f.max)
-            fossils<-rbind(fossils,data.frame(h=age,sp=root))
-          }
-        }
-      }
-    } # end of root edge
 
   } # end of horizon
 
@@ -477,6 +404,10 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
 
   fossils<-data.frame(h=numeric(),sp=numeric())
 
+  if(root.edge && exists("root.edge",tree) ){
+    lineages = c(tree$edge[,2], root)
+  } else lineages = tree$edge[,2]
+
   brl = 0 # record total branch length for debugging
 
   depth.counter = 0
@@ -495,21 +426,29 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
       probability = 0.9999
     rate = -log(1-probability)/s1
 
-    for(i in tree$edge[,2]){ # internal nodes + tips
+    for(i in lineages){ # internal nodes + tips
 
-      # work out the max age of the lineage (e.g. when that lineage became extant)
-      # & get ancestor
-      row=which(tree$edge[,2]==i)
-      ancestor=tree$edge[,1][row]
+      if(i == root){
 
-      # get the age of the ancestor
-      a=which(names(node.ages)==ancestor)
-      lineage.start=node.ages[[a]]
+        lineage.start = max(node.ages)+tree$root.edge
+        lineage.end = max(node.ages)
 
-      # work out the min age of the lineage (e.g. when that lineage became extinct)
-      # & get the branch length
-      b=tree$edge.length[row]
-      lineage.end=lineage.start-b # branch length
+      } else {
+
+        # work out the max age of the lineage (e.g. when that lineage became extant)
+        # & get ancestor
+        row=which(tree$edge[,2]==i)
+        ancestor=tree$edge[,1][row]
+
+        # get the age of the ancestor
+        a=which(names(node.ages)==ancestor)
+        lineage.start=node.ages[[a]]
+
+        # work out the min age of the lineage (e.g. when that lineage became extinct)
+        # & get the branch length
+        b=tree$edge.length[row]
+        lineage.end=lineage.start-b # branch length
+      }
 
       # if the lineage is extant during this horizon
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
@@ -557,61 +496,6 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
           # if random.number < pr { record fossil as collected }
           if (runif(1) <= pr) {
             fossils<-rbind(fossils,data.frame(h=h.max,sp=i))
-          }
-        }
-      }
-    }
-
-    if(root.edge && exists("root.edge",tree) ){
-
-      lineage.start = max(node.ages)+tree$root.edge
-      lineage.end = max(node.ages)
-
-      if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
-
-        # calculate the proportion of time during each horizon the lineage is extant
-        # lineage speciates and goes extinct in interval h
-        if((lineage.end > h.min) && (lineage.start < h.max)){
-          pr = (lineage.start-lineage.end)/s1
-          f.max = lineage.start
-          f.min = lineage.end
-        }
-        # lineage goes extinct in interval h
-        else if(lineage.end > h.min){
-          pr = (h.max-lineage.end)/s1
-          f.max = h.max
-          f.min = lineage.end
-        }
-        # lineage speciates in interval h
-        else if(lineage.start < h.max){
-          pr = (lineage.start-h.min)/s1
-          f.max = lineage.start
-          f.min = h.min
-        }
-        # lineage is extant the entire duration of interval h
-        else{
-          pr = 1
-          f.max = h.max
-          f.min = h.min
-        }
-
-        brl = brl + (s1*pr)
-
-        if(convert.rate){
-          # generate k fossils from a poisson distribution
-          k = rpois(1,rate*s1*pr)
-          if(k > 0){
-            for(j in 1:k){
-              age = runif(1,f.min,f.max)
-              fossils<-rbind(fossils,data.frame(h=age,sp=root))
-            }
-          }
-        } else {
-          # define the probabilty
-          pr = pr * probability
-          # if random.number < pr { record fossil as collected }
-          if (runif(1) <= pr) {
-            fossils<-rbind(fossils,data.frame(h=h,sp=root))
           }
         }
       }
