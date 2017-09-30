@@ -33,4 +33,3 @@ f<-sim.fossils.poisson(t, 0.5, root.edge = FALSE)
 f<-add.extant.occ(t, f, rho = 0.5)
 plot(f, t)
 }
-

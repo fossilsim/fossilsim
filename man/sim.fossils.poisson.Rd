@@ -31,4 +31,3 @@ plot(f, t)
 }
 \keyword{preseravtion}
 \keyword{uniform}
-

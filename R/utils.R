@@ -70,3 +70,22 @@ descendants<-function(edge,tree){
   return(decs)
   #eof
 }
+
+# map a vector of node numbers from one topology to another
+map_nodes<-function(x,t.old,t.new)
+{
+  ret = x
+  for(i in 1:length(ret))
+  {
+    if(x[i] > length(t.old$tip.label))
+    {
+      st = ape::extract.clade(t.old,x[i])$tip.label
+      ret[i] = phytools::findMRCA(t.new,st)
+    }
+    else
+    {
+      ret[i] = which(t.new$tip.label==t.old$tip.label[x[i]])
+    }
+  }
+  ret
+}

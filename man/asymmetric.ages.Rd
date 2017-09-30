@@ -21,4 +21,3 @@ Create a data.frame with asymmetric species durations
 t<-ape::rtree(6)
 asymmetric.ages(t)
 }
-
