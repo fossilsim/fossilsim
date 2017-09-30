@@ -1,9 +1,8 @@
 # Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
-#' @importFrom TreeSim getx
 n.ages<-function(tree){
 
-  node.ages <- TreeSim::getx(tree, sersampling = 1)[1:tree$Nnode+length(tree$tip)]
-  names(node.ages) <- 1:tree$Nnode+length(tree$tip)
+  node.ages <- TreeSim::getx(tree, sersampling = 1)[1:(tree$Nnode+length(tree$tip))]
+  names(node.ages) <- 1:(tree$Nnode+length(tree$tip))
 
   return(node.ages)
 }
