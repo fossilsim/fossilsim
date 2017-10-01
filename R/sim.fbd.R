@@ -67,7 +67,7 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate)
 			      	lineage.end=lineage.start-b # branch length
 
 			      	# sample fossil numbers from the Poisson distribution
-			      	rate = psi[factor(names(map[kk]))]
+			      	rate = psi[ which(LETTERS[1:k] == names(map)[kk]) ]
 				    rand=rpois(1,b*rate)
 
 				    if(rand > 0){
