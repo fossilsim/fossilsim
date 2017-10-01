@@ -8,8 +8,8 @@
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(6)
-#' # simulate fossils
 #' f<-sim.fossils.poisson(t, 2)
+#' # simulate fossils
 #' # add tip samples
 #' f<-add.tip.samples(t, f, rho = 0.5)
 #' plot(f, t)
@@ -22,6 +22,10 @@ add.tip.samples<-function(tree, fossils, rho = 1) {
     stop("fossils must be an object of class \"fossils\"")
   if(!(rho >= 0 && rho <= 1))
     stop("rho must be a probability between 0 and 1")
+
+  # store speciation mode
+  speciation = attr(fossils, "speciation")
+
   node.ages <- n.ages(tree)
   for (i in tree$edge[, 2]) {
     if(is.tip(i,tree)){
@@ -36,6 +40,8 @@ add.tip.samples<-function(tree, fossils, rho = 1) {
         fossils <- rbind(fossils, data.frame(h = lineage.end, sp = i))
     }
   }
+  if(!is.fossils(fossils))
+    fossils = as.fossils(fossils, speciation.mode = speciation)
   return(fossils)
 }
 
