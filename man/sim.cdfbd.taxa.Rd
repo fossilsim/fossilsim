@@ -4,7 +4,7 @@
 \alias{sim.cdfbd.taxa}
 \title{sim.cdfbd.taxa: Simulating Fossilized Birth Death Trees With Discrete Lineage-Specific Rate Regimes}
 \usage{
-sim.cdfbd.taxa(n, numbsim, lambda, mu, psi, rate)
+sim.cdfbd.taxa(n, numbsim, lambda, mu, psi, rate, pi)
 }
 \arguments{
 \item{n}{Number of extant sampled tips.}
@@ -18,6 +18,8 @@ sim.cdfbd.taxa(n, numbsim, lambda, mu, psi, rate)
 \item{psi}{Vector of lineage-specific fossil sampling rates.}
 
 \item{rate}{Rate of switching between rate regimes.}
+
+\item{pi}{Root state frequencies.}
 }
 \value{
 List of numbsim simulated trees with n extant sampled tips.

@@ -6,6 +6,7 @@
 #' @param mu Vector of lineage-specific extinction rates.
 #' @param psi Vector of lineage-specific fossil sampling rates.
 #' @param rate Rate of switching between rate regimes.
+#' @param pi Root state frequencies.
 #' @return List of numbsim simulated trees with n extant sampled tips.
 #' @examples
 #' n<-10
@@ -13,7 +14,7 @@
 #' sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
 #' @keywords fossilized birth death
 #' @export
-sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate)
+sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 {
 	k = length(psi)
 
@@ -24,9 +25,9 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate)
 
 		q = matrix(rep(rate,k*k),k,k,dimnames=list(LETTERS[1:k],LETTERS[1:k]))
 		diag(q) <- rep(-rate,k)
-		x = ape::rTraitDisc(t,"ER",k=k,rate=rate,root.value=sample(k)[1])
+		x = ape::rTraitDisc(t,"ER",k=k,rate=rate,root.value=sample.int(k,size=1,prob=pi))
 		m = phytools::make.simmap(t,x,Q=q,message=FALSE)
-
+		return(m)
 		#simulate fossils
 		f<-data.frame(h=numeric(),sp=numeric())
 
@@ -88,7 +89,7 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate)
 		fl <- character(num_fossils)
 
 		tree = t
-		origin = max(n.ages(tree)) + tree$root.edge
+		#origin = max(n.ages(tree)) + tree$root.edge
 		if(num_fossils > 0)
 		{
 			for(j in 1:num_fossils)
@@ -112,7 +113,7 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate)
 		unsampled.tips = fossil.tips[!grepl("fossil",fossil.tips)]
 
 		trees[[i]] = ape::drop.tip(tree, unsampled.tips)
-		trees[[i]]$root.edge = origin - max(n.ages(trees[[i]]))
+		#trees[[i]]$root.edge = origin - max(n.ages(trees[[i]]))
 	}
 
 	trees
