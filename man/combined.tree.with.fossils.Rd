@@ -28,3 +28,4 @@ f<-sim.fossils.poisson(t, 2)
 t2 = combined.tree.with.fossils(t,f)
 plot(t2)
 }
+

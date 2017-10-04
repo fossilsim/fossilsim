@@ -21,3 +21,4 @@ Create a data.frame with symmetric species durations (not node ages)
 t<-ape::rtree(6)
 symmetric.ages(t)
 }
+

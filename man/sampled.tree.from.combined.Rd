@@ -32,3 +32,4 @@ t2 = combined.tree.with.fossils(t,f)
 t3 = sampled.tree.from.combined(t2)
 plot(t3)
 }
+

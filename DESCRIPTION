@@ -2,13 +2,12 @@ Package: FossilSim
 Type: Package
 Title: Simulating Fossils
 Version: 0.1
-Authors@R: person("Rachel", "Warnock", email="rachel.warnock@ethz.bsse.ch", role=c("aut","cre"))
+Authors@R: c(person("Rachel", "Warnock", email="rachel.warnock@ethz.bsse.ch", role=c("aut","cre","cph")), person("Jo\"elle", "Barido-Sottani",role=c("aut","cph")), person("Walker", "Pett",role=c("aut","cph")))
 Description: Simulating fossil data on phylogenetic trees under mechanistic
     models of preservation and sampling.
 License: What license is it under?
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
 Imports:
     ape,
-    TreeSim,
-    phytools
+    TreeSim

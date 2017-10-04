@@ -23,3 +23,4 @@ Note that if \eqn{\beta = 0} all speciation events will be asymmetric and if \eq
 t<-ape::rtree(6)
 mixed.speciation(t, 0.5)
 }
+

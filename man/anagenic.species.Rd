@@ -28,3 +28,4 @@ sp1<-mixed.ages(t, 0.5)
 # simulate anagenic species
 sp2<-anagenic.species(sp1, 0.1)
 }
+

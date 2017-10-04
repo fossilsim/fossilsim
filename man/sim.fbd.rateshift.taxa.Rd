@@ -37,3 +37,4 @@ sim.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0,0.3))
 \keyword{birth}
 \keyword{death}
 \keyword{fossilized}
+

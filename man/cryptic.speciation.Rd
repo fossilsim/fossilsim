@@ -28,3 +28,4 @@ sp2<-anagenic.species(sp1, 0.1, parent.labels = T)
 assign cryptic speciation events
 sp3<-cryptic.speciation(sp2, 0.5)
 }
+

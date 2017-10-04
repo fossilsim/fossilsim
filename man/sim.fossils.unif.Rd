@@ -42,3 +42,4 @@ plot(f, t, binned = TRUE, strata = strata)
 \keyword{fossil}
 \keyword{preseravtion}
 \keyword{uniform}
+

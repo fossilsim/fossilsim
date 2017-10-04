@@ -34,3 +34,4 @@ f<-sim.fossils.poisson(t, 2)
 format.for.beast(t, f) # output on the console
 format.for.beast(t, f, file="example.tre") # output in file
 }
+

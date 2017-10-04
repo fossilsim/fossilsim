@@ -81,3 +81,4 @@ plot(f, t, show.strata = TRUE, interval.ages = times)
 plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = rates)
 
 }
+

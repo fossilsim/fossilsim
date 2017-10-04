@@ -23,9 +23,10 @@ Add extant and extinct tip samples
 \examples{
 # simulate tree
 t<-ape::rtree(6)
-# simulate fossils
 f<-sim.fossils.poisson(t, 2)
+# simulate fossils
 # add tip samples
 f<-add.tip.samples(t, f, rho = 0.5)
 plot(f, t)
 }
+

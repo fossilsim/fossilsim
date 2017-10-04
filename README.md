@@ -7,3 +7,5 @@ The latest version can be installed in R using the package devtools:
     library(devtools)
     install_github("rachelwarnock/fossilsim")
 
+### Contributors
+Rachel Warnock, Joëlle Barido-Sottani, Walker Pett
