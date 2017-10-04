@@ -27,4 +27,3 @@ f<-add.extant.occ(t, f, rho = 0.5)
 # asymmetric mapping
 f<-asymmetric.fossil.mapping(t, f)
 }
-
