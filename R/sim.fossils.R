@@ -13,7 +13,7 @@
 #' rate = 2
 #' f<-sim.fossils.poisson(t, rate)
 #' plot(f, t)
-#' @keywords uniform preseravtion
+#' @keywords uniform preservation
 #' @export
 sim.fossils.poisson<-function(tree,rate,root.edge=TRUE){
 

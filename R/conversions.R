@@ -1,5 +1,6 @@
 #' Transforms a tree and fossils dataframe to a combined format.
 #' Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
+#' IMPORTANT NOTE: at the moment will only work with sp = node right below fossil !!
 #'
 #' @param tree Phylo object.
 #' @param fossils Fossils object.
@@ -19,7 +20,7 @@ combined.tree.with.fossils = function(tree, fossils) {
   species = asymmetric.species.identities(tree)
   fossils$species = species[fossils$sp]
   fossils = fossils[order(fossils$species, -fossils$h),]
-
+  
   #renaming all species not in fossils
   for(i in 1:length(tree$tip.label)) {
     if(!i %in% fossils$species) {
@@ -56,6 +57,7 @@ combined.tree.with.fossils = function(tree, fossils) {
     tree$tip.label = c(tree$tip.label, paste0(tree$tip.label[current_spec], "_", count_spec))
     count_spec = count_spec +1
   }
+  tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
 
   #renumbering all nodes to maintain ape format
   for(n in totalnodes:(ntips+1)) {
@@ -172,4 +174,43 @@ prune.fossils = function(tree) {
 format.for.beast = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
   proc_tree = prune.fossils(sampled.tree.from.combined(combined.tree.with.fossils(tree,fossils), rho = rho, sampled_tips = sampled_tips))
   ape::write.tree(proc_tree, ...)
+}
+
+#' Transforms a fossilRecordSimulation object from package paleotree to a tree and fossils dataframe.
+#' IMPORTANT NOTE: at the moment outputs sp = node right below fossil !! (regardless of how speciation happened)
+#'
+#' @param record fossilRecordSimulation object.
+#' @return A list containing the converted tree and fossils
+#' @examples
+#' # simulate record
+#' record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40), nExtant=0, nSamp = c(5,25))
+#' # transform format
+#' l_tf = paleotreeRecordToFossils(record)
+#' l_tf$tree
+#' l_tf$fossils
+#' @export
+paleotreeRecordToFossils = function(record) {
+  tree = paleotree::taxa2phylo(paleotree::fossilRecord2fossilTaxa(record))
+  fossils = data.frame(h=numeric(),sp=numeric())
+  ages = n.ages(tree)
+  
+  #calculate age of record - paleotree allows for fully extinct trees so the youngest sample may not be at 0
+  youngest = tree$tip.label[which(ages < 1e-5)]
+  offset = record[[youngest]]$taxa.data['ext.time']
+  
+  for(i in 1:length(record)) {
+    if(length(record[[i]]$sampling.times) == 0) next
+  
+    node_idx = which(tree$tip.label == names(record)[i])
+    age = offset + ages[node_idx] + tree$edge.length[which(tree$edge[,2] == node_idx)] #age of the parent
+
+    for(t in sort(record[[i]]$sampling.times)) {
+      while(t > age) {
+        node_idx = tree$edge[which(tree$edge[,2] == node_idx),1]
+        age = age + tree$edge.length[which(tree$edge[,2] == node_idx)]
+      }
+      fossils = rbind(fossils, data.frame(sp = node_idx, h = t - offset))
+    }
+  }
+  return(list(tree = tree, fossils = fossils))
 }
