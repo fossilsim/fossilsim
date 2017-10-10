@@ -1,6 +1,5 @@
 #' Transforms a tree and fossils dataframe to a combined format.
 #' Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
-#' IMPORTANT NOTE: at the moment will only work with sp = node right below fossil !!
 #'
 #' @param tree Phylo object.
 #' @param fossils Fossils object.
@@ -16,9 +15,7 @@
 #' @export
 combined.tree.with.fossils = function(tree, fossils) {
   if(length(fossils[,1])==0) return(tree)
-
-  species = asymmetric.species.identities(tree)
-  fossils$species = species[fossils$sp]
+  
   fossils = fossils[order(fossils$species, -fossils$h),]
   
   #renaming all species not in fossils
@@ -27,10 +24,10 @@ combined.tree.with.fossils = function(tree, fossils) {
       tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
     }
   }
-
+  
   depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
-
+  
   current_spec = 0
   count_spec = 1
   totalnodes = length(tree$tip.label) + tree$Nnode
@@ -42,7 +39,7 @@ combined.tree.with.fossils = function(tree, fossils) {
       count_spec = 1
     }
     #adding new speciation node
-    edge = which(tree$edge[,2] == fossils$sp[i])
+    edge = which(tree$edge[,2] == fossils$node[i])
     tree$edge.length[edge] = times[tree$edge[edge,1]]-fossils$h[i]
     tree$edge = rbind(tree$edge,c(totalnodes+1,tree$edge[edge,2]))
     tree$edge.length = c(tree$edge.length,fossils$h[i]-times[tree$edge[edge,2]])
@@ -50,7 +47,7 @@ combined.tree.with.fossils = function(tree, fossils) {
     times[totalnodes+1] = fossils$h[i]
     totalnodes=totalnodes+1
     tree$Nnode=tree$Nnode+1
-
+    
     #adding fossil tip
     tree$edge = rbind(tree$edge,c(totalnodes,-i))
     tree$edge.length = c(tree$edge.length,0)
@@ -58,7 +55,7 @@ combined.tree.with.fossils = function(tree, fossils) {
     count_spec = count_spec +1
   }
   tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
-
+  
   #renumbering all nodes to maintain ape format
   for(n in totalnodes:(ntips+1)) {
     tree$edge[which(tree$edge==n)] = n + length(fossils[,1])
@@ -66,11 +63,11 @@ combined.tree.with.fossils = function(tree, fossils) {
   for(i in 1:length(fossils[,1])) {
     tree$edge[which(tree$edge==-i)] = ntips + i
   }
-
+  
   #force reordering for nice plotting
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
-
+  
   tree
 }
 
@@ -94,10 +91,10 @@ combined.tree.with.fossils = function(tree, fossils) {
 #' @export
 sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
   remove_tips = c()
-
+  
   depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
-
+  
   for(i in 1:length(tree$tip.label)) {
     if(times[i] < 1e-5 && #extant tip
        ((!is.null(sampled_tips) && !tree$tip.label[i] %in% sampled_tips) || #tip not sampled from sampled_tips
@@ -111,7 +108,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
       }
     }
   }
-
+  
   tree = ape::drop.tip(tree, remove_tips)
   tree
 }
@@ -137,7 +134,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' @export
 prune.fossils = function(tree) {
   remove_tips = c()
-
+  
   split_names = cbind(sub("_[^_]*$","",tree$tip.label),sub("^.+_","",tree$tip.label))
   for(name in unique(split_names[,1])) {
     idx = which(split_names[,1] == name)
@@ -148,7 +145,7 @@ prune.fossils = function(tree) {
       else remove_tips = c(remove_tips, id) # intermediate sample, to remove
     }
   }
-
+  
   tree = ape::drop.tip(tree, remove_tips)
   tree
 }
@@ -177,7 +174,6 @@ format.for.beast = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 }
 
 #' Transforms a fossilRecordSimulation object from package paleotree to a tree and fossils dataframe.
-#' IMPORTANT NOTE: at the moment outputs sp = node right below fossil !! (regardless of how speciation happened)
 #'
 #' @param record fossilRecordSimulation object.
 #' @return A list containing the converted tree and fossils
@@ -191,7 +187,7 @@ format.for.beast = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' @export
 paleotreeRecordToFossils = function(record) {
   tree = paleotree::taxa2phylo(paleotree::fossilRecord2fossilTaxa(record))
-  fossils = data.frame(h=numeric(),sp=numeric())
+  fossils = data.frame(h=numeric(),species=numeric(),node=numeric(),origin=numeric())
   ages = n.ages(tree)
   
   #calculate age of record - paleotree allows for fully extinct trees so the youngest sample may not be at 0
@@ -200,17 +196,29 @@ paleotreeRecordToFossils = function(record) {
   
   for(i in 1:length(record)) {
     if(length(record[[i]]$sampling.times) == 0) next
-  
-    node_idx = which(tree$tip.label == names(record)[i])
+    
+    tip_idx = which(tree$tip.label == names(record)[i])
+    node_idx = tip_idx
+    sampled_nodes = c()
     age = offset + ages[node_idx] + tree$edge.length[which(tree$edge[,2] == node_idx)] #age of the parent
-
+    
     for(t in sort(record[[i]]$sampling.times)) {
       while(t > age) {
         node_idx = tree$edge[which(tree$edge[,2] == node_idx),1]
         age = age + tree$edge.length[which(tree$edge[,2] == node_idx)]
       }
-      fossils = rbind(fossils, data.frame(sp = node_idx, h = t - offset))
+      sampled_nodes = c(sampled_nodes, node_idx)
     }
+    if(is.na(record[[i]]$taxa.data[["ancestor.id"]])) anc_node = NA
+    else {
+      while(record[[i]]$taxa.data[["orig.time"]] > age) {
+        node_idx = tree$edge[which(tree$edge[,2] == node_idx),1]
+        age = age + tree$edge.length[which(tree$edge[,2] == node_idx)]
+      }
+      anc_node = tree$edge[which(tree$edge[,2] == node_idx),1]
+    }
+    fossils = rbind(fossils, data.frame(h = sort(record[[i]]$sampling.times) - offset, species = tip_idx, node = sampled_nodes, origin = anc_node))
   }
+  row.names(fossils)=NULL
   return(list(tree = tree, fossils = fossils))
 }
