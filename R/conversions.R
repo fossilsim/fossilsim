@@ -222,3 +222,106 @@ paleotreeRecordToFossils = function(record) {
   row.names(fossils)=NULL
   return(list(tree = tree, fossils = fossils))
 }
+
+#' Transforms a tree, fossils dataframe and taxonomy (optional) into a fossilRecordSimulation object from package paleotree.
+#'
+#' @param tree phylo object containing the tree
+#' @param fossils fossils object
+#' @param taxonomy optional taxonomy object. If NULL, all speciation is assumed symmetric
+#' @param merge.cryptic whether cryptic species should be kept separate or merged, default FALSE
+#' @return The converted paleotree record
+#' @export
+# NB: not tested -> TODO test if paleotree requires sorting of some sort
+# NB: assumes taxonomy sorted from oldest to youngest on same branch
+# NB: assumes taxonomy end and start are branch-dependent, some code can be removed if not
+# NB: TODO assumes same species if speciation mode not 's', probably not correct
+# NB: TODO check ids in cryptic species
+# NB: TODO assumes species ancestor is always species just above (except cryptic), check ?
+fossilsToPaleotreeRecord = function(tree, fossils, taxonomy = NULL, merge.cryptic = F) {
+  node.ages = ape::node.depth.edgelength(tree)
+  node.ages = max(node.ages) - node.ages
+  rec_names = c("taxon.id","ancestor.id","orig.time","ext.time", "still.alive","looks.like")
+  
+  .convert_one_species = function(current_node, ancestor, record) {
+    # handling first species on branch
+    if(is.null(taxonomy) || taxonomy$mode[which(taxonomy$edge == current_node)[1]] == 's') { #new species
+      if(!is.null(taxonomy)) {
+        id = which(taxonomy$edge == current_node)[1]
+        current_species = taxonomy$sp[id]
+        record[[current_species]] = list(taxa.data = c(length(record) +1, ancestor, taxonomy$start[id], taxonomy$end[id], (taxonomy$end[anaid] < 1e-3), length(record) +1), sampling.times = c())
+        names(record[[current_species]]$taxa.data) = rec_names
+        
+        f = which(fossils$sp == taxonomy$sp[id])
+      }
+      else {
+        current_species = paste0("t",current_node)
+        above_node = tree$edge[which(tree$edge[,2] == current_node),1]
+        record[[current_species]] = list(taxa.data = c(length(record) +1, ancestor, node.ages[above_node], node.ages[current_node], (node.ages[current_node] < 1e-3), length(record) +1), sampling.times = c())
+        names(record[[current_species]]$taxa.data) = rec_names
+        
+        f = which(fossils$node == current_node) #no taxonomy, all fossils on this branch belong to one species
+      }
+      
+      # add all fossils
+      for(fid in f) {
+        record[[current_species]]$sampling.times = c(record[[current_species]]$sampling.times, (fossils$min[fid]+fossils$max[fid])/2)
+      }
+    }
+    
+    else { #same species
+      id = which(taxonomy$edge == current_node)[1]
+      current_species = names(record)[ancestor]
+      record[[current_species]]$taxa.data[["ext.time"]] = taxonomy$end[id]
+      # fossils already handled when species was started
+    }
+    
+    # handling following species
+    if(!is.null(taxonomy) && length(which(taxonomy$edge == current)) > 1) { #anagenic/cryptic species
+      ancestor = which(names(record) == current_species)
+      for(anaid in which(taxonomy$edge == current)[-1]) {
+        
+        if(taxonomy$cryptic[anaid] && merge.cryptic) { #in this case we attribute it to previous species
+          record[[current_species]]$taxa.data[["ext.time"]] = taxonomy$end[anaid]
+          
+          #if fossils also merged, then already handled with the previous species
+          if(!attr(fossils, "cryptic.merged")) {
+            f = which(fossils$sp == taxonomy$sp[anaid])
+            for(fid in f) {
+              record[[current_species]]$sampling.times = c(record[[current_species]]$sampling.times, (fossils$min[fid]+fossils$max[fid])/2)
+            }
+          }
+        }
+        else {
+          if(taxonomy$cryptic[anaid]) { # cryptic species, not merged TODO check proper ids here 
+            current_species = taxonomy$cryptic.id[anaid]
+            looks.like = which(names(record) == taxonomy$sp[id])
+          }
+          else {
+            current_species = taxonomy$sp[anaid]
+            looks.like = length(record) +1
+          }
+          
+          record[[current_species]] = list(taxa.data = c(length(record) +1, ancestor, taxonomy$start[anaid], taxonomy$end[anaid], (taxonomy$end[anaid] < 1e-3), looks.like), sampling.times = c())
+          names(record[[current_species]]$taxa.data) = rec_names
+          
+          f = which(fossils$sp == current_species)
+          for(fid in f) {
+            record[[current_species]]$sampling.times = c(record[[current_species]]$sampling.times, (fossils$min[fid]+fossils$max[fid])/2)
+          }
+        }
+      }
+    }
+    
+    desc = tree$edge[which(tree$edge[,1] == current_node),2]
+    for(d in desc) {
+      record = .convert_one_species(d, which(names(record) == current_species), record)
+    }
+    record
+  }
+  
+  current_node = length(tree$tip.label) + 1
+  record = .convert_one_species(current_node, NA, list())
+  
+  class(record) = "fossilRecordSimulation"
+  record
+}
