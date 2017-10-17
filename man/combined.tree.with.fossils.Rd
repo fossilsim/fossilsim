@@ -3,7 +3,8 @@
 \name{combined.tree.with.fossils}
 \alias{combined.tree.with.fossils}
 \title{Transforms a tree and fossils dataframe to a combined format.
-Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.}
+Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
+IMPORTANT NOTE: at the moment will only work with sp = node right below fossil !!}
 \usage{
 combined.tree.with.fossils(tree, fossils)
 }
@@ -18,6 +19,7 @@ A tree integrating the fossils.
 \description{
 Transforms a tree and fossils dataframe to a combined format.
 Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
+IMPORTANT NOTE: at the moment will only work with sp = node right below fossil !!
 }
 \examples{
 # simulate tree

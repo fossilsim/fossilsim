@@ -10,7 +10,7 @@
   show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
   preferred.environ = NULL, root.edge = TRUE, hide.edge = FALSE,
   edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
-  fcex = 1.2, fcol = "darkorange", ...)
+  fcex = 1.2, fcol = "darkorange", ecol = NULL, ...)
 }
 \arguments{
 \item{fossils}{Dataframe of sampled fossils (sp = edge labels, h = ages).}
@@ -48,6 +48,8 @@
 \item{hide.edge}{If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).}
 
 \item{fcol}{Color of fossil occurrences or ranges.}
+
+\item{ecol}{Color of extant samples. Right now this only works if binned = F.}
 }
 \description{
 This function is adapted from the \emph{ape} function \code{plot.phylo} used to phylogenetic trees.
