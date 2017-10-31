@@ -35,4 +35,3 @@ f<-asymmetric.fossil.mapping(t, f)
 # calculate attachment times
 attachment.times(t, f)
 }
-

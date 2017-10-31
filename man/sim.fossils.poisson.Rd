@@ -29,6 +29,5 @@ rate = 2
 f<-sim.fossils.poisson(t, rate)
 plot(f, t)
 }
-\keyword{preseravtion}
+\keyword{preservation}
 \keyword{uniform}
-
