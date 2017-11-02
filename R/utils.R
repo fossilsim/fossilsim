@@ -90,12 +90,20 @@ map_nodes<-function(x,t.old,t.new)
   ret
 }
 
-#find which species is on branch at time according to taxonomy
-find_species_in_taxonomy = function(taxonomy, branch, time) {
-  possible = which(taxonomy$b == branch)
-  if(length(possible) == 1) return(taxonomy$species[possible])
-  
+# find which species is on branch at time according to taxonomy
+find.species.in.taxonomy = function(taxonomy, branch, time = NULL) {
+  possible = which(taxonomy$edge == branch)
+  if(length(possible) == 1) return(taxonomy$sp[possible])
+  if(is.null(time)) stop("Multiple species found on branch, please specify a time")
+    
   for(x in possible) {
-    if(taxonomy$start.time[x] > time && taxonomy$end.time[x] < time) return(taxonomy$species[x])
+    if(taxonomy$start[x] > time && taxonomy$end[x] < time) return(taxonomy$species[x])
   }
+  stop("No species found, check that branch and time are compatible")
+}
+
+# get species record from taxonomy, i.e discard edge attributes
+species.record.from.taxonomy = function(taxonomy) {
+  taxonomy$edge = NULL
+  unique(taxonomy)
 }
