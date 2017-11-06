@@ -196,7 +196,7 @@ paleotree.record.to.fossils = function(record) {
   tree = paleotree::taxa2phylo(paleotree::fossilRecord2fossilTaxa(record))
   # recording node labels to keep track after changing the phylogeny
   tree$node.label = (length(tree$tip.label)+1):(length(tree$tip.label)+tree$Nnode)
-  fossils = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),node=numeric(),origin=numeric(),mode = character(), stringsAsFactors = F)
+  fossils = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),node=numeric(),origin=numeric(), stringsAsFactors = F)
   taxonomy = data.frame(edge=numeric(),sp=numeric(),start=numeric(),end=numeric(),mode = character(), 
                         cryptic = numeric(), cryptic.id = numeric(), parent = numeric(),stringsAsFactors = F)
   ages = n.ages(tree)
@@ -274,7 +274,7 @@ paleotree.record.to.fossils = function(record) {
                                           parent = names(record)[record[[i]]$taxa.data[['ancestor.id']]], stringsAsFactors = F))
     if(length(record[[i]]$sampling.times)>0)
       fossils = rbind(fossils, data.frame(hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times), 
-                                          sp = names(record)[i], node = sampled_nodes, origin = anc_node, mode = mode, stringsAsFactors = F))
+                                          sp = names(record)[i], node = sampled_nodes, origin = anc_node, stringsAsFactors = F))
   }
   
   row.names(taxonomy) = NULL
