@@ -24,4 +24,3 @@ t<-ape::rtree(6)
 fetch.descendants(7,t)
 fetch.descendants(7,t,return.edge.labels=TRUE)
 }
-

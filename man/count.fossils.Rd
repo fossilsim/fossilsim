@@ -15,4 +15,3 @@ Number of extinct samples.
 \description{
 Count the total number of fossils
 }
-
