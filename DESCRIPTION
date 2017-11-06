@@ -10,4 +10,5 @@ LazyData: TRUE
 RoxygenNote: 5.0.1
 Imports:
     ape,
-    TreeSim
+    TreeSim,
+    phytools

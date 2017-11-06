@@ -25,7 +25,7 @@ t<-ape::rtree(6)
 sp1<-mixed.ages(t, 0.5)
 # simulate anagenic species
 sp2<-anagenic.species(sp1, 0.1, parent.labels = T)
-assign cryptic speciation events
+# assign cryptic speciation events
 sp3<-cryptic.speciation(sp2, 0.5)
 }
 

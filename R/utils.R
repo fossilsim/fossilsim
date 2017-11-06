@@ -41,7 +41,7 @@ is.tip<-function(taxa,phylo){
 # Identify the root
 root<-function(tree){
 
-  root=length(tree$tip.label)+1
+  root = length(tree$tip.label) + 1
 
   return(root)
   #eof
@@ -94,7 +94,7 @@ map_nodes<-function(x,t.old,t.new)
 find_species_in_taxonomy = function(taxonomy, branch, time) {
   possible = which(taxonomy$b == branch)
   if(length(possible) == 1) return(taxonomy$species[possible])
-  
+
   for(x in possible) {
     if(taxonomy$start.time[x] > time && taxonomy$end.time[x] < time) return(taxonomy$species[x])
   }
