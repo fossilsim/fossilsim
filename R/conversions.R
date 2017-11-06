@@ -191,7 +191,7 @@ format.for.beast = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' @export
 # NB: taxonomy times not branch specific
 # NB: modes not branch specific
-# NB: not tested with cryptic speciation
+# NB: cryptic speciation: parent id is true parent, ie can be = cryptic id
 paleotree.record.to.fossils = function(record) {
   tree = paleotree::taxa2phylo(paleotree::fossilRecord2fossilTaxa(record))
   # recording node labels to keep track after changing the phylogeny
@@ -279,8 +279,8 @@ paleotree.record.to.fossils = function(record) {
   
   row.names(taxonomy) = NULL
   row.names(fossils) = NULL
-  class(taxonomy) = "taxonomy"
-  class(fossils) = "fossils"
+  attr(taxonomy, "class") <- c("taxonomy", class(taxonomy))
+  attr(fossils, "class") <- c("fossils", class(fossils))
   
   tree$root.edge = root_time - tree$root.time
   tree$origin.time = root_time
@@ -295,8 +295,6 @@ paleotree.record.to.fossils = function(record) {
 #' @param taxonomy taxonomy object. If both tree and taxonomy are provided, only taxonomy will be used.
 #' @return The converted paleotree record
 #' @export
-# NB: not tested with taxonomy or cryptic species
-# NB: TODO check ids in cryptic species
 fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
   if(is.null(taxonomy) && is.null(tree)) stop("Either tree or taxonomy needs to be provided")
   
