@@ -199,7 +199,7 @@ attachment.times<-function(tree,fossils,asymmetric.mapping=TRUE){
     nages<-n.ages(tree)
   }
 
-  a<-data.frame(sp=numeric(),lineage.starts=numeric(),lineage.ends=numeric(),first.appearance=numeric())
+  a<-data.frame(sp=numeric(),lineage.starts=numeric(),lineage.ends=numeric(),first.appearance=numeric(),last.appearance=numeric())
 
   for(i in unique(fossils$sp)){
 
@@ -217,8 +217,10 @@ attachment.times<-function(tree,fossils,asymmetric.mapping=TRUE){
 
     # Find the first appearance
     fa=max(fossils$h[which(fossils$sp==i)])
+    # Find the last appearance
+    la=min(fossils$h[which(fossils$sp==i)])
 
-    a<-rbind(a,data.frame(sp=i,lineage.starts=lineage.start,lineage.ends=lineage.end,first.appearance=fa))
+    a<-rbind(a,data.frame(sp=i,lineage.starts=lineage.start,lineage.ends=lineage.end,first.appearance=fa,last.appearance=la))
   }
   return(a)
   #EOF
