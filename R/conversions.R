@@ -168,10 +168,10 @@ prune.fossils = function(tree) {
 #' # simulate fossils
 #' f<-sim.fossils.poisson(t, 2)
 #' # output for BEAST
-#' format.for.beast(t, f) # output on the console
-#' format.for.beast(t, f, file="example.tre") # output in file
+#' beast.fbd.format(t, f) # output on the console
+#' beast.fbd.format(t, f, file="example.tre") # output in file
 #' @export
-format.for.beast = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
+beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
   proc_tree = prune.fossils(sampled.tree.from.combined(combined.tree.with.fossils(tree,fossils), rho = rho, sampled_tips = sampled_tips))
   ape::write.tree(proc_tree, ...)
 }

@@ -41,4 +41,3 @@ f<-sim.fossils.unif(t,max,strata,sampling)
 # reassign ages
 reassign.ages(t,f,max,strata)
 }
-

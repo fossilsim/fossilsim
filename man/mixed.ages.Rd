@@ -24,4 +24,3 @@ Function uses mixed.speciation() to assign asymmetric & symmetric lineages.
 t<-ape::rtree(6)
 mixed.ages(t, 0.5)
 }
-

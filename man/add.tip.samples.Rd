@@ -29,4 +29,3 @@ f<-sim.fossils.poisson(t, 2)
 f<-add.tip.samples(t, f, rho = 0.5)
 plot(f, t)
 }
-
