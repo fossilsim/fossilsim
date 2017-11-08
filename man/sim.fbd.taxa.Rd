@@ -34,4 +34,3 @@ sim.fbd.taxa(n,numbsim,lambda,mu,psi)
 \keyword{birth}
 \keyword{death}
 \keyword{fossilized}
-

@@ -14,9 +14,9 @@
 #' # simulate fossils
 #' f<-sim.fossils.poisson(t, 2)
 #' # simulate uncertainty
-#' f = simulate.uncertain.ages(f, c(0,TreeSim::getx(t)))
+#' f = sim.uncertain.ages(f, c(0,TreeSim::getx(t)))
 #' @export
-simulate.uncertain.ages = function(fossils, intervals, error_fraction = 0, error_range = 1, sd_intervals = NULL, save_params = F) {
+sim.uncertain.ages = function(fossils, intervals, error_fraction = 0, error_range = 1, sd_intervals = NULL, save_params = F) {
   if(!is.null(sd_intervals) && length(intervals) != length(sd_intervals)) {
     stop("Number of intervals do not match number of interval deviations")
   }
