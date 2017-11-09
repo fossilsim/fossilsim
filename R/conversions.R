@@ -21,8 +21,11 @@ combined.tree.with.fossils = function(tree, fossils) {
   fossils$species = species[fossils$sp]
   fossils = fossils[order(fossils$species, -fossils$h),]
   
+  ntips = length(tree$tip.label)
+  totalnodes = ntips + tree$Nnode
+  
   #renaming all species not in fossils
-  for(i in 1:length(tree$tip.label)) {
+  for(i in 1:ntips) {
     if(!i %in% fossils$species) {
       tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
     }
@@ -30,11 +33,17 @@ combined.tree.with.fossils = function(tree, fossils) {
 
   depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
+  
+  # adding root edge in case fossils appear on it
+  if(!is.null(tree$root.edge)) {
+    root = (ntips + length(fossils[,1]))*2
+    tree$edge = rbind(tree$edge, c(root, ntips +1))
+    tree$edge.length = c(tree$edge.length, tree$root.edge)
+    times[root] = max(times) + tree$root.edge
+  }
 
   current_spec = 0
   count_spec = 1
-  totalnodes = length(tree$tip.label) + tree$Nnode
-  ntips = length(tree$tip.label)
   for(i in 1:length(fossils[,1])) {
     if(fossils$species[i] != current_spec) {
       tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
@@ -58,6 +67,19 @@ combined.tree.with.fossils = function(tree, fossils) {
     count_spec = count_spec +1
   }
   tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
+  
+  #handling root edge again, mrca may have been modified by the inclusion of fossils
+  if(!is.null(tree$root.edge)) {
+    rootedge = which(tree$edge[,1] == root)
+    newroot = tree$edge[rootedge,2]
+    
+    rootidx = which(tree$edge == newroot)
+    tree$edge[which(tree$edge == ntips + 1)] = newroot
+    tree$edge[rootidx] = ntips + 1
+    
+    tree$root.edge = tree$edge.length[rootedge]
+    tree$edge = tree$edge[-rootedge,]
+  }
 
   #renumbering all nodes to maintain ape format
   for(n in totalnodes:(ntips+1)) {
@@ -70,7 +92,7 @@ combined.tree.with.fossils = function(tree, fossils) {
   #force reordering for nice plotting
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
-
+  
   tree
 }
 
