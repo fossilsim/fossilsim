@@ -18,6 +18,12 @@ An object of class taxonomy. Note the origin or root can not be cryptic.
 Add cryptic species to a taxonomy object
 }
 \examples{
+t = ape::rtree(10)
+sp = create.taxonomy(t, 1)
+add.cryptic.species(sp, 0.5)
 
+}
+\seealso{
+\code{\link{taxonomy}}
 }
 

@@ -11,6 +11,8 @@
 #' t = ape::rtree(10)
 #' create.taxonomy(t, 0.5, 0.1, 0.5)
 #'
+#' @seealso \code{\link{taxonomy}}
+#'
 #' @export
 create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE){
   if(!"phylo" %in% class(tree))
@@ -102,6 +104,11 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
 #' @return Object of class taxonomy.
 #'
 #' @examples
+#' t = ape::rtree(10)
+#' sp = create.taxonomy(t, 1)
+#' add.anagenic.species(t, sp, 0.1)
+#'
+#' @seealso \code{\link{taxonomy}}
 #'
 #' @export
 add.anagenic.species<-function(tree, species, lambda.a){
@@ -265,6 +272,11 @@ add.anagenic.species<-function(tree, species, lambda.a){
 #' @return An object of class taxonomy. Note the origin or root can not be cryptic.
 #'
 #' @examples
+#' t = ape::rtree(10)
+#' sp = create.taxonomy(t, 1)
+#' add.cryptic.species(sp, 0.5)
+#'
+#' @seealso \code{\link{taxonomy}}
 #'
 #' @export
 add.cryptic.species<-function(species, kappa){

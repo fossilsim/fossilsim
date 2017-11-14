@@ -20,6 +20,12 @@ Object of class taxonomy.
 Add anagenic species to a taxonomy object
 }
 \examples{
+t = ape::rtree(10)
+sp = create.taxonomy(t, 1)
+add.anagenic.species(t, sp, 0.1)
 
+}
+\seealso{
+\code{\link{taxonomy}}
 }
 
