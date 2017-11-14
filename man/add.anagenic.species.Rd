@@ -15,7 +15,6 @@ add.anagenic.species(tree, species, lambda.a)
 }
 \value{
 Object of class taxonomy.
-Note the edge associated with anagenic species is the edge on which the speciation event occurred.
 }
 \description{
 Add anagenic species to a taxonomy object

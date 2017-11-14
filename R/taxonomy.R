@@ -1,24 +1,32 @@
 #' Taxonomy object
 #'
+#' @description
 #' Create a taxonomy object related species identity to a phylo object.
 #'
-#' @description
-#' The input is a dataframe that must include the following columns: \cr \cr
-#' \code{sp} = true species identity label.
-#' If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest) associated with this species.
-#' This may not be case if the data set also contains anagenic species. UPDATE THIS \cr \cr
-#' \code{edge} = edge label of the branch in the corresponding phylo object.
-#' Note some species may be associated with multiple branches. \cr \cr
-#' \code{mode} = speciation mode. "o" = origin or "r" = root, edge/species that began the process. "b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenic speciation.
-#' "NA" = no speciation event is associated with the edge label or speciation mode is unknown. \cr \cr
-#' Additional information: \cr \cr
-#' \code{parent} = ancestor of sp. This will correspond to the terminal-most edge label of the parent species. \cr \cr
-#' \code{start} = origin time of species. \cr \cr
-#' \code{end} = end time of species. \cr \cr
-#' \code{cryptic} = TRUE if speciation event was cryptic. \cr \cr
-#' \code{cryptic.id} = cryptic species identity. If cryptic = TRUE \code{cryptic.id} will differ from the true species identity (\code{sp}). \cr
+#' @details
+#' The taxonomy object includes the following 3 fields for each edge in the phylo object:
+#' \itemize{
+#' \item{\code{sp} = true species identity label.
+#' If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest) associated with each species.
+#' This may not be case if the data set also contains anagenic species.}
+#' \item{\code{edge} = edge label of the branch in the corresponding phylo object.
+#' Note some species may be associated with multiple edges.}
+#' \item{\code{mode} = speciation mode. "o" = origin or "r" = root (the edge/species that began the process).
+#' "b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenic speciation.
+#' "NA" = no speciation event is associated with the edge label or speciation mode is unknown.}
+#' }
 #'
-#' @param data Dataframe of species taxonomy.
+#' Additional optional fields:
+#' \itemize{
+#' \item{\code{parent} = ancestor of species \code{sp}. Parent labels follow the same convention as species.
+#' The label assigned to the parent of the origin or root will be zero.}
+#' \item{\code{start} = origin time of species.}
+#' \item{\code{end} = end time of species. }
+#' \item{\code{cryptic} = TRUE if speciation event was cryptic.}
+#' \item{\code{cryptic.id} = cryptic species identity. If cryptic = TRUE \code{cryptic.id} will differ from the true species identity (\code{sp}).}
+#' }
+#'
+#' @param data Dataframe of species taxonomy. See Details for the list of required fields.
 #'
 #' @export
 taxonomy<-function(data){

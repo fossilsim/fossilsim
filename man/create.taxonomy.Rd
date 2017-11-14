@@ -16,7 +16,7 @@ create.taxonomy(tree, beta = 0, lambda.a = 0, kappa = 0,
 
 \item{kappa}{Probability that speciation event is cryptic. Default = 0.}
 
-\item{root.edge}{If TRUE include root edge.}
+\item{root.edge}{If TRUE include root edge. Default = TRUE.}
 }
 \value{
 An object of class taxonomy.
