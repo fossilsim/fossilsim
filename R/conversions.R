@@ -226,7 +226,7 @@ paleotree.record.to.fossils = function(record) {
   tree = paleotree::taxa2phylo(paleotree::fossilRecord2fossilTaxa(record))
   # recording node labels to keep track after changing the phylogeny
   tree$node.label = (length(tree$tip.label)+1):(length(tree$tip.label)+tree$Nnode)
-  fossils = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),edge=numeric(),origin=numeric(), stringsAsFactors = F)
+  fossildf = fossils()
   taxonomy = data.frame(edge=numeric(),sp=numeric(),start=numeric(),end=numeric(),mode = character(),
                         cryptic = numeric(), cryptic.id = numeric(), parent = numeric(),stringsAsFactors = F)
   ages = n.ages(tree)
@@ -279,7 +279,7 @@ paleotree.record.to.fossils = function(record) {
       prev = tree$edge[which(tree$edge[,2] == node_idx),1]
       if(prev %in% taxonomy$edge) break()
       lgth = tree$edge.length[which(tree$edge[,2] == prev)]
-      if(lgth == 0) break()
+      if(length(lgth) > 0 && lgth == 0) break()
 
       node_idx = prev
       age = age + lgth
@@ -306,19 +306,19 @@ paleotree.record.to.fossils = function(record) {
                                           cryptic.id = names(record)[record[[i]]$taxa.data[['looks.like']]],
                                           parent = names(record)[record[[i]]$taxa.data[['ancestor.id']]], stringsAsFactors = F))
     if(length(record[[i]]$sampling.times)>0)
-      fossils = rbind(fossils, data.frame(hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
-                                          sp = names(record)[i], edge = sampled_nodes, origin = origin, stringsAsFactors = F))
+      fossildf = rbind(fossildf, data.frame(hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
+                                          sp = names(record)[i], edge = sampled_nodes, origin = origin))
   }
 
   row.names(taxonomy) = NULL
-  row.names(fossils) = NULL
-  fossils = as.fossils(fossils, from.taxonomy  = T)
+  row.names(fossildf) = NULL
+  fossildf = as.fossils(fossildf, TRUE)
   taxonomy = as.taxonomy(taxonomy)
 
   tree$root.edge = root_time - tree$root.time
   tree$origin.time = root_time
 
-  return(list(tree = tree, fossils = fossils, taxonomy = taxonomy))
+  return(list(tree = tree, fossils = fossildf, taxonomy = taxonomy))
 }
 
 #' Transforms a fossils dataframe and either taxonomy or tree into a fossilRecordSimulation object from package paleotree.

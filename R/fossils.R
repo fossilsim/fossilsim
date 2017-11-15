@@ -12,23 +12,28 @@
 #'  \item \code{hmax} the highest bound of the time interval in which that fossil was sampled. Is equal to \code{hmin} if sampling times are exact.
 #' }
 #'
-#' @param data Dataframe or list of sampled fossils. See Details for the list of required fields.
+#' @param data Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, creates a blank fossils object.
 #' @param from.taxonomy Boolean indicating whether the fossils were sampled using a taxonomy object. Defaults to FALSE.
 #'
 #' @export
-fossils<-function(data, from.taxonomy = FALSE){
-  if(is.list(data)) data <- as.data.frame(data)
+fossils<-function(data = NULL, from.taxonomy = FALSE){
+  if(is.null(data)) {
+    data = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),edge=numeric(),origin=numeric())
+  }
+  else {
+    if(is.list(data)) data <- as.data.frame(data)
 
-  # check for required fields
-  required_fields = c("origin", "sp", "edge", "hmin", "hmax")
-  missing = which(! required_fields %in% colnames(data))
-  if(length(missing) > 0) stop(paste0("Missing required fields: ", paste(required_fields[missing], collapse = ", ")))
+    # check for required fields
+    required_fields = c("origin", "sp", "edge", "hmin", "hmax")
+    missing = which(! required_fields %in% colnames(data))
+    if(length(missing) > 0) stop(paste0("Missing required fields: ", paste(required_fields[missing], collapse = ", ")))
 
-  # check for additional fields
-  additional = which(! colnames(data) %in% required_fields)
-  if(length(additional) > 0) {
-    warning(paste0("These fields will be discarded: ", paste(colnames(data)[additional], collapse = ", ")))
-    data[,additional] = NULL
+    # check for additional fields
+    additional = which(! colnames(data) %in% required_fields)
+    if(length(additional) > 0) {
+      warning(paste0("These fields will be discarded: ", paste(colnames(data)[additional], collapse = ", ")))
+      data[,additional] = NULL
+    }
   }
 
   attr(data, "class") <- c("fossils", class(data))

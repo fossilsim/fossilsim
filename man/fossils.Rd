@@ -6,14 +6,14 @@
 \alias{is.fossils}
 \title{Fossils object}
 \usage{
-fossils(data, from.taxonomy = FALSE)
+fossils(data = NULL, from.taxonomy = FALSE)
 
 as.fossils(data, ...)
 
 is.fossils(fossils)
 }
 \arguments{
-\item{data}{Dataframe or list of sampled fossils. See Details for the list of required fields.}
+\item{data}{Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, creates a blank fossils object.}
 
 \item{from.taxonomy}{Boolean indicating whether the fossils were sampled using a taxonomy object. Defaults to FALSE.}
 }
