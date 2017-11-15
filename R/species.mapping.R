@@ -27,23 +27,24 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
   # assign symmetric and asymmetric species
   node.ages = n.ages(tree)
 
-  species<-data.frame(sp = numeric(),
-                      edge = numeric(),
-                      parent = numeric(),
+  species<-data.frame(sp = integer(),
+                      edge = integer(),
+                      parent = integer(),
                       start = numeric(),
                       end = numeric(),
+                      mode = character(),
+                      origin = integer(),
                       cryptic = integer(),
-                      cryptic.id = numeric(),
-                      mode = character()
+                      cryptic.id = integer()
   )
 
   # identify the root
   root = length(tree$tip.label) + 1
 
   if(root.edge && exists("root.edge",tree))
-    species <- rbind(species, data.frame(sp = root, edge = root, parent = 0, start = node.ages[root] + tree$root.edge, end = node.ages[root], mode="o", cryptic = 0, cryptic.id = root))
+    species <- rbind(species, data.frame(sp = root, edge = root, parent = 0, start = node.ages[root] + tree$root.edge, end = node.ages[root], mode="o", origin = root, cryptic = 0, cryptic.id = root))
   else
-    species <- rbind(species, data.frame(sp = root, edge = root, parent = 0, start = node.ages[root], end = node.ages[root], mode="r", cryptic = 0, cryptic.id = root))
+    species <- rbind(species, data.frame(sp = root, edge = root, parent = 0, start = node.ages[root], end = node.ages[root], mode="r", origin = root, cryptic = 0, cryptic.id = root))
 
   aux = function(node, p) {
     # fetch the two descendants
@@ -57,8 +58,8 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
     if(runif(1) > (1 - beta)){
       # speciation event is symmetric
       a <- p$sp[which(p$edge == node)]
-      p <- rbind(p, data.frame(sp = d1, edge = d1, start = node.ages[a], end = node.ages[d1], mode="s", parent = a, cryptic = 0, cryptic.id = d1))
-      p <- rbind(p, data.frame(sp = d2, edge = d2, start = node.ages[a], end = node.ages[d2], mode="s", parent = a, cryptic = 0, cryptic.id = d2))
+      p <- rbind(p, data.frame(sp = d1, edge = d1, parent = a, start = node.ages[a], end = node.ages[d1], mode="s", origin = d1, cryptic = 0, cryptic.id = d1))
+      p <- rbind(p, data.frame(sp = d2, edge = d2, parent = a, start = node.ages[a], end = node.ages[d2], mode="s", origin = d2, cryptic = 0, cryptic.id = d2))
     } else{
       # speciation event is asymmetric/budding
 
@@ -70,9 +71,11 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
 
       a <- p$parent[which(p$edge == node)]
       s <- p$start[which(p$sp == d1)][1]
-      p <- rbind(p, data.frame(sp = d1, edge = d1, start = s, end = node.ages[d1], mode="NA", parent = a, cryptic = 0, cryptic.id = d1))
+      m <- p$mode[which(p$sp == d1)][1]
+      o <- p$origin[which(p$sp == d1)][1]
+      p <- rbind(p, data.frame(sp = d1, edge = d1, parent = a, start = s, end = node.ages[d1], mode = m, origin = o, cryptic = 0, cryptic.id = d1))
       # new species
-      p <- rbind(p, data.frame(sp = d2, edge = d2, start = node.ages[ancestor(d2, tree)], end = node.ages[d2], mode="b", parent = d1, cryptic = 0, cryptic.id = d2))
+      p <- rbind(p, data.frame(sp = d2, edge = d2, parent = d1, start = node.ages[ancestor(d2, tree)], end = node.ages[d2], mode="b", origin = d2, cryptic = 0, cryptic.id = d2))
     }
 
     p = aux(d1, p)
@@ -190,14 +193,12 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # additional younger edges associated with sp
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
-            mode = as.character(s$mode[which(s$mode != "NA")])
-
-            if(length(edge) > 1)
-              mode = c(mode, rep("NA", (length(edge) - 1)))
+            #mode = as.character(s$mode[which(s$mode != "NA")])
+            mode = s$mode[1]
 
             parent = s$parent[1]
 
-            species <- rbind(species, data.frame(sp = sp, edge = edge, start = start, end = end, mode = mode, parent = parent, cryptic = 0, cryptic.id = sp))
+            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end, mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp))
 
             # deal with potential asym descendants
             if(any(species$parent == i & species$start <= start & species$start > end)) {
@@ -219,12 +220,10 @@ add.anagenic.species<-function(tree, species, lambda.a){
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
             mode = "a"
-            if(length(edge) > 1)
-              mode = c(mode, rep("NA", length(edge) - 1))
 
             parent = species.counter - 1
 
-            species <- rbind(species, data.frame(sp = sp, edge = edge, start = start, end = end, mode = mode, parent = parent, cryptic = 0, cryptic.id = sp))
+            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end, mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp))
 
             # any descendant parent labels associated with this species shouldn't need to change
 
@@ -240,12 +239,10 @@ add.anagenic.species<-function(tree, species, lambda.a){
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
             mode = "a"
-            if(length(edge) > 1)
-              mode = c(mode, rep("NA", length(edge) - 1))
 
             parent = species.counter - 1
 
-            species <- rbind(species, data.frame(sp = sp, edge = edge, start = start, end = end, mode = mode, parent = parent, cryptic = 0, cryptic.id = sp))
+            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end, mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp))
 
             # deal with potential asym descendants
             if(any(species$parent == i & species$start < start & species$start > end)) {
@@ -312,6 +309,4 @@ add.cryptic.species<-function(species, kappa){
   }
   return(species)
 }
-
-
 
