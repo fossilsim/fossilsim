@@ -4,6 +4,9 @@ n.ages<-function(tree){
   node.ages <- TreeSim::getx(tree, sersampling = 1)[1:(tree$Nnode+length(tree$tip))]
   names(node.ages) <- 1:(tree$Nnode+length(tree$tip))
 
+  # adding possible offset if tree fully extinct
+  if(!is.null(tree$root.time)) node.ages = node.ages + tree$root.time - max(node.ages)
+
   return(node.ages)
 }
 
@@ -95,7 +98,7 @@ find.species.in.taxonomy = function(taxonomy, branch, time = NULL) {
   possible = which(taxonomy$edge == branch)
   if(length(possible) == 1) return(taxonomy$sp[possible])
   if(is.null(time)) stop("Multiple species found on branch, please specify a time")
-  
+
   for(x in possible) {
     if(taxonomy$start[x] > time && taxonomy$end[x] < time) return(taxonomy$species[x])
   }

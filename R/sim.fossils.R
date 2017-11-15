@@ -3,9 +3,8 @@
 #' @param tree Phylo object.
 #' @param rate Poisson sampling rate.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
+#' @param use.exact.times Whether exact sampling times should be simulated. If FALSE hmin and hmax are set to the start and end times of the corresponding edge. Default TRUE.
 #' @return An object of class fossils.
-#' sp = node labels. h = ages.
-#' The label is for the node just below the sampled fossil.
 #' @examples
 #' # simulate tree
 #' t<-ape::rtree(4)
@@ -15,61 +14,49 @@
 #' plot(f, t)
 #' @keywords uniform preservation
 #' @export
-sim.fossils.poisson<-function(tree,rate,root.edge=TRUE){
+sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE){
 
   node.ages<-n.ages(tree)
 
-  fossils<-data.frame(h=numeric(),sp=numeric())
-
+  fdf = fossils()
   root = length(tree$tip.label) + 1
 
   if(root.edge && exists("root.edge",tree) ){
-
     lineages = c(tree$edge[,2], root)
-
   } else lineages = tree$edge[,2]
 
-  for (i in lineages){ # internal nodes + tips
+  for (node in lineages){ # internal nodes + tips
+    if(node <= length(tree$tip.label)) sp = as.character(tree$tip.label[node])
+    else if(!is.null(tree$node.label)) sp = as.character(tree$node.label[node - length(tree$tip.label)])
+    else sp = paste0("t",node)
 
-    if(i == root){
-
-      # root age
-      a=which(names(node.ages)==root)
-      lineage.end=node.ages[[a]]
-
-      # origin time
-      b=tree$root.edge
-      lineage.start=lineage.end+b
-
-    } else {
-
-      # work out the max age of the lineage (e.g. when that lineage became extant)
-      # & get ancestor
-      row=which(tree$edge[,2]==i)
-      ancestor=tree$edge[,1][row]
-
-      # get the age of the ancestor
-      a=which(names(node.ages)==ancestor)
-      lineage.start=node.ages[[a]]
-
-      # work out the min age of the lineage (e.g. when that lineage became extinct)
-      # & get the branch length
-      b=tree$edge.length[row]
-      lineage.end=lineage.start-b # branch length
+    end = node.ages[node]
+    if(node == root) {
+      origin = NA
+      blength = tree$root.edge
     }
+    else {
+      edge = which(tree$edge[,2] == node)
+      origin = tree$edge[edge, 1]
+      blength = tree$edge.length[edge]
+    }
+    start = end + blength
 
     # sample fossil numbers from the Poisson distribution
-    rand=rpois(1,b*rate)
+    rand=rpois(1,blength*rate)
 
-    if(rand > 0){
-      h=runif(rand,min=lineage.end,max=lineage.start)
-      fossils<-rbind(fossils,data.frame(h=h,sp=i))
+    if(rand > 0) {
+      if(use.exact.times) {
+        h=runif(rand,min=end,max=start)
+        fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = h, hmax = h))
+      } else {
+        fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand)))
+      }
     }
   }
 
-  fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
-  return(fossils) # in this data frame h=fossil age and sp=lineage
-  # EOF
+  fdf <- as.fossils(fdf)
+  return(fdf)
 }
 
 #' Simulate fossils under a uniform model of preservation for a set of equal length intervals
@@ -154,52 +141,52 @@ sim.fossils.unif<-function(tree,basin.age,strata,probability,root.edge=T,convert
       # if the lineage is extant during this horizon
       if ( (lineage.start >= h.min) & (lineage.end <= h.max) ) {
 
-          # calculate the proportion of time during each horizon the lineage is extant
-          # lineage speciates and goes extinct in interval h
-          if((lineage.end > h.min) && (lineage.start < h.max)){
-            pr = (lineage.start-lineage.end)/s1
-            f.max = lineage.start
-            f.min = lineage.end
-          }
-          # lineage goes extinct in interval h
-          else if(lineage.end > h.min){
-            pr = (h.max-lineage.end)/s1
-            f.max = h.max
-            f.min = lineage.end
-          }
-          # lineage speciates in interval h
-          else if(lineage.start < h.max){
-            pr = (lineage.start-h.min)/s1
-            f.max = lineage.start
-            f.min = h.min
-          }
-          # lineage is extant the entire duration of interval h
-          else{
-            pr = 1
-            f.max = h.max
-            f.min = h.min
-          }
+        # calculate the proportion of time during each horizon the lineage is extant
+        # lineage speciates and goes extinct in interval h
+        if((lineage.end > h.min) && (lineage.start < h.max)){
+          pr = (lineage.start-lineage.end)/s1
+          f.max = lineage.start
+          f.min = lineage.end
+        }
+        # lineage goes extinct in interval h
+        else if(lineage.end > h.min){
+          pr = (h.max-lineage.end)/s1
+          f.max = h.max
+          f.min = lineage.end
+        }
+        # lineage speciates in interval h
+        else if(lineage.start < h.max){
+          pr = (lineage.start-h.min)/s1
+          f.max = lineage.start
+          f.min = h.min
+        }
+        # lineage is extant the entire duration of interval h
+        else{
+          pr = 1
+          f.max = h.max
+          f.min = h.min
+        }
 
-          brl = brl + (s1*pr)
+        brl = brl + (s1*pr)
 
-          if(convert.rate){
-            # generate k fossils from a poisson distribution
-            k = rpois(1,rate*s1*pr)
-            if(k > 0){
-              for(j in 1:k){
-                age = runif(1,f.min,f.max)
-                fossils<-rbind(fossils,data.frame(h=age,sp=i))
-              }
+        if(convert.rate){
+          # generate k fossils from a poisson distribution
+          k = rpois(1,rate*s1*pr)
+          if(k > 0){
+            for(j in 1:k){
+              age = runif(1,f.min,f.max)
+              fossils<-rbind(fossils,data.frame(h=age,sp=i))
             }
-          } else {
-            # define the probabilty
-            pr = pr * probability
-            # if random.number < pr { record fossil as collected }
-            if (runif(1) <= pr) {
-              fossils<-rbind(fossils,data.frame(h=h,sp=i))
-            }
+          }
+        } else {
+          # define the probabilty
+          pr = pr * probability
+          # if random.number < pr { record fossil as collected }
+          if (runif(1) <= pr) {
+            fossils<-rbind(fossils,data.frame(h=h,sp=i))
           }
         }
+      }
 
     }
   }
@@ -614,4 +601,3 @@ assign.interval<-function(intervals, t){
   }
   return(i)
 }
-

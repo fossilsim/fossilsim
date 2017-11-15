@@ -4,7 +4,7 @@
 \alias{sim.fossils.poisson}
 \title{Simulate fossils under a Poisson sampling model}
 \usage{
-sim.fossils.poisson(tree, rate, root.edge = TRUE)
+sim.fossils.poisson(tree, rate, root.edge = TRUE, use.exact.times = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
@@ -12,11 +12,11 @@ sim.fossils.poisson(tree, rate, root.edge = TRUE)
 \item{rate}{Poisson sampling rate.}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
+
+\item{use.exact.times}{Whether exact sampling times should be simulated. If FALSE hmin and hmax are set to the start and end times of the corresponding edge. Default TRUE.}
 }
 \value{
 An object of class fossils.
-sp = node labels. h = ages.
-The label is for the node just below the sampled fossil.
 }
 \description{
 Simulate fossils under a Poisson sampling model
