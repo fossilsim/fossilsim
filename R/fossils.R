@@ -18,7 +18,7 @@
 #' @export
 fossils<-function(data = NULL, from.taxonomy = FALSE){
   if(is.null(data)) {
-    data = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),edge=numeric(),origin=numeric())
+    data = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),edge=numeric(),origin=numeric(), stringsAsFactors = F)
   }
   else {
     if(is.list(data)) data <- as.data.frame(data)

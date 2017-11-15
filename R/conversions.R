@@ -307,7 +307,7 @@ paleotree.record.to.fossils = function(record) {
                                           parent = names(record)[record[[i]]$taxa.data[['ancestor.id']]], stringsAsFactors = F))
     if(length(record[[i]]$sampling.times)>0)
       fossildf = rbind(fossildf, data.frame(hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
-                                          sp = names(record)[i], edge = sampled_nodes, origin = origin))
+                                          sp = names(record)[i], edge = sampled_nodes, origin = origin, stringsAsFactors = F))
   }
 
   row.names(taxonomy) = NULL

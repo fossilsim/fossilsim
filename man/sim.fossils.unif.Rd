@@ -5,7 +5,7 @@
 \title{Simulate fossils under a uniform model of preservation for a set of equal length intervals}
 \usage{
 sim.fossils.unif(tree, basin.age, strata, probability, root.edge = T,
-  convert.rate = FALSE)
+  convert.rate = FALSE, use.exact.times = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
@@ -22,8 +22,6 @@ sim.fossils.unif(tree, basin.age, strata, probability, root.edge = T,
 }
 \value{
 An object of class fossils.
-sp = node labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max interval age.
-The label is for the node just below the sampled fossil.
 }
 \description{
 Simulate fossils under a uniform model of preservation for a set of equal length intervals
@@ -40,5 +38,5 @@ f<-sim.fossils.unif(t, max, strata, probability)
 plot(f, t, binned = TRUE, strata = strata)
 }
 \keyword{fossil}
-\keyword{preseravtion}
+\keyword{preservation}
 \keyword{uniform}
