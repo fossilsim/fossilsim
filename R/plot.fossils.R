@@ -27,7 +27,7 @@
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param fcol Color of fossil occurrences or ranges.
-#'
+#' @param ecol Color of extant samples. Right now this only works if binned = F.
 #'
 #' @examples
 #' set.seed(123)
@@ -61,7 +61,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
                        # tree appearance
                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                        # fossil appearance
-                       fcex = 1.2, fcol = "darkorange", ...) {
+                       fcex = 1.2, fcol = "darkorange", ecol = NULL, ...) {
 
   x<-tree  # tree
   ba<-max
@@ -85,6 +85,9 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   y.lim = NULL
   adj = NULL
   srt = 0
+
+  if(is.null(ecol))
+    ecol = fcol
 
   if(!(is.fossils(fossils)))
     stop("fossils must be an object of class \"fossils\"")
@@ -126,10 +129,10 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
       stop("I can't handle NA proxy values right now, please use 0 for the time being")
   }
 
-  # required C fxns
-  .nodeHeight <- function(Ntip, Nnode, edge, Nedge, yy) .C(ape::node_height,as.integer(Ntip), as.integer(Nnode), as.integer(edge[,1]), as.integer(edge[, 2]), as.integer(Nedge), as.double(yy))[[6]]
-  .nodeDepth <- function(Ntip, Nnode, edge, Nedge, node.depth) .C(ape::node_depth,as.integer(Ntip), as.integer(Nnode), as.integer(edge[,1]), as.integer(edge[, 2]), as.integer(Nedge), double(Ntip + Nnode), as.integer(node.depth))[[6]]
-  .nodeDepthEdgelength <- function(Ntip, Nnode, edge, Nedge, edge.length) .C(ape::node_depth_edgelength, as.integer(Ntip),as.integer(Nnode), as.integer(edge[, 1]), as.integer(edge[,2]), as.integer(Nedge), as.double(edge.length), double(Ntip + Nnode))[[7]]
+  # required ape C fxns
+  .nodeHeight <- function(edge, Nedge, yy) .C(ape::node_height, as.integer(edge[, 1]), as.integer(edge[, 2]), as.integer(Nedge), as.double(yy))[[4]]
+  .nodeDepth <- function(Ntip, Nnode, edge, Nedge, node.depth) .C(ape::node_depth, as.integer(Ntip), as.integer(edge[, 1]), as.integer(edge[, 2]), as.integer(Nedge), double(Ntip + Nnode), as.integer(node.depth))[[5]]
+  .nodeDepthEdgelength <- function(Ntip, Nnode, edge, Nedge, edge.length) .C(ape::node_depth_edgelength, as.integer(edge[, 1]), as.integer(edge[, 2]), as.integer(Nedge), as.double(edge.length), double(Ntip + Nnode))[[5]]
 
   Nedge <- dim(x$edge)[1]
   Nnode <- x$Nnode
@@ -157,7 +160,8 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   yy[TIPS] <- 1:Ntip
   z <- reorder(x, order = "postorder")
 
-  yy <- .nodeHeight(Ntip, Nnode, z$edge, Nedge, yy)
+  #yy <- .nodeHeight(Ntip, Nnode, z$edge, Nedge, yy)
+  yy <- .nodeHeight(z$edge, Nedge, yy)
   xx <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
 
   if (root.edge) {
@@ -345,8 +349,16 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         }
         points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$sp] , col = fcol, pch = 19, cex = fcex)
       }
-      else
-        points(max(xx) - fossils$h, yy[fossils$sp], col = fcol, pch = 19, cex = fcex)
+      else{
+        if(fcol == ecol)
+          points(max(xx) - fossils$h, yy[fossils$sp], col = fcol, pch = 19, cex = fcex)
+        else{
+          extant = fossils[which(fossils$h == 0), ]
+          extinct = fossils[which(fossils$h != 0), ]
+          points(max(xx) - extant$h, yy[extant$sp], col = ecol, pch = 19, cex = fcex)
+          points(max(xx) - extinct$h, yy[extinct$sp], col = fcol, pch = 19, cex = fcex)
+        }
+      }
     }
 
     # ranges

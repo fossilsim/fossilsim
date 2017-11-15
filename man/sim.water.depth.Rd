@@ -27,4 +27,3 @@ plot(wd, type="l")
 \keyword{fossil}
 \keyword{non-uniform}
 \keyword{preservation}
-

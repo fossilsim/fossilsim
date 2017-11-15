@@ -26,4 +26,3 @@ add.cryptic.species(sp, 0.5)
 \seealso{
 \code{\link{taxonomy}}
 }
-

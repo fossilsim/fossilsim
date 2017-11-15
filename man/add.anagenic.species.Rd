@@ -28,4 +28,3 @@ add.anagenic.species(t, sp, 0.1)
 \seealso{
 \code{\link{taxonomy}}
 }
-
