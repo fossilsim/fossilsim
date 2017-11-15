@@ -15,19 +15,19 @@
 #' @export
 combined.tree.with.fossils = function(tree, fossils) {
   if(length(fossils[,1])==0) return(tree)
-  
+
   fossils = fossils[order(fossils$species, -fossils$h),]
-  
+
   #renaming all species not in fossils
   for(i in 1:length(tree$tip.label)) {
     if(!i %in% fossils$species) {
       tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
     }
   }
-  
+
   depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
-  
+
   current_spec = 0
   count_spec = 1
   totalnodes = length(tree$tip.label) + tree$Nnode
@@ -39,7 +39,7 @@ combined.tree.with.fossils = function(tree, fossils) {
       count_spec = 1
     }
     #adding new speciation node
-    edge = which(tree$edge[,2] == fossils$node[i])
+    edge = which(tree$edge[,2] == fossils$edge[i])
     tree$edge.length[edge] = times[tree$edge[edge,1]]-fossils$h[i]
     tree$edge = rbind(tree$edge,c(totalnodes+1,tree$edge[edge,2]))
     tree$edge.length = c(tree$edge.length,fossils$h[i]-times[tree$edge[edge,2]])
@@ -47,7 +47,7 @@ combined.tree.with.fossils = function(tree, fossils) {
     times[totalnodes+1] = fossils$h[i]
     totalnodes=totalnodes+1
     tree$Nnode=tree$Nnode+1
-    
+
     #adding fossil tip
     tree$edge = rbind(tree$edge,c(totalnodes,-i))
     tree$edge.length = c(tree$edge.length,0)
@@ -55,7 +55,7 @@ combined.tree.with.fossils = function(tree, fossils) {
     count_spec = count_spec +1
   }
   tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
-  
+
   #renumbering all nodes to maintain ape format
   for(n in totalnodes:(ntips+1)) {
     tree$edge[which(tree$edge==n)] = n + length(fossils[,1])
@@ -63,11 +63,11 @@ combined.tree.with.fossils = function(tree, fossils) {
   for(i in 1:length(fossils[,1])) {
     tree$edge[which(tree$edge==-i)] = ntips + i
   }
-  
+
   #force reordering for nice plotting
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
-  
+
   tree
 }
 
@@ -91,10 +91,10 @@ combined.tree.with.fossils = function(tree, fossils) {
 #' @export
 sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
   remove_tips = c()
-  
+
   depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
-  
+
   for(i in 1:length(tree$tip.label)) {
     if(times[i] < 1e-5 && #extant tip
        ((!is.null(sampled_tips) && !tree$tip.label[i] %in% sampled_tips) || #tip not sampled from sampled_tips
@@ -108,7 +108,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
       }
     }
   }
-  
+
   tree = ape::drop.tip(tree, remove_tips)
   tree
 }
@@ -134,7 +134,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' @export
 prune.fossils = function(tree) {
   remove_tips = c()
-  
+
   split_names = cbind(sub("_[^_]*$","",tree$tip.label),sub("^.+_","",tree$tip.label))
   for(name in unique(split_names[,1])) {
     idx = which(split_names[,1] == name)
@@ -145,7 +145,7 @@ prune.fossils = function(tree) {
       else remove_tips = c(remove_tips, id) # intermediate sample, to remove
     }
   }
-  
+
   tree = ape::drop.tip(tree, remove_tips)
   tree
 }
@@ -184,7 +184,7 @@ format.for.beast = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' # simulate record
 #' record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40), nExtant=0, nSamp = c(5,25))
 #' # transform format
-#' l_tf = paleotreeRecordToFossils(record)
+#' l_tf = paleotree.record.to.fossils(record)
 #' l_tf$tree
 #' l_tf$taxonomy
 #' l_tf$fossils
@@ -193,19 +193,24 @@ format.for.beast = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 # NB: modes not branch specific
 # NB: cryptic speciation: parent id is true parent, ie can be = cryptic id
 paleotree.record.to.fossils = function(record) {
+  # check that paleotree is installed - should be but you never know
+  if (!requireNamespace("paleotree", quietly = TRUE)) {
+    stop("Paleotree needed for this function to work. Please install it.", call. = FALSE)
+  }
+
   tree = paleotree::taxa2phylo(paleotree::fossilRecord2fossilTaxa(record))
   # recording node labels to keep track after changing the phylogeny
   tree$node.label = (length(tree$tip.label)+1):(length(tree$tip.label)+tree$Nnode)
-  fossils = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),node=numeric(),origin=numeric(), stringsAsFactors = F)
-  taxonomy = data.frame(edge=numeric(),sp=numeric(),start=numeric(),end=numeric(),mode = character(), 
+  fossils = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),edge=numeric(),origin=numeric(), stringsAsFactors = F)
+  taxonomy = data.frame(edge=numeric(),sp=numeric(),start=numeric(),end=numeric(),mode = character(),
                         cryptic = numeric(), cryptic.id = numeric(), parent = numeric(),stringsAsFactors = F)
   ages = n.ages(tree)
-  
+
   #calculate age of record - paleotree allows for fully extinct trees so the youngest sample may not be at 0
   youngest = tree$tip.label[which(ages < 1e-5)[1]]
   offset = record[[youngest]]$taxa.data['ext.time']
   root_time = 0
-  
+
   # this is a hack so the mode checking will work
   # basically paleotree outputs bifurcation nodes as 2 zero-length edges with the tip randomly assigned
   # here I'm reordering so the 2 edges always have the same ancestor
@@ -223,10 +228,10 @@ paleotree.record.to.fossils = function(record) {
       }
     }
   }
-  
+
   for(i in 1:length(record)) {
     if(record[[i]]$taxa.data['orig.time'] > root_time) root_time = record[[i]]$taxa.data[['orig.time']]
-    
+
     # recording positions of species on phylogeny
     node_idx = which(tree$tip.label == names(record)[i])
     sampled_nodes = c()
@@ -235,7 +240,7 @@ paleotree.record.to.fossils = function(record) {
     }
     all_nodes = node_idx
     age = offset + ages[node_idx] + tree$edge.length[which(tree$edge[,2] == node_idx)] #age of the parent
-    
+
     for(t in sort(record[[i]]$sampling.times)) {
       while(node_idx != length(record) + 1 && t > age) {
         node_idx = tree$edge[which(tree$edge[,2] == node_idx),1]
@@ -244,47 +249,50 @@ paleotree.record.to.fossils = function(record) {
       }
       sampled_nodes = c(sampled_nodes, node_idx)
     }
-    
+
     while(node_idx != length(record) + 1 && record[[i]]$taxa.data[["orig.time"]] > age) {
-      node_idx = tree$edge[which(tree$edge[,2] == node_idx),1]
-      age = age + tree$edge.length[which(tree$edge[,2] == node_idx)]
+      prev = tree$edge[which(tree$edge[,2] == node_idx),1]
+      if(prev %in% taxonomy$edge) break()
+      lgth = tree$edge.length[which(tree$edge[,2] == prev)]
+      if(lgth == 0) break()
+
+      node_idx = prev
+      age = age + lgth
       all_nodes = c(all_nodes, node_idx)
     }
-    
-    if(is.na(record[[i]]$taxa.data[["ancestor.id"]])) {
-      anc_node = NA
+
+    if(is.na(record[[i]]$taxa.data[["ancestor.id"]])) { #root species
+      origin = NA
       mode = 'root'
-    }
-    else {
-      anc_node = tree$edge[which(tree$edge[,2] == node_idx),1]
-      # checking for mode
-      if(anc_node != length(record) +1 && tree$edge.length[which(tree$edge[,2] == anc_node)] == 0) {
-        mode = 's' # bifurcation event
-      } else {
-        desc_anc = which(tree$edge[,1] == anc_node)
-        other_desc = desc_anc[which(tree$edge[desc_anc,2] != node_idx)]
-        if(tree$edge.length[other_desc] == 0) mode = 'a' # anagenic event
+    } else {
+      origin = tree$edge[which(tree$edge[,2] == node_idx),1]
+      orig_edge = which(tree$edge[,2] == origin)
+      if(length(orig_edge) == 0 || tree$edge.length[orig_edge] > 0) {
+        desc_anc = which(tree$edge[,1] == origin)
+        if(any(tree$edge.length[desc_anc] == 0)) mode = 'a' # anagenic event
         else mode = 'b' # budding
+      } else {
+        mode = 's' # bifurcation event
       }
     }
-    
+
     taxonomy = rbind(taxonomy, data.frame(edge = all_nodes, sp = names(record)[i],start=record[[i]]$taxa.data[['orig.time']],end=record[[i]]$taxa.data[['ext.time']],
-                                          mode = mode, cryptic = !(record[[i]]$taxa.data[['taxon.id']] == record[[i]]$taxa.data[['looks.like']]), 
-                                          cryptic.id = names(record)[record[[i]]$taxa.data[['looks.like']]], 
+                                          mode = mode, cryptic = !(record[[i]]$taxa.data[['taxon.id']] == record[[i]]$taxa.data[['looks.like']]),
+                                          cryptic.id = names(record)[record[[i]]$taxa.data[['looks.like']]],
                                           parent = names(record)[record[[i]]$taxa.data[['ancestor.id']]], stringsAsFactors = F))
     if(length(record[[i]]$sampling.times)>0)
-      fossils = rbind(fossils, data.frame(hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times), 
-                                          sp = names(record)[i], node = sampled_nodes, origin = anc_node, stringsAsFactors = F))
+      fossils = rbind(fossils, data.frame(hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
+                                          sp = names(record)[i], edge = sampled_nodes, origin = origin, stringsAsFactors = F))
   }
-  
+
   row.names(taxonomy) = NULL
   row.names(fossils) = NULL
-  attr(taxonomy, "class") <- c("taxonomy", class(taxonomy))
-  attr(fossils, "class") <- c("fossils", class(fossils))
-  
+  fossils = as.fossils(fossils, from.taxonomy  = T)
+  taxonomy = as.taxonomy(taxonomy)
+
   tree$root.edge = root_time - tree$root.time
   tree$origin.time = root_time
-  
+
   return(list(tree = tree, fossils = fossils, taxonomy = taxonomy))
 }
 
@@ -297,9 +305,9 @@ paleotree.record.to.fossils = function(record) {
 #' @export
 fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
   if(is.null(taxonomy) && is.null(tree)) stop("Either tree or taxonomy needs to be provided")
-  
+
   rec_names = c("taxon.id","ancestor.id","orig.time","ext.time", "still.alive","looks.like")
-  
+
   if(!is.null(taxonomy)) {
     # then record based purely on taxonomy
     species = species.record.from.taxonomy(taxonomy)
@@ -311,7 +319,7 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
       record[[i]] = list(taxa.data = c(i, anc, species$start[i], species$end[i], (species$end[i] < 1e-5), which(names(record) == species$cryptic.id[i])),
                          sampling.times = numeric())
       names(record[[i]]$taxa.data) = rec_names
-      
+
       f = which(fossils$sp == species$sp[i])
       for(fid in f) {
         record[[i]]$sampling.times = c(record[[i]]$sampling.times, (fossils$hmin[fid]+fossils$hmax[fid])/2)
@@ -324,28 +332,28 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
       if(current_node <= length(tree$tip.label)) current_species = as.character(tree$tip.label[current_node])
       else if(!is.null(tree$node.label)) current_species = as.character(tree$node.label[current_node - length(tree$tip.label)])
       else current_species = paste0("t",current_node)
-      
+
       above_node = tree$edge[which(tree$edge[,2] == current_node),1]
-      record[[current_species]] = list(taxa.data = c(length(record) +1, ancestor, node.ages[above_node], node.ages[current_node], (node.ages[current_node] < 1e-3), length(record) +1), 
+      record[[current_species]] = list(taxa.data = c(length(record) +1, ancestor, node.ages[above_node], node.ages[current_node], (node.ages[current_node] < 1e-3), length(record) +1),
                                        sampling.times = numeric())
       names(record[[current_species]]$taxa.data) = rec_names
-      
-      f = which(fossils$node == current_node) #no taxonomy, all fossils on this branch belong to one species
+
+      f = which(fossils$edge == current_node) #no taxonomy, all fossils on this branch belong to one species
       for(fid in f) {
         record[[current_species]]$sampling.times = c(record[[current_species]]$sampling.times, (fossils$min[fid]+fossils$max[fid])/2)
       }
-      
+
       desc = tree$edge[which(tree$edge[,1] == current_node),2]
       for(d in desc) {
         record = .convert_one_species(d, which(names(record) == current_species), record)
       }
       record
     }
-    
+
     # no taxonomy => parse tree assuming symmetric speciation everywhere
     node.ages = ape::node.depth.edgelength(tree)
     node.ages = max(node.ages) - node.ages
-    
+
     current_node = length(tree$tip.label) + 1
     if(is.null(tree$root.edge)) {
       # no root edge => assuming that the tree started with 2 new species created at the root time
@@ -365,7 +373,7 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
       record = .convert_one_species(current_node, NA, list())
     }
   }
-  
+
   class(record) = "fossilRecordSimulation"
   record
 }
