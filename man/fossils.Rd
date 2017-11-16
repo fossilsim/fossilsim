@@ -8,9 +8,9 @@
 \usage{
 fossils(data = NULL, from.taxonomy = FALSE)
 
-as.fossils(data, ...)
+as.fossils(data, from.taxonomy = FALSE)
 
-is.fossils(fossils)
+is.fossils(data)
 }
 \arguments{
 \item{data}{Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, creates a blank fossils object.}

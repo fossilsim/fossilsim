@@ -14,6 +14,8 @@
 #' plot(f, t)
 #' @keywords uniform preservation
 #' @export
+#' @importFrom stats rpois
+#' @importFrom stats runif
 sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE) {
 
   node.ages<-n.ages(tree)
@@ -47,7 +49,7 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE) 
 
     if(rand > 0) {
       if(use.exact.times) {
-        h=runif(rand,min=end,max=start)
+        h = runif(rand,min=end,max=start)
         fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
       } else {
         fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
@@ -67,6 +69,7 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE) 
 #' @param probability Probability of sampling/preservation.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).
+#' @param use.exact.times Whether exact sampling times should be simulated. If FALSE hmin and hmax are set to the start and end times of the corresponding edge. Default TRUE.
 #' @return An object of class fossils.
 #' @examples
 #' # simulate tree
@@ -89,7 +92,7 @@ sim.fossils.unif<-function(tree,basin.age,strata,probability,root.edge=T,convert
     stop("Sampling probability must be a probability between 0 and 1")
 
   if((probability == 1) & (convert.rate)){
-    warn("Can not convert probability to a rate if pr = 1, using pr = 0.9999 instead")
+    warning("Can not convert probability to a rate if pr = 1, using pr = 0.9999 instead")
     probability = 0.9999
   }
 
@@ -188,7 +191,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, rates, root.edge = TRUE){
   if(length(rates) != (length(interval.ages) - 1 ))
     stop("Length mismatch between interval ages and sampling rates")
 
-  horizons.min = head(interval.ages, -1)
+  horizons.min = utils::head(interval.ages, -1)
   horizons.max = interval.ages[-1]
 
   node.ages<-n.ages(tree)
@@ -311,7 +314,7 @@ sim.fossils.non.unif<-function(tree, interval.ages, rates, root.edge = TRUE){
 #' The label is for the node just below the sampled fossil.
 #'
 #' @references
-#' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92–109.
+#' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.
 #'
 #' @examples
 #' # simulate tree
@@ -341,7 +344,7 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
     horizons.max = seq(s1, basin.age, length = strata)
     horizons.min = horizons.max - s1
   } else {
-    horizons.min = head(interval.ages, -1)
+    horizons.min = utils::head(interval.ages, -1)
     horizons.max = interval.ages[-1]
   }
 

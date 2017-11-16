@@ -52,6 +52,7 @@
 #' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = rates)
 #'
 #' @export
+#' @importFrom graphics par points lines
 plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                        # age info/options
                        show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
@@ -62,7 +63,8 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                        # fossil appearance
                        fcex = 1.2, fcol = "darkorange", ecol = NULL, ...) {
-
+  
+  fossils$h = (fossils$hmin + fossils$hmax)/2
   x<-tree  # tree
   ba<-max
 
@@ -233,7 +235,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         horizons.min = horizons.max - s1
         s1 = rev(horizons.max - horizons.min) # rev is unneccessary here
       } else {
-        horizons.min = head(interval.ages, -1)
+        horizons.min = utils::head(interval.ages, -1)
         horizons.max = interval.ages[-1]
         ba = max(horizons.max)
         s1 = rev(horizons.max - horizons.min)

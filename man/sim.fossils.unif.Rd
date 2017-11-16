@@ -19,6 +19,8 @@ sim.fossils.unif(tree, basin.age, strata, probability, root.edge = T,
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 
 \item{convert.rate}{If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).}
+
+\item{use.exact.times}{Whether exact sampling times should be simulated. If FALSE hmin and hmax are set to the start and end times of the corresponding edge. Default TRUE.}
 }
 \value{
 An object of class fossils.
