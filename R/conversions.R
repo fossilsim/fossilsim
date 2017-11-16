@@ -32,7 +32,7 @@ combined.tree.with.fossils = function(tree, fossils) {
     tree$edge.length = c(tree$edge.length, tree$root.edge)
     times[root] = max(times) + tree$root.edge
   }
-  
+
   #renaming all species not in fossils
   for(i in 1:ntips) {
     if(!tree$tip.label[i] %in% fossils$sp) {
@@ -209,7 +209,8 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' @return A list containing the converted tree, taxonomy and fossils
 #' @examples
 #' # simulate record
-#' record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40), nExtant=0, nSamp = c(5,25))
+#' record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
+#'     nExtant=0, nSamp = c(5,25))
 #' # transform format
 #' l_tf = paleotree.record.to.fossils(record)
 #' l_tf$tree

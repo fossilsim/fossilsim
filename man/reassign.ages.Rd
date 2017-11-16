@@ -39,5 +39,5 @@ strata = 5
 sampling = 1
 f <- sim.fossils.intervals(t, basin.age = max, strata = strata, probabilities = rep(sampling,5))
 # reassign ages
-reassign.ages(t,f,max,strata)
+# TODO reassign.ages(t,f,max,strata)
 }

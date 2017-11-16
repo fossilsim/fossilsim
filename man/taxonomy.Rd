@@ -8,9 +8,9 @@
 \usage{
 taxonomy(data)
 
-as.taxonomy(data, ...)
+as.taxonomy(data)
 
-is.taxonomy(taxonomy)
+is.taxonomy(data)
 }
 \arguments{
 \item{data}{Dataframe of species taxonomy. See Details for the list of required fields.}

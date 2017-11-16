@@ -30,7 +30,7 @@ sim.cdfbd.taxa: Simulating Fossilized Birth Death Trees With Discrete Lineage-Sp
 \examples{
 n<-10
 numbsim<-1
-sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
+# TODO sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
 }
 \keyword{birth}
 \keyword{death}

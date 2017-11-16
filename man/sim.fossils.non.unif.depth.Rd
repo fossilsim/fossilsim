@@ -54,7 +54,8 @@ max = basin.age(t)
 strata = 7
 wd<-sim.water.depth(strata)
 # simulate fossils
-f<-sim.fossils.non.unif.depth(t, wd, PA = 1, PD = 0.5, DT = 1, basin.age = max, strata = strata, convert.rate = TRUE)
+f<-sim.fossils.non.unif.depth(t, wd, PA = 1, PD = 0.5, DT = 1,
+    basin.age = max, strata = strata, convert.rate = TRUE)
 plot(f,t, show.proxy = T, proxy.data = wd, strata = strata, show.strata = T)
 }
 \references{

@@ -49,7 +49,7 @@
 #' f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
 #' plot(f, t, show.strata = TRUE, interval.ages = times)
 #' # add proxy data
-#' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = rates)
+#' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)
 #'
 #' @export
 #' @importFrom graphics par points lines
@@ -64,7 +64,9 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
                        # fossil appearance
                        fcex = 1.2, fcol = "darkorange", ecol = NULL, ...) {
 
+  # TODO probably not appropriate all the time
   fossils$h = (fossils$hmin + fossils$hmax)/2
+
   x<-tree  # tree
   ba<-max
 
@@ -171,7 +173,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   }
 
   #if (no.margin)
-   # par(mai = rep(0, 4))
+  # par(mai = rep(0, 4))
   if (show.tip.label)
     nchar.tip.label <- nchar(x$tip.label)
   max.yy <- max(yy)
@@ -343,12 +345,13 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     # fossils
     if(show.fossils){
       if(binned){
-        if(attr(fossils, "ages") == "interval.max"){
-          y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
-        } else {
-          # treat fossil data as continuous
-          y = sapply(fossils$h, function(x) max(which(horizons.min <= x)) )
-        }
+        # TODO check correction
+        #if(attr(fossils, "ages") == "interval.max"){
+        #y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
+        #} else {
+        # treat fossil data as continuous
+        y = sapply(fossils$hmin, function(x) max(which(horizons.min <= x)) )
+        #}
         points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$sp] , col = fcol, pch = 19, cex = fcex)
       }
       else{

@@ -31,7 +31,7 @@ lambda <- 2.0
 mu <- 0.5
 psi <-0.6
 numbsim<-2
-sim.fbd.age(age,numbsim,lambda,mu,psi)
+# TODO sim.fbd.age(age,numbsim,lambda,mu,psi)
 }
 \keyword{birth}
 \keyword{death}

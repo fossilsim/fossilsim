@@ -80,6 +80,6 @@ rates = c(4, 1, 0.1)
 f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
 plot(f, t, show.strata = TRUE, interval.ages = times)
 # add proxy data
-plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = rates)
+plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)
 
 }

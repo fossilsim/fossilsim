@@ -43,33 +43,33 @@ taxonomy<-function(data){
 
 #' @export
 #' @aliases taxonomy
-print.taxonomy<-function(t, max.length = 50){
-  summary(t, max.length = max.length, details = FALSE)
+print.taxonomy<-function(x, max.length = 50, ...){
+  summary(x, max.length = max.length, details = FALSE)
 }
 
 #' @export
 #' @aliases taxomy
-summary.taxonomy<-function(t, max.length = 50, details = TRUE, ...){
-  if(length(t$sp) > 0){
-    if(length(t$sp) < max.length)
-      max.length = length(t$sp)
-    print(as.data.frame(t)[1:max.length,])
-    if(length(t$sp) > max.length)
+summary.taxonomy<-function(object, max.length = 50, details = TRUE, ...){
+  if(length(object$sp) > 0){
+    if(length(object$sp) < max.length)
+      max.length = length(object$sp)
+    print(as.data.frame(object)[1:max.length,])
+    if(length(object$sp) > max.length)
       cat("...\n")
   }
-  cat("Taxonomy representing", length(unique(t$sp)), "species across", length(unique(t$edge)), "edges.\n")
+  cat("Taxonomy representing", length(unique(object$sp)), "species across", length(unique(object$edge)), "edges.\n")
   if(details){
-    cat("\t", length(which(t$mode == "b")), "budding species\n\t",
-    length(which(t$mode == "s")), "bifurcating species\n\t",
-    length(which(t$mode == "a")), "anagenic species\n\t",
-    length(which(t$mode == "o")), "origin species\n\t",
-    length(which(t$mode == "NA" & t$cryptic == 1)), "cryptic speciation events\n")
+    cat("\t", length(which(object$mode == "b")), "budding species\n\t",
+    length(which(object$mode == "s")), "bifurcating species\n\t",
+    length(which(object$mode == "a")), "anagenic species\n\t",
+    length(which(object$mode == "o")), "origin species\n\t",
+    length(which(object$mode == "NA" & object$cryptic == 1)), "cryptic speciation events\n")
   }
 }
 
 #' @export
 #' @rdname taxonomy
-as.taxonomy<-function(data, ...) UseMethod("as.taxonomy")
+as.taxonomy<-function(data) UseMethod("as.taxonomy")
 
 as.taxonomy.default<-function(data, ...){
   taxonomy(data, ...)
@@ -77,7 +77,7 @@ as.taxonomy.default<-function(data, ...){
 
 #' @export
 #' @rdname taxonomy
-is.taxonomy<-function(taxonomy){
+is.taxonomy<-function(data){
   if(inherits(taxonomy, "taxonomy"))
     TRUE
   else
