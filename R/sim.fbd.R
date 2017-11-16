@@ -78,7 +78,7 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 
 				    lineage.start = lineage.end
 				}
-		    }	
+		    }
 		}
 
 
@@ -100,11 +100,11 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 				lineage.end = node.ages[[a]]
 
 				h = f[j,1] - lineage.end
-				
+
 				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
-				
+
 				f[,2] = map_nodes(f[,2],tree,tmp)
-				
+
 				tree = tmp
 			}
 		}
@@ -165,11 +165,11 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 					lineage.end = node.ages[[a]]
 
 					h = f[j,1] - lineage.end
-					
+
 					tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
-					
+
 					f[,2] = map_nodes(f[,2],tree,tmp)
-					
+
 					tree = tmp
 				}
 			}
@@ -195,7 +195,7 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 #' is the extinction rate prior (ancestral) to time times[i].
 #' @param psi Vector of fossil sampling rates, the rate in entry i
 #' is the fossil sampling rate prior (ancestral) to time times[i].
-#' @param times Vector of mass extinction and rate shift times. 
+#' @param times Vector of mass extinction and rate shift times.
 #' Time is 0 today and increasing going backwards in time. Specify the vector as times[i]
 #' @return List of numbsim simulated trees with n extant sampled tips.
 #' @examples
@@ -218,7 +218,7 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 
 		horizons = c(0, times, origin)
 
-		f <- sim.fossils.non.unif(t, horizons, psi)
+		f <- sim.fossils.intervals(t, interval.ages = horizons, rates = psi)
 		f <- f[order(f$h,decreasing=T),]
 
 		num_fossils = length(f[,2])
@@ -236,11 +236,11 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 				lineage.end = node.ages[[a]]
 
 				h = f[j,1] - lineage.end
-				
+
 				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
-				
+
 				f[,2] = map_nodes(f[,2],tree,tmp)
-				
+
 				tree = tmp
 			}
 		}
@@ -297,11 +297,11 @@ sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi)
 				lineage.end = node.ages[[a]]
 
 				h = f[j,1] - lineage.end
-				
+
 				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
-				
+
 				f[,2] = map_nodes(f[,2],tree,tmp)
-				
+
 				tree = tmp
 			}
 		}

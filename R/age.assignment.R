@@ -21,7 +21,7 @@
 #' # simulate fossils
 #' strata = 5
 #' sampling = 1
-#' f<-sim.fossils.unif(t,max,strata,sampling)
+#' f <- sim.fossils.intervals(t, basin.age = max, strata = strata, probabilities = rep(sampling,5))
 #' # reassign ages
 #' reassign.ages(t,f,max,strata)
 #' @export

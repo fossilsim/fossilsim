@@ -46,7 +46,7 @@
 #' max = basin.age(t)
 #' times = c(0, 0.3, 1, max)
 #' rates = c(4, 1, 0.1)
-#' f<-sim.fossils.non.unif(t, times, rates)
+#' f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
 #' plot(f, t, show.strata = TRUE, interval.ages = times)
 #' # add proxy data
 #' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = rates)
@@ -63,7 +63,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                        # fossil appearance
                        fcex = 1.2, fcol = "darkorange", ecol = NULL, ...) {
-  
+
   fossils$h = (fossils$hmin + fossils$hmax)/2
   x<-tree  # tree
   ba<-max
@@ -446,5 +446,3 @@ add.depth.profile<-function(depth.profile,axis.strata,strata,show.axis,add.depth
     mtext(2, col = 'grey75', text="Sampling proxy", line = 2)
   }
 }
-
-

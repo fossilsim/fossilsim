@@ -20,7 +20,7 @@ is the extinction rate prior (ancestral) to time times[i].}
 \item{psi}{Vector of fossil sampling rates, the rate in entry i
 is the fossil sampling rate prior (ancestral) to time times[i].}
 
-\item{times}{Vector of mass extinction and rate shift times. 
+\item{times}{Vector of mass extinction and rate shift times.
 Time is 0 today and increasing going backwards in time. Specify the vector as times[i]}
 }
 \value{
