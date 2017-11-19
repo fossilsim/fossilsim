@@ -35,16 +35,24 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
                       mode = character(),
                       origin = integer(),
                       cryptic = integer(),
-                      cryptic.id = integer()
+                      cryptic.id = integer(),
+                      edge.start = numeric(),
+                      edge.end = numeric()
   )
 
   # identify the root
   root = length(tree$tip.label) + 1
 
-  if(root.edge && exists("root.edge",tree))
-    species <- rbind(species, data.frame(sp = root, edge = root, parent = 0, start = node.ages[root] + tree$root.edge, end = node.ages[root], mode="o", origin = root, cryptic = 0, cryptic.id = root))
-  else
-    species <- rbind(species, data.frame(sp = root, edge = root, parent = 0, start = node.ages[root], end = node.ages[root], mode="r", origin = root, cryptic = 0, cryptic.id = root))
+  if(root.edge && exists("root.edge",tree)){
+    start = node.ages[root] + tree$root.edge
+    mode = "o"
+  } else {
+    start = node.ages[root]
+    mode = "r"
+  }
+  species <- rbind(species, data.frame(sp = root, edge = root, parent = 0, start = start, end = node.ages[root],
+                                       mode = mode, origin = root, cryptic = 0, cryptic.id = root,
+                                       edge.start = start, edge.end = node.ages[root]))
 
   aux = function(node, p) {
     # fetch the two descendants
@@ -58,8 +66,12 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
     if(runif(1) > (1 - beta)){
       # speciation event is symmetric
       a <- p$sp[which(p$edge == node)]
-      p <- rbind(p, data.frame(sp = d1, edge = d1, parent = a, start = node.ages[a], end = node.ages[d1], mode="s", origin = d1, cryptic = 0, cryptic.id = d1))
-      p <- rbind(p, data.frame(sp = d2, edge = d2, parent = a, start = node.ages[a], end = node.ages[d2], mode="s", origin = d2, cryptic = 0, cryptic.id = d2))
+      p <- rbind(p, data.frame(sp = d1, edge = d1, parent = a, start = node.ages[a], end = node.ages[d1],
+                               mode="s", origin = d1, cryptic = 0, cryptic.id = d1,
+                               edge.start = node.ages[a], edge.end = node.ages[d1]))
+      p <- rbind(p, data.frame(sp = d2, edge = d2, parent = a, start = node.ages[a], end = node.ages[d2],
+                               mode="s", origin = d2, cryptic = 0, cryptic.id = d2,
+                               edge.start = node.ages[a], edge.end = node.ages[d2]))
     } else{
       # speciation event is asymmetric/budding
 
@@ -73,9 +85,14 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
       s <- p$start[which(p$sp == d1)][1]
       m <- p$mode[which(p$sp == d1)][1]
       o <- p$origin[which(p$sp == d1)][1]
-      p <- rbind(p, data.frame(sp = d1, edge = d1, parent = a, start = s, end = node.ages[d1], mode = m, origin = o, cryptic = 0, cryptic.id = d1))
+      p <- rbind(p, data.frame(sp = d1, edge = d1, parent = a, start = s, end = node.ages[d1],
+                               mode = m, origin = o, cryptic = 0, cryptic.id = d1,
+                               edge.start = node.ages[ancestor(d1, tree)], edge.end = node.ages[d1]))
       # new species
-      p <- rbind(p, data.frame(sp = d2, edge = d2, parent = d1, start = node.ages[ancestor(d2, tree)], end = node.ages[d2], mode="b", origin = d2, cryptic = 0, cryptic.id = d2))
+      start = node.ages[ancestor(d2, tree)]
+      p <- rbind(p, data.frame(sp = d2, edge = d2, parent = d1, start = start, end = node.ages[d2],
+                               mode="b", origin = d2, cryptic = 0, cryptic.id = d2,
+                               edge.start = start, edge.end = node.ages[d2]))
     }
 
     p = aux(d1, p)
@@ -193,12 +210,17 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # additional younger edges associated with sp
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
+            edge.start = edges$start[which(edges$edge %in% edge)]
+            edge.end = edges$end[which(edges$edge %in% edge)]
+
             #mode = as.character(s$mode[which(s$mode != "NA")])
             mode = s$mode[1]
 
             parent = s$parent[1]
 
-            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end, mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp))
+            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end,
+                                                 mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp,
+                                                 edge.start = edge.start, edge.end = edge.end))
 
             # deal with potential asym descendants
             if(any(species$parent == i & species$start <= start & species$start > end)) {
@@ -219,11 +241,16 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # additional younger edges associated with sp
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
+            edge.start = edges$start[which(edges$edge %in% edge)]
+            edge.end = edges$end[which(edges$edge %in% edge)]
+
             mode = "a"
 
             parent = species.counter - 1
 
-            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end, mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp))
+            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end,
+                                                 mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp,
+                                                 edge.start = edge.start, edge.end = edge.end))
 
             # any descendant parent labels associated with this species shouldn't need to change
 
@@ -238,11 +265,16 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # additional younger edges associated with sp
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
+            edge.start = edges$start[which(edges$edge %in% edge)]
+            edge.end = edges$end[which(edges$edge %in% edge)]
+
             mode = "a"
 
             parent = species.counter - 1
 
-            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end, mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp))
+            species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end,
+                                                 mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp,
+                                                 edge.start = edge.start, edge.end = edge.end))
 
             # deal with potential asym descendants
             if(any(species$parent == i & species$start < start & species$start > end)) {
