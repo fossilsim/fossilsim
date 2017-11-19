@@ -17,17 +17,10 @@ combined.tree.with.fossils = function(tree, fossils) {
   if(length(fossils[,1])==0) return(tree)
 
   fossils$h = (fossils$hmin + fossils$hmax)/2
-  fossils = fossils[order(fossils$sp, -fossils$h),]
+  fossils = fossils[order(fossils$edge, -fossils$h),]
 
   ntips = length(tree$tip.label)
   totalnodes = ntips + tree$Nnode
-
-  #renaming all species not in fossils
-  for(i in 1:ntips) {
-    if(!i %in% fossils$sp) {
-      tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
-    }
-  }
 
   depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
@@ -40,11 +33,19 @@ combined.tree.with.fossils = function(tree, fossils) {
     times[root] = max(times) + tree$root.edge
   }
 
+  #renaming all species not in fossils
+  for(i in 1:ntips) {
+    if(!tree$tip.label[i] %in% fossils$sp) {
+      tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
+    }
+  }
+
   current_spec = 0
   count_spec = 1
   for(i in 1:length(fossils[,1])) {
-    if(fossils$sp[i] != current_spec) {
-      tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
+    if(fossils$sp[i] !=  current_spec) {
+      idx = which(tree$tip.label == current_spec)
+      if(length(idx) >0) tree$tip.label[idx] = paste0(tree$tip.label[idx], "_", count_spec)
       current_spec = fossils$sp[i]
       count_spec = 1
     }
@@ -61,10 +62,11 @@ combined.tree.with.fossils = function(tree, fossils) {
     #adding fossil tip
     tree$edge = rbind(tree$edge,c(totalnodes,-i))
     tree$edge.length = c(tree$edge.length,0)
-    tree$tip.label = c(tree$tip.label, paste0(tree$tip.label[current_spec], "_", count_spec))
+    tree$tip.label = c(tree$tip.label, paste0(current_spec, "_", count_spec))
     count_spec = count_spec +1
   }
-  tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
+  idx = which(tree$tip.label == current_spec)
+  if(length(idx) >0) tree$tip.label[idx] = paste0(tree$tip.label[idx], "_", count_spec)
 
   #handling root edge again, mrca may have been modified by the inclusion of fossils
   if(!is.null(tree$root.edge)) {
@@ -207,7 +209,8 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' @return A list containing the converted tree, taxonomy and fossils
 #' @examples
 #' # simulate record
-#' record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40), nExtant=0, nSamp = c(5,25))
+#' record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
+#'     nExtant=0, nSamp = c(5,25))
 #' # transform format
 #' l_tf = paleotree.record.to.fossils(record)
 #' l_tf$tree
@@ -231,9 +234,6 @@ paleotree.record.to.fossils = function(record) {
                         cryptic = numeric(), cryptic.id = numeric(), parent = numeric(),stringsAsFactors = F)
   ages = n.ages(tree)
 
-  #calculate age of record - paleotree allows for fully extinct trees so the youngest sample may not be at 0
-  youngest = tree$tip.label[which(ages < 1e-5)[1]]
-  offset = record[[youngest]]$taxa.data['ext.time']
   root_time = 0
 
   # this is a hack so the mode checking will work
@@ -264,7 +264,7 @@ paleotree.record.to.fossils = function(record) {
       node_idx = tree$edge[which(tree$edge[,2] == node_idx),1]
     }
     all_nodes = node_idx
-    age = offset + ages[node_idx] + tree$edge.length[which(tree$edge[,2] == node_idx)] #age of the parent
+    age = ages[node_idx] + tree$edge.length[which(tree$edge[,2] == node_idx)] #age of the parent
 
     for(t in sort(record[[i]]$sampling.times)) {
       while(node_idx != length(record) + 1 && t > age) {

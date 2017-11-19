@@ -20,7 +20,7 @@ is the extinction rate prior (ancestral) to time times[i].}
 \item{psi}{Vector of fossil sampling rates, the rate in entry i
 is the fossil sampling rate prior (ancestral) to time times[i].}
 
-\item{times}{Vector of mass extinction and rate shift times. 
+\item{times}{Vector of mass extinction and rate shift times.
 Time is 0 today and increasing going backwards in time. Specify the vector as times[i]}
 }
 \value{
@@ -32,7 +32,7 @@ sim.fbd.rateshift.taxa: Simulating Fossilized Birth Death Trees Incorporating Ra
 \examples{
 n<-10
 numbsim<-1
-sim.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0,0.3))
+# TODO sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0,0.3))
 }
 \keyword{birth}
 \keyword{death}

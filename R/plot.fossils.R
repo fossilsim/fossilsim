@@ -46,12 +46,13 @@
 #' max = basin.age(t)
 #' times = c(0, 0.3, 1, max)
 #' rates = c(4, 1, 0.1)
-#' f<-sim.fossils.non.unif(t, times, rates)
+#' f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
 #' plot(f, t, show.strata = TRUE, interval.ages = times)
 #' # add proxy data
-#' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = T, proxy.data = rates)
+#' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)
 #'
 #' @export
+#' @importFrom graphics par points lines
 plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                        # age info/options
                        show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
@@ -62,6 +63,9 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                        # fossil appearance
                        fcex = 1.2, fcol = "darkorange", ecol = NULL, ...) {
+
+  # TODO probably not appropriate all the time
+  fossils$h = (fossils$hmin + fossils$hmax)/2
 
   x<-tree  # tree
   ba<-max
@@ -169,7 +173,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   }
 
   #if (no.margin)
-   # par(mai = rep(0, 4))
+  # par(mai = rep(0, 4))
   if (show.tip.label)
     nchar.tip.label <- nchar(x$tip.label)
   max.yy <- max(yy)
@@ -233,7 +237,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         horizons.min = horizons.max - s1
         s1 = rev(horizons.max - horizons.min) # rev is unneccessary here
       } else {
-        horizons.min = head(interval.ages, -1)
+        horizons.min = utils::head(interval.ages, -1)
         horizons.max = interval.ages[-1]
         ba = max(horizons.max)
         s1 = rev(horizons.max - horizons.min)
@@ -341,12 +345,13 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     # fossils
     if(show.fossils){
       if(binned){
-        if(attr(fossils, "ages") == "interval.max"){
-          y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
-        } else {
-          # treat fossil data as continuous
-          y = sapply(fossils$h, function(x) max(which(horizons.min <= x)) )
-        }
+        # TODO check correction
+        #if(attr(fossils, "ages") == "interval.max"){
+        #y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
+        #} else {
+        # treat fossil data as continuous
+        y = sapply(fossils$hmin, function(x) max(which(horizons.min <= x)) )
+        #}
         points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$sp] , col = fcol, pch = 19, cex = fcex)
       }
       else{
@@ -444,5 +449,3 @@ add.depth.profile<-function(depth.profile,axis.strata,strata,show.axis,add.depth
     mtext(2, col = 'grey75', text="Sampling proxy", line = 2)
   }
 }
-
-

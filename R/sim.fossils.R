@@ -14,6 +14,8 @@
 #' plot(f, t)
 #' @keywords uniform preservation
 #' @export
+#' @importFrom stats rpois
+#' @importFrom stats runif
 sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE) {
 
   node.ages<-n.ages(tree)
@@ -47,7 +49,7 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE) 
 
     if(rand > 0) {
       if(use.exact.times) {
-        h=runif(rand,min=end,max=start)
+        h = runif(rand,min=end,max=start)
         fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
       } else {
         fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
@@ -55,6 +57,132 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE) 
     }
   }
 
+  fdf <- as.fossils(fdf)
+  return(fdf)
+}
+
+#' Simulate fossils under a non-uniform model of preservation on a set of consecutive time intervals
+#'
+#' Intervals can be specified by either setting \code{interval.ages} to the actual interval boundaries or setting both \code{basin.age} and \code{strata}.
+#' In the second case all intervals will be of equal length.
+#' Preservation is specified either via \code{rates}, which represent the rates of a Poisson process in each interval,
+#' or \code{probabilities}, which represent the probabilities of sampling per interval. When using \code{probabilities}, at most one fossil will be sampled per interval.
+#'
+#' @param tree Phylo object.
+#' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
+#' @param basin.age Maximum age of the oldest stratigraphic interval.
+#' @param strata Number of stratigraphic intervals.
+#' @param probabilities Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals.
+#' @param rates Poisson sampling rate for each interval. The number of rates should match the number of intervals.
+#' @param root.edge If TRUE include the root edge (default = TRUE).
+#' @param use.exact.times Whether exact sampling times should be simulated. If FALSE hmin and hmax are set to the start and end times of the sampling interval. Default TRUE.
+#' @return An object of class fossils.
+#' @examples
+#' # simulate tree
+#' t <- ape::rtree(6)
+#' # assign a max age based on tree height
+#' max.age <- basin.age(t)
+#' # simulate fossils using basin.age and strata & probabilities
+#' strata = 4
+#' probability = rep(0.7,4)
+#' f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
+#' plot(f, t, binned = TRUE, strata = strata)
+#' # simulate fossils using interval.ages & rates
+#' times = seq(0, max.age, length.out = 5)
+#' rates = c(5, 3, 1,5)
+#' f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
+#' plot(f, t)
+#' @keywords uniform fossil preservation
+#' @keywords non-uniform fossil preservation
+#' @export
+sim.fossils.intervals <- function(tree,
+                                  interval.ages = NULL, basin.age = NULL, strata = NULL,
+                                  probabilities = NULL, rates = NULL,
+                                  root.edge=T, use.exact.times = TRUE){
+
+  if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
+    stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
+  if(!is.null(basin.age) && !is.null(strata)) {
+    if(!is.null(interval.ages)) warning("Two intervals definition found, using interval.ages")
+    else interval.ages <- seq(0, basin.age, length=strata+1)
+  }
+
+  if(is.null(probabilities) && is.null(rates)) stop("Either rates or probabilities need to be specified")
+
+  use.rates = FALSE
+  if(!is.null(probabilities) && !is.null(rates)) {
+    rates = NULL
+    warning("Both probabilities and rates found, using probabilities")
+  }
+  if(!is.null(rates)) {
+    use.rates = TRUE
+    if(length(rates) != (length(interval.ages) - 1 )) stop("Length mismatch between interval ages and sampling rates")
+  } else {
+    if(length(probabilities) != (length(interval.ages) - 1 )) stop("Length mismatch between interval ages and sampling probabilities")
+    if(any(probabilities < 0) || any(probabilities > 1)) stop("Sampling probabilities must be between 0 and 1")
+  }
+
+  node.ages<-n.ages(tree)
+  root=length(tree$tip.label)+1
+
+  fdf = fossils()
+  root = length(tree$tip.label) + 1
+
+  if(root.edge && exists("root.edge",tree) ){
+    lineages = c(tree$edge[,2], root)
+  } else lineages = tree$edge[,2]
+
+  for (node in lineages) { # internal nodes + tips
+    if(node <= length(tree$tip.label)) sp = as.character(tree$tip.label[node])
+    else if(!is.null(tree$node.label)) sp = as.character(tree$node.label[node - length(tree$tip.label)])
+    else sp = paste0("t",node)
+
+    end = node.ages[node]
+    if(node == root) {
+      origin = NA
+      blength = tree$root.edge
+    }
+    else {
+      edge = which(tree$edge[,2] == node)
+      origin = tree$edge[edge, 1]
+      blength = tree$edge.length[edge]
+    }
+    start = end + blength
+
+    #possible intervals covered by edge
+    for (i in 1:(length(interval.ages)-1)) {
+      if(interval.ages[i+1] < end) next
+      if(interval.ages[i] > start) break
+
+      min.time = max(end, interval.ages[i])
+      max.time = min(start, interval.ages[i+1])
+
+      if(use.rates) {
+        # generate k fossils from a poisson distribution
+        k = rpois(1,rates[i]*(max.time - min.time))
+        if(k > 0) {
+          if(use.exact.times) {
+            ages = runif(k,min.time,max.time)
+            fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
+          } else {
+            fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = rep(min.time, k), hmax = rep(max.time, k), stringsAsFactors = F))
+          }
+        }
+      } else {
+        # scale the probability
+        pr = probabilities[i] * (max.time - min.time)/(interval.ages[i+1] - interval.ages[i])
+        # if random.number < pr { record fossil as collected }
+        if (runif(1) <= pr) {
+          if(use.exact.times) {
+            ages = runif(1,min.time,max.time)
+            fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
+          } else {
+            fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+          }
+        }
+      }
+    }
+  }
   fdf <- as.fossils(fdf)
   return(fdf)
 }
@@ -87,7 +215,7 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE) 
 #' The label is for the node just below the sampled fossil.
 #'
 #' @references
-#' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92–109.
+#' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.
 #'
 #' @examples
 #' # simulate tree
@@ -98,7 +226,8 @@ sim.fossils.poisson<-function(tree,rate,root.edge=TRUE, use.exact.times = TRUE) 
 #' strata = 7
 #' wd<-sim.water.depth(strata)
 #' # simulate fossils
-#' f<-sim.fossils.non.unif.depth(t, wd, PA = 1, PD = 0.5, DT = 1, basin.age = max, strata = strata, convert.rate = TRUE)
+#' f<-sim.fossils.non.unif.depth(t, wd, PA = 1, PD = 0.5, DT = 1,
+#'     basin.age = max, strata = strata, convert.rate = TRUE)
 #' plot(f,t, show.proxy = T, proxy.data = wd, strata = strata, show.strata = T)
 #' @keywords non-uniform fossil preseravtion
 #' @export
@@ -117,7 +246,7 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
     horizons.max = seq(s1, basin.age, length = strata)
     horizons.min = horizons.max - s1
   } else {
-    horizons.min = head(interval.ages, -1)
+    horizons.min = utils::head(interval.ages, -1)
     horizons.max = interval.ages[-1]
   }
 
@@ -228,10 +357,7 @@ sim.fossils.non.unif.depth<-function(tree, profile, PA=.5, PD=.5, DT=.5, interva
     #eol
   }
 
-  if(convert.rate)
-    fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
-  else
-    fossils<-fossils(fossils, age = "interval.max", speciation.mode = "symmetric")
+  fossils = as.fossils(fossils)
   return(fossils) # in this data frame h=horizon and sp=lineage
 
   #eof

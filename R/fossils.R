@@ -44,28 +44,28 @@ fossils<-function(data = NULL, from.taxonomy = FALSE){
 
 #' @export
 #' @aliases fossils
-print.fossils<-function(f, max.length = 10, ...){
-  if(length(f$sp) > 0){
-    if(length(f$sp) < max.length)
-      max.length = length(f$sp)
-    print(as.data.frame(f)[1:max.length,])
-    if(length(f$sp) > max.length)
+print.fossils <- function(x, max.length = 10, ...){
+  if(length(x$sp) > 0){
+    if(length(x$sp) < max.length)
+      max.length = length(x$sp)
+    print(as.data.frame(x)[1:max.length,])
+    if(length(x$sp) > max.length)
       cat("...\n")
   }
-  cat("Fossil record with", length(f$sp), "occurrences representing", length(unique(f$sp)), "species\n")
-  if(attr(f,"from.taxonomy")) cat("Fossils record simulated from a taxonomy")
+  cat("Fossil record with", length(x$sp), "occurrences representing", length(unique(x$sp)), "species\n")
+  if(attr(x,"from.taxonomy")) cat("Fossils record simulated from a taxonomy")
   else cat("Fossils record not simulated from a taxonomy: all speciation was assumed symmetric")
 }
 
 #' @export
 #' @aliases fossils
-summary.fossils<-function(f, max.length = 10, ...){
-  print(f, max.length = max.length)
+summary.fossils <- function(object, max.length = 10, ...){
+  print(object, max.length = max.length)
 }
 
 #' @export
 #' @rdname  fossils
-as.fossils<-function(data, ...) UseMethod("as.fossils")
+as.fossils<-function(data, from.taxonomy = FALSE) UseMethod("as.fossils")
 
 as.fossils.default<-function(data, ...){
   fossils(data, ...)
@@ -73,8 +73,8 @@ as.fossils.default<-function(data, ...){
 
 #' @export
 #' @rdname  fossils
-is.fossils<-function(fossils){
-  if(inherits(fossils, "fossils"))
+is.fossils<-function(data){
+  if(inherits(data, "fossils"))
     TRUE
   else
     FALSE

@@ -11,7 +11,7 @@
 #' @examples
 #' n<-10
 #' numbsim<-1
-#' sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
+#' # TODO sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
 #' @keywords fossilized birth death
 #' @export
 sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
@@ -78,7 +78,7 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 
 				    lineage.start = lineage.end
 				}
-		    }	
+		    }
 		}
 
 
@@ -100,11 +100,11 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 				lineage.end = node.ages[[a]]
 
 				h = f[j,1] - lineage.end
-				
+
 				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
-				
+
 				f[,2] = map_nodes(f[,2],tree,tmp)
-				
+
 				tree = tmp
 			}
 		}
@@ -135,7 +135,7 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 #' mu <- 0.5
 #' psi <-0.6
 #' numbsim<-2
-#' sim.fbd.age(age,numbsim,lambda,mu,psi)
+#' # TODO sim.fbd.age(age,numbsim,lambda,mu,psi)
 #' @keywords fossilized birth death
 #' @export
 sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
@@ -147,6 +147,8 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 		{
 			t = trees[[i]]
 			f <- sim.fossils.poisson(t, psi)
+
+			# TODO f$h has been removed
 			f <- f[order(f$h,decreasing=T),]
 
 			num_fossils = length(f[,2])
@@ -160,16 +162,16 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 				for(j in 1:num_fossils)
 				{
 					node.ages = n.ages(tree)
-
+          # TODO all indexing done on columns is probably invalid with the new format
 					a=which(names(node.ages)==f[j,2])
 					lineage.end = node.ages[[a]]
 
 					h = f[j,1] - lineage.end
-					
+
 					tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
-					
+
 					f[,2] = map_nodes(f[,2],tree,tmp)
-					
+
 					tree = tmp
 				}
 			}
@@ -195,13 +197,13 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 #' is the extinction rate prior (ancestral) to time times[i].
 #' @param psi Vector of fossil sampling rates, the rate in entry i
 #' is the fossil sampling rate prior (ancestral) to time times[i].
-#' @param times Vector of mass extinction and rate shift times. 
+#' @param times Vector of mass extinction and rate shift times.
 #' Time is 0 today and increasing going backwards in time. Specify the vector as times[i]
 #' @return List of numbsim simulated trees with n extant sampled tips.
 #' @examples
 #' n<-10
 #' numbsim<-1
-#' sim.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0,0.3))
+#' # TODO sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0,0.3))
 #' @keywords fossilized birth death
 #' @export
 sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
@@ -218,7 +220,9 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 
 		horizons = c(0, times, origin)
 
-		f <- sim.fossils.non.unif(t, horizons, psi)
+		f <- sim.fossils.intervals(t, interval.ages = horizons, rates = psi)
+
+		# TODO f$h has been removed
 		f <- f[order(f$h,decreasing=T),]
 
 		num_fossils = length(f[,2])
@@ -232,15 +236,16 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 			{
 				node.ages = n.ages(tree)
 
+				# TODO all indexing done on columns is probably invalid with the new format
 				a=which(names(node.ages)==f[j,2])
 				lineage.end = node.ages[[a]]
 
 				h = f[j,1] - lineage.end
-				
+
 				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
-				
+
 				f[,2] = map_nodes(f[,2],tree,tmp)
-				
+
 				tree = tmp
 			}
 		}
@@ -269,7 +274,7 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 #' mu <- 0.5
 #' psi <-0.6
 #' numbsim<-2
-#' sim.fbd.taxa(n,numbsim,lambda,mu,psi)
+#' # TODO sim.fbd.taxa(n,numbsim,lambda,mu,psi)
 #' @keywords fossilized birth death
 #' @export
 sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi)
@@ -279,6 +284,8 @@ sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi)
 	{
 		t = trees[[i]]
 		f <- sim.fossils.poisson(t, psi)
+
+		# TODO f$h has been removed
 		f <- f[order(f$h,decreasing=T),]
 
 		num_fossils = length(f[,2])
@@ -293,15 +300,16 @@ sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi)
 			{
 				node.ages = n.ages(tree)
 
+				# TODO all indexing done on columns is probably invalid with the new format
 				a=which(names(node.ages)==f[j,2])
 				lineage.end = node.ages[[a]]
 
 				h = f[j,1] - lineage.end
-				
+
 				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
-				
+
 				f[,2] = map_nodes(f[,2],tree,tmp)
-				
+
 				tree = tmp
 			}
 		}
