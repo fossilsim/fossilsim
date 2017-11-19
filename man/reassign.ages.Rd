@@ -41,3 +41,4 @@ f <- sim.fossils.intervals(t, basin.age = max, strata = strata, probabilities = 
 # reassign ages
 # TODO reassign.ages(t,f,max,strata)
 }
+

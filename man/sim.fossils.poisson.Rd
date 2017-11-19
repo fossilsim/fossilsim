@@ -11,9 +11,9 @@ sim.fossils.poisson(tree, rate, root.edge = TRUE, use.exact.times = TRUE)
 
 \item{rate}{Poisson sampling rate.}
 
-\item{root.edge}{If TRUE include the root edge (default = TRUE).}
+\item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
-\item{use.exact.times}{Whether exact sampling times should be simulated. If FALSE hmin and hmax are set to the start and end times of the corresponding edge. Default TRUE.}
+\item{use.exact.times}{If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding edge. Default = TRUE.}
 }
 \value{
 An object of class fossils.
@@ -28,6 +28,8 @@ t<-ape::rtree(4)
 rate = 2
 f<-sim.fossils.poisson(t, rate)
 plot(f, t)
+
 }
 \keyword{preservation}
 \keyword{uniform}
+

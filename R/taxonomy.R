@@ -1,7 +1,7 @@
 #' Taxonomy object
 #'
 #' @description
-#' Create a taxonomy object related species identity to a phylo object.
+#' Create a taxonomy object relating species identity to a phylo object.
 #'
 #' @details
 #' The taxonomy object includes the following 7 fields for each edge in the phylo object:
@@ -22,7 +22,7 @@
 #'
 #' Optional fields:
 #' \itemize{
-#' \item{\code{cryptic = TRUE} if speciation event was cryptic otherwise the function assumes \code{cryptic = TRUE}.}
+#' \item{\code{cryptic = TRUE} if speciation event was cryptic otherwise the function assumes \code{cryptic = FALSE}.}
 #' \item{\code{cryptic.id} = cryptic species identity. If cryptic = TRUE \code{cryptic.id} will differ from the true species identity \code{sp}.}
 #' }
 #'
@@ -31,7 +31,7 @@
 #' @export
 taxonomy<-function(data){
   if(is.null(data$sp) || is.null(data$edge) || is.null(data$mode) || is.null(data$end) || is.null(data$start) || is.null(data$end))
-    stop("Species identity, edge labels and mode must be specified using 'sp', 'edge' and 'mode'")
+    stop("Species identity, edge labels, mode, start and end times must be specified using 'sp', 'edge', 'mode', 'start' and 'end'")
 
   if(is.null(data$cryptic))
     data <- cbind(data, cryptic = 0, cryptic.id = data$sp)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.fossils.R
 \name{sim.fossils.intervals}
 \alias{sim.fossils.intervals}
-\title{Simulate fossils under a non-uniform model of preservation on a set of consecutive time intervals}
+\title{Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals}
 \usage{
 sim.fossils.intervals(tree, interval.ages = NULL, basin.age = NULL,
   strata = NULL, probabilities = NULL, rates = NULL, root.edge = T,
@@ -21,18 +21,19 @@ sim.fossils.intervals(tree, interval.ages = NULL, basin.age = NULL,
 
 \item{rates}{Poisson sampling rate for each interval. The number of rates should match the number of intervals.}
 
-\item{root.edge}{If TRUE include the root edge (default = TRUE).}
+\item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
-\item{use.exact.times}{Whether exact sampling times should be simulated. If FALSE hmin and hmax are set to the start and end times of the sampling interval. Default TRUE.}
+\item{use.exact.times}{If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding edge. Default = TRUE.}
 }
 \value{
 An object of class fossils.
 }
 \description{
-Intervals can be specified by either setting \code{interval.ages} to the actual interval boundaries or setting both \code{basin.age} and \code{strata}.
-In the second case all intervals will be of equal length.
-Preservation is specified either via \code{rates}, which represent the rates of a Poisson process in each interval,
-or \code{probabilities}, which represent the probabilities of sampling per interval. When using \code{probabilities}, at most one fossil will be sampled per interval.
+Intervals can be specified by specifying the interval boundaries using \code{interval.ages} or specifying both \code{basin.age} and \code{strata}.
+In the second scenario all intervals will be of equal length.
+Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
+or \code{probabilities}, which represent the probabilities of sampling per interval.
+When using \code{probabilities}, at most one fossil per species will be sampled per interval.
 }
 \examples{
 # simulate tree
@@ -54,3 +55,4 @@ plot(f, t)
 \keyword{non-uniform}
 \keyword{preservation}
 \keyword{uniform}
+

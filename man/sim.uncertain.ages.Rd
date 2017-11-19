@@ -36,3 +36,4 @@ f<-sim.fossils.poisson(t, 2)
 # simulate uncertainty
 f = sim.uncertain.ages(f, c(0,TreeSim::getx(t)))
 }
+
