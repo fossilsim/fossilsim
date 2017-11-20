@@ -153,7 +153,7 @@ add.anagenic.species<-function(tree, species, lambda.a){
     # since species labels can change with the addition of anagenic species
     species.counter = max(as.numeric(names(node.ages))) + 1
 
-    # calculate edge start and end times
+    # calculate edge start and end times (I think this is probably not necessary now)
     edges = data.frame(edge = numeric(), start = numeric(), end = numeric())
 
     for(i in unique(tree$edge[,2])){
@@ -341,4 +341,3 @@ add.cryptic.species<-function(species, kappa){
   }
   return(species)
 }
-

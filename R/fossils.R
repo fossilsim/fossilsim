@@ -1,24 +1,25 @@
 #' Fossils object
 #'
-#' Create a fossil record object from a dataframe or a list. The input is taken to be a dataframe or list.
+#' Create a fossil record object. The input is taken to be a dataframe or list.
 #'
 #' The fossil record object contains 5 fields containing for each fossil the following data:
 #' \itemize{
-#'  \item \code{sp} the label of the corresponding species. This label matches with tip labels in the corresponding phylogeny
-#'  and with species labels in the taxonomy record.
+#'  \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny
+#'  and the species labels in the corresponding object
 #'  \item \code{edge} the label of the sampling node in the phylogeny, i.e the node at the end of the edge on which the fossil was sampled
 #'  \item \code{origin} the label of the node where the corresponding species originated in the phylogeny
-#'  \item \code{hmin} the lowest bound of the time interval in which that fossil was sampled
-#'  \item \code{hmax} the highest bound of the time interval in which that fossil was sampled. Is equal to \code{hmin} if sampling times are exact.
+#'  \item \code{hmin} the youngest bound of the time interval in which the fossil was sampled
+#'  \item \code{hmax} the oldest bound of the time interval in which the fossil was sampled.
+#'  This is equal to \code{hmin} if sampling times are exact
 #' }
 #'
-#' @param data Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, creates a blank fossils object.
-#' @param from.taxonomy Boolean indicating whether the fossils were sampled using a taxonomy object. Defaults to FALSE.
+#' @param data Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, the function creates an empty fossils object.
+#' @param from.taxonomy Boolean indicating whether the fossils were sampled using a taxonomy object. Default = FALSE.
 #'
 #' @export
 fossils<-function(data = NULL, from.taxonomy = FALSE){
   if(is.null(data)) {
-    data = data.frame(hmin=numeric(),hmax = numeric(), sp=numeric(),edge=numeric(),origin=numeric(), stringsAsFactors = F)
+    data = data.frame(sp = numeric(), edge = numeric(), origin = numeric(), hmin = numeric(), hmax = numeric(), stringsAsFactors = F)
   }
   else {
     if(is.list(data)) data <- as.data.frame(data)
@@ -54,7 +55,7 @@ print.fossils <- function(x, max.length = 10, ...){
   }
   cat("Fossil record with", length(x$sp), "occurrences representing", length(unique(x$sp)), "species\n")
   if(attr(x,"from.taxonomy")) cat("Fossils record simulated from a taxonomy")
-  else cat("Fossils record not simulated from a taxonomy: all speciation was assumed symmetric")
+  else cat("Fossils record not simulated using taxonomy: all speciation events are symmetric")
 }
 
 #' @export

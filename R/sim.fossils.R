@@ -32,9 +32,11 @@ sim.fossils.poisson<-function(tree, rate, root.edge = TRUE, use.exact.times = TR
 
   for (node in lineages){ # internal nodes + tips
 
-    if(node <= length(tree$tip.label)) sp = as.character(tree$tip.label[node])
-    else if(!is.null(tree$node.label)) sp = as.character(tree$node.label[node - length(tree$tip.label)])
-    else sp = paste0("t",node)
+    #if(node <= length(tree$tip.label)) sp = as.character(tree$tip.label[node])
+    #else if(!is.null(tree$node.label)) sp = as.character(tree$node.label[node - length(tree$tip.label)])
+    #else sp = paste0("t",node)
+
+    sp = node
 
     end = node.ages[node]
     if(node == root) {
@@ -56,7 +58,7 @@ sim.fossils.poisson<-function(tree, rate, root.edge = TRUE, use.exact.times = TR
         h = runif(rand, min = end, max = start)
         fdf <- rbind(fdf, data.frame(edge = node, sp = sp, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
       } else {
-        fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
+        fdf <- rbind(fdf, data.frame(edge = node, sp = sp, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
       }
     }
   }
@@ -83,33 +85,37 @@ sim.fossils.poisson<-function(tree, rate, root.edge = TRUE, use.exact.times = TR
 #' @return An object of class fossils.
 #'
 #' @examples
+#'
 #' # simulate tree
 #' t <- ape::rtree(6)
 #' # assign a max age based on tree height
 #' max.age <- basin.age(t)
+#'
 #' # simulate fossils using basin.age and strata & probabilities
 #' strata = 4
-#' probability = rep(0.7,4)
+#' probability = rep(0.7, 4)
 #' f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
 #' plot(f, t, binned = TRUE, strata = strata)
+#'
 #' # simulate fossils using interval.ages & rates
 #' times = seq(0, max.age, length.out = 5)
 #' rates = c(5, 3, 1,5)
 #' f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
 #' plot(f, t)
+#'
 #' @keywords uniform fossil preservation
 #' @keywords non-uniform fossil preservation
 #' @export
 sim.fossils.intervals <- function(tree,
                                   interval.ages = NULL, basin.age = NULL, strata = NULL,
                                   probabilities = NULL, rates = NULL,
-                                  root.edge=T, use.exact.times = TRUE){
+                                  root.edge = TRUE, use.exact.times = TRUE){
 
   if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
     stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
   if(!is.null(basin.age) && !is.null(strata)) {
-    if(!is.null(interval.ages)) warning("Two intervals definition found, using interval.ages")
-    else interval.ages <- seq(0, basin.age, length=strata+1)
+    if(!is.null(interval.ages)) warning("Two interval definitions found, using interval.ages")
+    else interval.ages <- seq(0, basin.age, length = strata + 1)
   }
 
   if(is.null(probabilities) && is.null(rates)) stop("Either rates or probabilities need to be specified")
@@ -128,19 +134,21 @@ sim.fossils.intervals <- function(tree,
   }
 
   node.ages<-n.ages(tree)
-  root=length(tree$tip.label)+1
+  root = length(tree$tip.label) + 1
 
   fdf = fossils()
-  root = length(tree$tip.label) + 1
 
   if(root.edge && exists("root.edge",tree) ){
     lineages = c(tree$edge[,2], root)
   } else lineages = tree$edge[,2]
 
   for (node in lineages) { # internal nodes + tips
-    if(node <= length(tree$tip.label)) sp = as.character(tree$tip.label[node])
-    else if(!is.null(tree$node.label)) sp = as.character(tree$node.label[node - length(tree$tip.label)])
-    else sp = paste0("t",node)
+
+    #if(node <= length(tree$tip.label)) sp = as.character(tree$tip.label[node])
+    #else if(!is.null(tree$node.label)) sp = as.character(tree$node.label[node - length(tree$tip.label)])
+    #else sp = paste0("t",node)
+
+    sp = node
 
     end = node.ages[node]
     if(node == root) {
@@ -155,7 +163,7 @@ sim.fossils.intervals <- function(tree,
     start = end + blength
 
     #possible intervals covered by edge
-    for (i in 1:(length(interval.ages)-1)) {
+    for (i in 1:(length(interval.ages) - 1)) {
       if(interval.ages[i+1] < end) next
       if(interval.ages[i] > start) break
 
@@ -170,18 +178,22 @@ sim.fossils.intervals <- function(tree,
             ages = runif(k,min.time,max.time)
             fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
           } else {
+            min.time = interval.ages[i]
+            max.time = interval.ages[i+1]
             fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = rep(min.time, k), hmax = rep(max.time, k), stringsAsFactors = F))
           }
         }
       } else {
         # scale the probability
         pr = probabilities[i] * (max.time - min.time)/(interval.ages[i+1] - interval.ages[i])
-        # if random.number < pr { record fossil as collected }
+        # if random.number < pr { record fossil as collected during interval }
         if (runif(1) <= pr) {
           if(use.exact.times) {
-            ages = runif(1,min.time,max.time)
+            ages = runif(1, min.time, max.time)
             fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
           } else {
+            min.time = interval.ages[i]
+            max.time = interval.ages[i+1]
             fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
           }
         }
@@ -417,11 +429,11 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 basin.age<-function(tree,root.edge=TRUE){
   node.ages<-n.ages(tree)
   if(root.edge && exists("root.edge",tree) )
-    ba = max(node.ages)+tree$root.edge
+    ba = max(node.ages) + tree$root.edge
   else
     ba = max(node.ages)
 
-  ba = round(ba,1)+0.1
+  ba = round(ba,1) + 0.1
   return(ba)
 }
 

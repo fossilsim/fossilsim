@@ -5,7 +5,7 @@
 \title{Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals}
 \usage{
 sim.fossils.intervals(tree, interval.ages = NULL, basin.age = NULL,
-  strata = NULL, probabilities = NULL, rates = NULL, root.edge = T,
+  strata = NULL, probabilities = NULL, rates = NULL, root.edge = TRUE,
   use.exact.times = TRUE)
 }
 \arguments{
@@ -36,20 +36,24 @@ or \code{probabilities}, which represent the probabilities of sampling per inter
 When using \code{probabilities}, at most one fossil per species will be sampled per interval.
 }
 \examples{
+
 # simulate tree
 t <- ape::rtree(6)
 # assign a max age based on tree height
 max.age <- basin.age(t)
+
 # simulate fossils using basin.age and strata & probabilities
 strata = 4
-probability = rep(0.7,4)
+probability = rep(0.7, 4)
 f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
 plot(f, t, binned = TRUE, strata = strata)
+
 # simulate fossils using interval.ages & rates
 times = seq(0, max.age, length.out = 5)
 rates = c(5, 3, 1,5)
 f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
 plot(f, t)
+
 }
 \keyword{fossil}
 \keyword{non-uniform}

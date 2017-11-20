@@ -13,22 +13,23 @@ as.fossils(data, from.taxonomy = FALSE)
 is.fossils(data)
 }
 \arguments{
-\item{data}{Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, creates a blank fossils object.}
+\item{data}{Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, the function creates an empty fossils object.}
 
-\item{from.taxonomy}{Boolean indicating whether the fossils were sampled using a taxonomy object. Defaults to FALSE.}
+\item{from.taxonomy}{Boolean indicating whether the fossils were sampled using a taxonomy object. Default = FALSE.}
 }
 \description{
-Create a fossil record object from a dataframe or a list. The input is taken to be a dataframe or list.
+Create a fossil record object. The input is taken to be a dataframe or list.
 }
 \details{
 The fossil record object contains 5 fields containing for each fossil the following data:
 \itemize{
- \item \code{sp} the label of the corresponding species. This label matches with tip labels in the corresponding phylogeny
- and with species labels in the taxonomy record.
+ \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny
+ and the species labels in the corresponding object
  \item \code{edge} the label of the sampling node in the phylogeny, i.e the node at the end of the edge on which the fossil was sampled
  \item \code{origin} the label of the node where the corresponding species originated in the phylogeny
- \item \code{hmin} the lowest bound of the time interval in which that fossil was sampled
- \item \code{hmax} the highest bound of the time interval in which that fossil was sampled. Is equal to \code{hmin} if sampling times are exact.
+ \item \code{hmin} the youngest bound of the time interval in which the fossil was sampled
+ \item \code{hmax} the oldest bound of the time interval in which the fossil was sampled.
+ This is equal to \code{hmin} if sampling times are exact
 }
 }
 
