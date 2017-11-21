@@ -352,16 +352,16 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         # treat fossil data as continuous
         y = sapply(fossils$hmin, function(x) max(which(horizons.min <= x)) )
         #}
-        points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$sp] , col = fcol, pch = 19, cex = fcex)
+        points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$edge] , col = fcol, pch = 19, cex = fcex)
       }
       else{
         if(fcol == ecol)
-          points(max(xx) - fossils$h, yy[fossils$sp], col = fcol, pch = 19, cex = fcex)
+          points(max(xx) - fossils$h, yy[fossils$edge], col = fcol, pch = 19, cex = fcex)
         else{
           extant = fossils[which(fossils$h == 0), ]
           extinct = fossils[which(fossils$h != 0), ]
-          points(max(xx) - extant$h, yy[extant$sp], col = ecol, pch = 19, cex = fcex)
-          points(max(xx) - extinct$h, yy[extinct$sp], col = fcol, pch = 19, cex = fcex)
+          points(max(xx) - extant$h, yy[extant$edge], col = ecol, pch = 19, cex = fcex)
+          points(max(xx) - extinct$h, yy[extinct$edge], col = fcol, pch = 19, cex = fcex)
         }
       }
     }
@@ -382,9 +382,9 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         fossils$r = max(xx) - fossils$h
       }
 
-      for(i in unique(fossils$sp)) {
+      for(i in unique(fossils$edge)) {
 
-        range = fossils$r[which(fossils$sp==i)]
+        range = fossils$r[which(fossils$edge==i)]
 
         if(length(range) == 1)
           range = c(range-buffer,range+buffer)
@@ -400,7 +400,8 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     # water depth profile
     add.depth.axis = TRUE
     if(show.proxy){
-      add.depth.profile(proxy.data,axis.strata,strata,show.axis,add.depth.axis,show.preferred.depth=show.preferred.environ,PD=preferred.environ,x.labs=x.labs)
+      add.depth.profile(proxy.data, axis.strata, strata, show.axis, add.depth.axis,
+                        show.preferred.depth = show.preferred.environ, PD = preferred.environ, x.labs = x.labs)
     }
   }
 

@@ -4,12 +4,14 @@
 \alias{sim.fossils.intervals}
 \title{Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals}
 \usage{
-sim.fossils.intervals(tree, interval.ages = NULL, basin.age = NULL,
-  strata = NULL, probabilities = NULL, rates = NULL, root.edge = TRUE,
-  use.exact.times = TRUE)
+sim.fossils.intervals(tree = NULL, species = NULL, interval.ages = NULL,
+  basin.age = NULL, strata = NULL, probabilities = NULL, rates = NULL,
+  root.edge = TRUE, use.exact.times = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
+
+\item{species}{Taxonomy object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -39,6 +41,7 @@ When using \code{probabilities}, at most one fossil per species will be sampled 
 
 # simulate tree
 t <- ape::rtree(6)
+
 # assign a max age based on tree height
 max.age <- basin.age(t)
 
@@ -49,10 +52,14 @@ f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilitie
 plot(f, t, binned = TRUE, strata = strata)
 
 # simulate fossils using interval.ages & rates
-times = seq(0, max.age, length.out = 5)
-rates = c(5, 3, 1,5)
+times = seq(0, max.age, length.out = 4)
+rates = c(5, 0, 5)
 f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
 plot(f, t)
+
+# simulate fossils using taxonomy
+s <- create.taxonomy(t, 0.1, 0.1, 1)
+f <- sim.fossils.intervals(s, interval.ages = times, rates = rates)
 
 }
 \keyword{fossil}

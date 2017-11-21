@@ -1,17 +1,29 @@
 #' Simulate fossils under a Poisson sampling model
 #'
-#' @param tree Phylo object.
+#' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+#' If both are specified, the function uses taxonomy.
+#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. \code{beta = 1}).
+#'
 #' @param rate Poisson sampling rate.
+#' @param tree Phylo object.
+#' @param species Taxonomy object.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #' @param use.exact.times If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding edge. Default = TRUE.
 #' @return An object of class fossils.
 #'
 #' @examples
+#'
 #' # simulate tree
-#' t<-ape::rtree(4)
-#' # simulate fossils
+#' t <- ape::rtree(6)
+#'
+#' # simulate fossils using the tree
 #' rate = 2
-#' f<-sim.fossils.poisson(t, rate)
+#' f <- sim.fossils.poisson(rate, tree = t)
+#' plot(f, t)
+#'
+#' # simulate fossils using taxonomy
+#' s <- create.taxonomy(t, 0.5, 0.1, 1)
+#' f <- sim.fossils.poisson(rate, species = s)
 #' plot(f, t)
 #'
 #' @keywords uniform preservation
@@ -19,36 +31,35 @@
 #'
 #' @importFrom stats rpois
 #' @importFrom stats runif
-sim.fossils.poisson<-function(tree, rate, root.edge = TRUE, use.exact.times = TRUE) {
+sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRUE, use.exact.times = TRUE) {
 
-  node.ages <- n.ages(tree)
+  if(is.null(tree) && is.null(species))
+    stop("Specify phylo or taxonomy object")
+
+  if(!is.null(tree) && !"phylo" %in% class(tree))
+      stop("tree must be an object of class \"phylo\"")
+
+  if(!is.null(species) && !"taxonomy" %in% class(species))
+    stop("species must be an object of class \"taxonomy\"")
+
+  if(!is.null(tree) && !is.null(species))
+    warning("tree and species both defined, using species taxonomy")
+
+  if(is.null(species))
+    species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
 
   fdf = fossils()
-  root = length(tree$tip.label) + 1
 
-  if(root.edge && exists("root.edge",tree) ){
-    lineages = c(tree$edge[,2], root)
-  } else lineages = tree$edge[,2]
+  lineages = unique(species$sp)
 
-  for (node in lineages){ # internal nodes + tips
+  for (sp in lineages){ # internal nodes + tips
 
-    #if(node <= length(tree$tip.label)) sp = as.character(tree$tip.label[node])
-    #else if(!is.null(tree$node.label)) sp = as.character(tree$node.label[node - length(tree$tip.label)])
-    #else sp = paste0("t",node)
+    start = species$start[which(species$sp == sp)][1]
+    end = species$end[which(species$sp == sp)][1]
+    origin = species$origin[which(species$sp == sp)][1]
+    edges = species[which(species$sp == sp), ]
 
-    sp = node
-
-    end = node.ages[node]
-    if(node == root) {
-      origin = NA
-      blength = tree$root.edge
-    }
-    else {
-      edge = which(tree$edge[,2] == node)
-      origin = tree$edge[edge, 1]
-      blength = tree$edge.length[edge]
-    }
-    start = end + blength
+    blength = start - end
 
     # sample fossil numbers from the Poisson distribution
     rand = rpois(1, blength*rate)
@@ -56,9 +67,10 @@ sim.fossils.poisson<-function(tree, rate, root.edge = TRUE, use.exact.times = TR
     if(rand > 0) {
       if(use.exact.times) {
         h = runif(rand, min = end, max = start)
-        fdf <- rbind(fdf, data.frame(edge = node, sp = sp, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
+        edge = sapply(h, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+        fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
       } else {
-        fdf <- rbind(fdf, data.frame(edge = node, sp = sp, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
+        fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
       }
     }
   }
@@ -75,6 +87,7 @@ sim.fossils.poisson<-function(tree, rate, root.edge = TRUE, use.exact.times = TR
 #' When using \code{probabilities}, at most one fossil per species will be sampled per interval.
 #'
 #' @param tree Phylo object.
+#' @param species Taxonomy object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
@@ -88,6 +101,7 @@ sim.fossils.poisson<-function(tree, rate, root.edge = TRUE, use.exact.times = TR
 #'
 #' # simulate tree
 #' t <- ape::rtree(6)
+#'
 #' # assign a max age based on tree height
 #' max.age <- basin.age(t)
 #'
@@ -98,18 +112,31 @@ sim.fossils.poisson<-function(tree, rate, root.edge = TRUE, use.exact.times = TR
 #' plot(f, t, binned = TRUE, strata = strata)
 #'
 #' # simulate fossils using interval.ages & rates
-#' times = seq(0, max.age, length.out = 5)
-#' rates = c(5, 3, 1,5)
+#' times = seq(0, max.age, length.out = 4)
+#' rates = c(5, 0, 5)
 #' f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
 #' plot(f, t)
+#'
+#' # simulate fossils using taxonomy
+#' s <- create.taxonomy(t, 0.1, 0.1, 1)
+#' f <- sim.fossils.intervals(s, interval.ages = times, rates = rates)
 #'
 #' @keywords uniform fossil preservation
 #' @keywords non-uniform fossil preservation
 #' @export
-sim.fossils.intervals <- function(tree,
-                                  interval.ages = NULL, basin.age = NULL, strata = NULL,
-                                  probabilities = NULL, rates = NULL,
-                                  root.edge = TRUE, use.exact.times = TRUE){
+sim.fossils.intervals<-function(tree = NULL, species = NULL,
+                                interval.ages = NULL, basin.age = NULL, strata = NULL,
+                                probabilities = NULL, rates = NULL,
+                                root.edge = TRUE, use.exact.times = TRUE){
+
+  if(is.null(tree) && is.null(species))
+    stop("Specify phylo or taxonomy object")
+
+  if(!is.null(tree) && !"phylo" %in% class(tree))
+    stop("tree must be an object of class \"phylo\"")
+
+  if(!is.null(species) && !"taxonomy" %in% class(species))
+    stop("species must be an object of class \"taxonomy\"")
 
   if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
     stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
@@ -119,6 +146,9 @@ sim.fossils.intervals <- function(tree,
   }
 
   if(is.null(probabilities) && is.null(rates)) stop("Either rates or probabilities need to be specified")
+
+  if(is.null(species))
+    species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
 
   use.rates = FALSE
   if(!is.null(probabilities) && !is.null(rates)) {
@@ -133,36 +163,35 @@ sim.fossils.intervals <- function(tree,
     if(any(probabilities < 0) || any(probabilities > 1)) stop("Sampling probabilities must be between 0 and 1")
   }
 
-  node.ages<-n.ages(tree)
-  root = length(tree$tip.label) + 1
+  #node.ages<-n.ages(tree)
+  #root = length(tree$tip.label) + 1
+
+  if(is.null(tree) && is.null(species))
+    stop("Specify phylo or taxonomy object")
+
+  if(!is.null(tree) && !"phylo" %in% class(tree))
+    stop("tree must be an object of class \"phylo\"")
+
+  if(!is.null(species) && !"taxonomy" %in% class(species))
+    stop("species must be an object of class \"taxonomy\"")
+
+  if(is.null(species))
+    species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
 
   fdf = fossils()
 
-  if(root.edge && exists("root.edge",tree) ){
-    lineages = c(tree$edge[,2], root)
-  } else lineages = tree$edge[,2]
+  lineages = unique(species$sp)
 
-  for (node in lineages) { # internal nodes + tips
+  for (sp in lineages) { # internal nodes + tips
 
-    #if(node <= length(tree$tip.label)) sp = as.character(tree$tip.label[node])
-    #else if(!is.null(tree$node.label)) sp = as.character(tree$node.label[node - length(tree$tip.label)])
-    #else sp = paste0("t",node)
+    start = species$start[which(species$sp == sp)][1]
+    end = species$end[which(species$sp == sp)][1]
+    origin = species$origin[which(species$sp == sp)][1]
+    edges = species[which(species$sp == sp), ]
 
-    sp = node
+    blength = start - end
 
-    end = node.ages[node]
-    if(node == root) {
-      origin = NA
-      blength = tree$root.edge
-    }
-    else {
-      edge = which(tree$edge[,2] == node)
-      origin = tree$edge[edge, 1]
-      blength = tree$edge.length[edge]
-    }
-    start = end + blength
-
-    #possible intervals covered by edge
+    #possible intervals covered by species
     for (i in 1:(length(interval.ages) - 1)) {
       if(interval.ages[i+1] < end) next
       if(interval.ages[i] > start) break
@@ -172,29 +201,31 @@ sim.fossils.intervals <- function(tree,
 
       if(use.rates) {
         # generate k fossils from a poisson distribution
-        k = rpois(1,rates[i]*(max.time - min.time))
+        k = rpois(1, rates[i]*(max.time - min.time))
+        ages = runif(k, min.time, max.time)
+        edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
         if(k > 0) {
           if(use.exact.times) {
-            ages = runif(k,min.time,max.time)
-            fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
+            fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
           } else {
-            min.time = interval.ages[i]
-            max.time = interval.ages[i+1]
-            fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = rep(min.time, k), hmax = rep(max.time, k), stringsAsFactors = F))
+            min.time = rep(interval.ages[i], k)
+            max.time = rep(interval.ages[i+1], k) # this is kind of redundant
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
           }
         }
       } else {
         # scale the probability
         pr = probabilities[i] * (max.time - min.time)/(interval.ages[i+1] - interval.ages[i])
+        ages = runif(1, min.time, max.time)
+        edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
         # if random.number < pr { record fossil as collected during interval }
         if (runif(1) <= pr) {
           if(use.exact.times) {
-            ages = runif(1, min.time, max.time)
-            fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
-          } else {
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
+          } else { # { use interval ages }
             min.time = interval.ages[i]
             max.time = interval.ages[i+1]
-            fdf <- rbind(fdf,data.frame(edge = node, sp = sp, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
           }
         }
       }
