@@ -22,8 +22,7 @@
 #' plot(f, t)
 #'
 #' # simulate fossils using taxonomy
-#' set.seed(123)
-#' s <- create.taxonomy(t, 0, 3, 0)
+#' s <- create.taxonomy(t, 0.5, 1, 0.5)
 #' f <- sim.fossils.poisson(rate, species = s)
 #' plot(f, t)
 #'

@@ -167,10 +167,6 @@ add.anagenic.species<-function(tree, species, lambda.a){
       edges = rbind(edges, data.frame(edge = root, start = root.age + tree$root.edge, end = root.age))
     } else edges = rbind(edges, data.frame(edge = root, start = root.age, end = root.age))
 
-    # order by edge label so that root edge label appears before descendant labels
-    # TODO: this is flawed
-    edges = edges[order(edges$edge),]
-
     for(i in unique(species$sp)){
 
       sp.start = species$start[which(species$sp == i)][1]
@@ -184,6 +180,7 @@ add.anagenic.species<-function(tree, species, lambda.a){
         # associated edges
         potential.edges = species$edge[which(species$sp == i)]
         p = subset(edges, edges$edge %in% potential.edges)
+        p = p[order(p$end, decreasing = TRUE),]
 
         # subset edges associated with i from species df
         s = subset(species, species$edge %in% potential.edges)
@@ -211,8 +208,8 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # additional younger edges associated with sp
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
-            edge.start = edges$start[which(edges$edge %in% edge)]
-            edge.end = edges$end[which(edges$edge %in% edge)]
+            edge.start = p$start[which(p$edge %in% edge)]
+            edge.end = p$end[which(p$edge %in% edge)]
 
             #mode = as.character(s$mode[which(s$mode != "NA")])
             mode = s$mode[1]
@@ -242,8 +239,8 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # additional younger edges associated with sp
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
-            edge.start = edges$start[which(edges$edge %in% edge)]
-            edge.end = edges$end[which(edges$edge %in% edge)]
+            edge.start = p$start[which(p$edge %in% edge)]
+            edge.end = p$end[which(p$edge %in% edge)]
 
             mode = "a"
 
@@ -266,8 +263,8 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # additional younger edges associated with sp
             edge = c(edge, p$edge[which(p$start < start & p$start > end)])
 
-            edge.start = edges$start[which(edges$edge %in% edge)]
-            edge.end = edges$end[which(edges$edge %in% edge)]
+            edge.start = p$start[which(p$edge %in% edge)]
+            edge.end = p$end[which(p$edge %in% edge)]
 
             mode = "a"
 
