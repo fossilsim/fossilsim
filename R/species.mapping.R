@@ -153,7 +153,7 @@ add.anagenic.species<-function(tree, species, lambda.a){
     # since species labels can change with the addition of anagenic species
     species.counter = max(as.numeric(names(node.ages))) + 1
 
-    # calculate edge start and end times (I think this is probably not necessary now)
+    # calculate edge start and end times (you could probably extract this info from the sp dataframe now)
     edges = data.frame(edge = numeric(), start = numeric(), end = numeric())
 
     for(i in unique(tree$edge[,2])){
@@ -168,6 +168,7 @@ add.anagenic.species<-function(tree, species, lambda.a){
     } else edges = rbind(edges, data.frame(edge = root, start = root.age, end = root.age))
 
     # order by edge label so that root edge label appears before descendant labels
+    # TODO: this is flawed
     edges = edges[order(edges$edge),]
 
     for(i in unique(species$sp)){

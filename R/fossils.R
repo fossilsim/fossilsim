@@ -54,7 +54,7 @@ print.fossils <- function(x, max.length = 10, ...){
       cat("...\n")
   }
   cat("Fossil record with", length(x$sp), "occurrences representing", length(unique(x$sp)), "species\n")
-  if(attr(x,"from.taxonomy")) cat("Fossils record simulated from a taxonomy")
+  if(attr(x,"from.taxonomy")) cat("Fossils record simulated from existing taxonomy")
   else cat("Fossils record not simulated using taxonomy: all speciation events are symmetric")
 }
 
