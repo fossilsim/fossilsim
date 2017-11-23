@@ -25,7 +25,7 @@
 #' # reassign ages
 #' # TODO reassign.ages(t,f,max,strata)
 #' @export
-reassign.ages<-function(tree,fossils,basin.age,strata,poisson=FALSE,root.edge=TRUE) {
+xreassign.ages<-function(tree,fossils,basin.age,strata,poisson=FALSE,root.edge=TRUE) {
 
   interval.length = basin.age/strata
   interval.md = interval.length/2
@@ -113,4 +113,72 @@ reassign.ages<-function(tree,fossils,basin.age,strata,poisson=FALSE,root.edge=TR
   #eof
 }
 
+
+
+#' @param tree Phylo object.
+#' @param species Taxonomy object.
+#' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
+#' @param basin.age Maximum age of the oldest stratigraphic interval.
+#' @param strata Number of stratigraphic intervals.
+#' @param use.species.ages If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.
+#'
+#' @return An object of class fossils.
+
+reassign.ages<-function(fossils, tree = NULL, species = NULL,
+                        interval.ages = NULL, basin.age = NULL, strata = NULL, use.species.ages = FALSE){
+
+  if(!is.null(fossils))
+    stop("Specify fossils object")
+
+  if(!is.null(fossils) && !"phylo" %in% class(fossils))
+    stop("fossils must be an object of class \"fossils\"")
+
+  if(is.null(tree) && is.null(species))
+    stop("Specify phylo or taxonomy object")
+
+  if(!is.null(tree) && !"phylo" %in% class(tree))
+    stop("tree must be an object of class \"phylo\"")
+
+  if(!is.null(species) && !"taxonomy" %in% class(species))
+    stop("species must be an object of class \"taxonomy\"")
+
+  if(!is.null(tree) && !is.null(species))
+    warning("tree and species both defined, using species taxonomy")
+
+  #TODO: we do not need species info if use.species.ages = FALSE
+  #TODO: cross check species taxonomy and fossils object
+  #TODO: check fossil ages are not already binned
+  #TODO: throw an error if any fossils are older than the max
+
+  if(is.null(species)){
+    species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
+    from.taxonomy = FALSE
+  } else
+    from.taxonomy = TRUE
+
+  if(!is.null(tree) && !is.null(species))
+    warning("tree and species both defined, using species taxonomy")
+
+  if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
+    stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
+  if(!is.null(basin.age) && !is.null(strata)) {
+    if(!is.null(interval.ages)) warning("Two interval definitions found, using interval.ages")
+    else interval.ages <- seq(0, basin.age, length = strata + 1)
+  }
+
+  # for each fossil
+  for(i in 1:length(fossils$hmin)){
+    int = assign.interval(interval.ages, fossils$hmin[i])
+
+    if(!use.species.ages){
+      # assign hmin and hmax using interval ages
+      fossils$hmin[i] = times[int]
+      fossils$hmin[i] = times[int+1]
+    } else { # { assign hmin and hmax that do not violate species ages }
+
+    }
+
+  }
+  return(fossils)
+}
 

@@ -4,8 +4,7 @@
 \alias{sim.fossils.poisson}
 \title{Simulate fossils under a Poisson sampling model}
 \usage{
-sim.fossils.poisson(rate, tree = NULL, species = NULL, root.edge = TRUE,
-  use.exact.times = TRUE)
+sim.fossils.poisson(rate, tree = NULL, species = NULL, root.edge = TRUE)
 }
 \arguments{
 \item{rate}{Poisson sampling rate.}
@@ -15,8 +14,6 @@ sim.fossils.poisson(rate, tree = NULL, species = NULL, root.edge = TRUE,
 \item{species}{Taxonomy object.}
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
-
-\item{use.exact.times}{If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding edge. Default = TRUE.}
 }
 \value{
 An object of class fossils.
@@ -37,7 +34,7 @@ f <- sim.fossils.poisson(rate, tree = t)
 plot(f, t)
 
 # simulate fossils using taxonomy
-s <- create.taxonomy(t, 0.5, 0.1, 1)
+s <- create.taxonomy(t, 0.5, 1, 0.5)
 f <- sim.fossils.poisson(rate, species = s)
 plot(f, t)
 

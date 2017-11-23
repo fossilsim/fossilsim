@@ -25,7 +25,7 @@ sim.fossils.intervals(tree = NULL, species = NULL, interval.ages = NULL,
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
-\item{use.exact.times}{If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding edge. Default = TRUE.}
+\item{use.exact.times}{If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding interval. Default = TRUE.}
 }
 \value{
 An object of class fossils.
@@ -49,7 +49,7 @@ max.age <- basin.age(t)
 strata = 4
 probability = rep(0.7, 4)
 f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
-plot(f, t, binned = TRUE, strata = strata)
+plot(f, t, strata = strata, show.strata = T)
 
 # simulate fossils using interval.ages & rates
 times = seq(0, max.age, length.out = 4)
@@ -59,7 +59,8 @@ plot(f, t)
 
 # simulate fossils using taxonomy
 s <- create.taxonomy(t, 0.1, 0.1, 1)
-f <- sim.fossils.intervals(s, interval.ages = times, rates = rates)
+f <- sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
+plot(f, t)
 
 }
 \keyword{fossil}

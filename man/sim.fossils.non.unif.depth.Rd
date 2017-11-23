@@ -4,20 +4,15 @@
 \alias{sim.fossils.non.unif.depth}
 \title{Simulate fossils under a non-uniform model of preservation (Holland, 1995)}
 \usage{
-sim.fossils.non.unif.depth(tree, profile, PA = 0.5, PD = 0.5, DT = 0.5,
+sim.fossils.non.unif.depth(tree = NULL, species = NULL,
   interval.ages = NULL, basin.age = NULL, strata = NULL,
-  root.edge = TRUE, convert.rate = FALSE)
+  depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5,
+  use.rates = FALSE, root.edge = TRUE, use.exact.times = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{profile}{Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.}
-
-\item{PA}{Peak adbundance parameter.}
-
-\item{PD}{Preferred depth parameter.}
-
-\item{DT}{Depth tolerance parameter.}
+\item{species}{Taxonomy object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -25,9 +20,19 @@ sim.fossils.non.unif.depth(tree, profile, PA = 0.5, PD = 0.5, DT = 0.5,
 
 \item{strata}{Number of stratigraphic intervals.}
 
-\item{root.edge}{If TRUE include the root edge (default = TRUE).}
+\item{depth.profile}{Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.}
 
-\item{convert.rate}{If TRUE convert per interval sampling probability into a per interval Poisson rate (default = FALSE).}
+\item{PA}{Peak adbundance parameter.}
+
+\item{PD}{Preferred depth parameter.}
+
+\item{DT}{Depth tolerance parameter.}
+
+\item{use.rates}{If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.}
+
+\item{root.edge}{If TRUE include the root edge. Default = TRUE.}
+
+\item{use.exact.times}{If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding interval. Default = TRUE.}
 }
 \value{
 An object of class fossils.
@@ -46,17 +51,28 @@ Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or
 maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}.
 }
 \examples{
+
 # simulate tree
 t<-ape::rtree(6)
+
 # assign a max age based on tree height
 max = basin.age(t)
+
 # generate water depth profile
 strata = 7
 wd<-sim.water.depth(strata)
-# simulate fossils
-f<-sim.fossils.non.unif.depth(t, wd, PA = 1, PD = 0.5, DT = 1,
-    basin.age = max, strata = strata, convert.rate = TRUE)
+
+# simulate fossils using tree & basin.age and strata
+f<-sim.fossils.non.unif.depth(t, basin.age = max, strata = strata,
+ depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
 plot(f,t, show.proxy = T, proxy.data = wd, strata = strata, show.strata = T)
+
+# simulate fossils using taxonomy & interval.ages
+s <- create.taxonomy(t, 0.1, 0.1, 1)
+times = seq(0, max.age, length.out = strata + 1)
+f<-sim.fossils.non.unif.depth(species = s, interval.ages = times, depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
+plot(f,t)
+
 }
 \references{
 Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.

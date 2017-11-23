@@ -51,7 +51,8 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
   } else
     from.taxonomy = TRUE
 
-  # If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding edge.
+  # If TRUE use exact sampling times.
+  # If FALSE hmin and hmax will equal the start and end times of the corresponding edge.
   use.exact.times = TRUE
 
   fdf = fossils()
@@ -115,7 +116,7 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
 #' strata = 4
 #' probability = rep(0.7, 4)
 #' f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
-#' plot(f, t, binned = TRUE, strata = strata)
+#' plot(f, t, strata = strata, show.strata = T)
 #'
 #' # simulate fossils using interval.ages & rates
 #' times = seq(0, max.age, length.out = 4)
@@ -125,7 +126,8 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
 #'
 #' # simulate fossils using taxonomy
 #' s <- create.taxonomy(t, 0.1, 0.1, 1)
-#' f <- sim.fossils.intervals(s, interval.ages = times, rates = rates)
+#' f <- sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
+#' plot(f, t)
 #'
 #' @keywords uniform fossil preservation
 #' @keywords non-uniform fossil preservation
@@ -143,6 +145,9 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 
   if(!is.null(species) && !"taxonomy" %in% class(species))
     stop("species must be an object of class \"taxonomy\"")
+
+  if(!is.null(tree) && !is.null(species))
+    warning("tree and species both defined, using species taxonomy")
 
   if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
     stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
@@ -171,15 +176,6 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
     if(length(probabilities) != (length(interval.ages) - 1 )) stop("Length mismatch between interval ages and sampling probabilities")
     if(any(probabilities < 0) || any(probabilities > 1)) stop("Sampling probabilities must be between 0 and 1")
   }
-
-  if(is.null(tree) && is.null(species))
-    stop("Specify phylo or taxonomy object")
-
-  if(!is.null(tree) && !"phylo" %in% class(tree))
-    stop("tree must be an object of class \"phylo\"")
-
-  if(!is.null(species) && !"taxonomy" %in% class(species))
-    stop("species must be an object of class \"taxonomy\"")
 
   if(is.null(species))
     species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
@@ -264,7 +260,7 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' @param PA Peak adbundance parameter.
 #' @param PD Preferred depth parameter.
 #' @param DT Depth tolerance parameter.
-#' @param convert.rate If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.
+#' @param use.rates If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #' @param use.exact.times If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding interval. Default = TRUE.
 #'
@@ -276,17 +272,28 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.
 #'
 #' @examples
+#'
 #' # simulate tree
 #' t<-ape::rtree(6)
+#'
 #' # assign a max age based on tree height
 #' max = basin.age(t)
+#'
 #' # generate water depth profile
 #' strata = 7
 #' wd<-sim.water.depth(strata)
-#' # simulate fossils
+#'
+#' # simulate fossils using tree & basin.age and strata
 #' f<-sim.fossils.non.unif.depth(t, basin.age = max, strata = strata,
-#'  depth.profile = wd, PA = 1, PD = 0.5, DT = 1, convert.rate = TRUE)
+#'  depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
 #' plot(f,t, show.proxy = T, proxy.data = wd, strata = strata, show.strata = T)
+#'
+#' # simulate fossils using taxonomy & interval.ages
+#' s <- create.taxonomy(t, 0.1, 0.1, 1)
+#' times = seq(0, max.age, length.out = strata + 1)
+#' f<-sim.fossils.non.unif.depth(species = s, interval.ages = times, depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
+#' plot(f,t)
+#'
 #' @keywords non-uniform fossil preseravtion
 #' @export
 sim.fossils.non.unif.depth<-function(tree = NULL, species = NULL,
@@ -302,6 +309,9 @@ sim.fossils.non.unif.depth<-function(tree = NULL, species = NULL,
 
   if(!is.null(species) && !"taxonomy" %in% class(species))
     stop("species must be an object of class \"taxonomy\"")
+
+  if(!is.null(tree) && !is.null(species))
+    warning("tree and species both defined, using species taxonomy")
 
   if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
     stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
@@ -485,7 +495,7 @@ count.fossils.binned<-function(fossils, interval.ages){
 # assign any given age to one of a set of intervals
 assign.interval<-function(intervals, t){
 
-  #TODO check intervals are youngest to oldest
+  #TODO check intervals are ordered youngest to oldest
 
   i = -1
   for(j in 1:length(intervals)){
@@ -494,3 +504,65 @@ assign.interval<-function(intervals, t){
   }
   return(i)
 }
+
+#' Reconcile existing fossil and taxonomy objects
+#'
+#' This function uses edge identifiers (\code{edge}) and fossil sampling times (\code{hmin}) to reassign fossil species identifiers (\code{sp, origin}) using an existing taxonomy object.
+#' It can only be used if exact fossil sampling times are known (i.e. hmin = hmax), otherwise edges containing multiple species may be indistinguishable.
+#'
+#' @param fossils Fossils object.
+#' @param species Taxonomy object.
+#'
+#' @return An object of class fossils.
+#' @examples
+#'
+#' # simulate tree
+#' t <- ape::rtree(6)
+#'
+#' # simulate fossils using the tree
+#' rate = 2
+#' f <- sim.fossils.poisson(rate, tree = t)
+#' plot(f, t)
+#'
+#' # simulate fossils using taxonomy
+#' s <- create.taxonomy(t, 0.5, 1, 0.5)
+#' f <- reconcile.fossils.taxonomy(f, s)
+#' plot(f, t)
+#'
+#' @export
+reconcile.fossils.taxonomy<-function(fossils, species){
+
+  if(!is.null(fossils) && !"fossils" %in% class(fossils))
+    stop("fossils must be an object of class \"fossils\"")
+
+  if(!is.null(species) && !"taxonomy" %in% class(species))
+    stop("species must be an object of class \"taxonomy\"")
+
+  if(!identical(fossils$hmin, fossils$hmax))
+    stop("exact fossil sampling times must be specified to use this function (i.e. hmin = hmax)")
+
+  if(attr(fossils,"from.taxonomy"))
+    warning("fossils already assigned based on taxonomy")
+
+  # for each fossil identify the edge
+  for(i in 1:length(fossils$edge)){
+    edge = fossils$edge[i]
+    # identify the edges in the corresponding taxonomy obj
+    j = which(species$edge == edge)
+    if(length(j) == 1){
+      # reassign species
+      fossils$sp[i] = species$sp[j]
+      fossils$origin[i] = species$origin[j]
+    } else { # {more than one species is associated with the edge }
+      age = fossils$hmin[i]
+      edges = species$edge[j]
+      j = which(species$edge %in% edges & species$start > age & species$end < age)
+      # reassign species
+      fossils$sp[i] = species$sp[j]
+      fossils$origin[i] = species$origin[j]
+    }
+  }
+  fossils = as.fossils(fossils, from.taxonomy = TRUE)
+  return(fossils)
+}
+

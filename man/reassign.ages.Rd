@@ -2,43 +2,24 @@
 % Please edit documentation in R/age.assignment.R
 \name{reassign.ages}
 \alias{reassign.ages}
-\title{Reassign fossil ages}
 \usage{
-reassign.ages(tree, fossils, basin.age, strata, poisson = FALSE,
-  root.edge = TRUE)
+reassign.ages(fossils, tree = NULL, species = NULL, interval.ages = NULL,
+  basin.age = NULL, strata = NULL, use.species.ages = FALSE)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{fossils}{Fossils object.}
+\item{species}{Taxonomy object.}
 
-\item{basin.age}{Maximum age of the oldest horizon.}
+\item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
+
+\item{basin.age}{Maximum age of the oldest stratigraphic interval.}
 
 \item{strata}{Number of stratigraphic intervals.}
 
-\item{poisson}{If TRUE the function returns random ages.}
+\item{use.species.ages}{If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.}
 }
 \value{
-Fossils object with reassigned fossil ages.
-sp = edge labels. h = ages.
-}
-\description{
-Reassign fossil ages using the median age of a stratigraphic interval
-or a random time point drawn from that interval (poisson = TRUE).
-If a given species is only extant for a portion of the total interval duration
-ages are reassigned using the median age of the branch duration
-or a random time point drawn from that duration (poisson = TRUE).
-}
-\examples{
-# simulate tree
-t<-ape::rtree(8)
-# assign a max age based on tree height
-max = basin.age(t)
-# simulate fossils
-strata = 5
-sampling = 1
-f <- sim.fossils.intervals(t, basin.age = max, strata = strata, probabilities = rep(sampling,5))
-# reassign ages
-# TODO reassign.ages(t,f,max,strata)
+An object of class fossils.
 }
 
