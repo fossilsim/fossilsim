@@ -1,4 +1,4 @@
-#' sim.cdfbd.taxa: Simulating Fossilized Birth Death Trees With Discrete Lineage-Specific Rate Regimes
+#' sim.cdfbd.taxa: Simulating fossilized birth death trees with discrete lineage-specific rate regimes
 #'
 #' @param n Number of extant sampled tips.
 #' @param numbsim Number of trees to simulate.
@@ -9,16 +9,16 @@
 #' @param pi Root state frequencies.
 #' @return List of numbsim simulated trees with n extant sampled tips.
 #' @examples
-#' n<-10
-#' numbsim<-1
-#' # TODO sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
+#' n = 10
+#' numbsim = 1
+#' sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
 #' @keywords fossilized birth death
 #' @export
 sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 {
 	k = length(psi)
 
-	trees = TreeSim::sim.bd.taxa(n,numbsim,lambda,mu,complete=T)
+	trees = TreeSim::sim.bd.taxa(n, numbsim, lambda, mu, complete = TRUE)
 	for(i in 1:length(trees))
 	{
 		t = trees[[i]]
@@ -63,12 +63,12 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 		    	for(kk in length(map))
 		    	{
 		    		# work out the min age of the lineage (e.g. when that lineage became extinct)
-			      	# & get the branch length
-			      	b=map[kk]
-			      	lineage.end=lineage.start-b # branch length
+			      # & get the branch length
+			      b=map[kk]
+			      lineage.end=lineage.start-b # branch length
 
-			      	# sample fossil numbers from the Poisson distribution
-			      	rate = psi[ which(LETTERS[1:k] == names(map)[kk]) ]
+			      # sample fossil numbers from the Poisson distribution
+			      rate = psi[ which(LETTERS[1:k] == names(map)[kk]) ]
 				    rand=rpois(1,b*rate)
 
 				    if(rand > 0){
@@ -78,13 +78,12 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 
 				    lineage.start = lineage.end
 				}
-		    }
+		  }
 		}
 
+		f <- f[order(f$hmin,decreasing=T),] # f$h
 
-		f <- f[order(f$h,decreasing=T),]
-
-		num_fossils = length(f[,2])
+		num_fossils = length(f$sp) # f[,2]
 		h <- numeric(num_fossils)
 		fl <- character(num_fossils)
 
@@ -96,14 +95,15 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 			{
 				node.ages = n.ages(tree)
 
-				a=which(names(node.ages)==f[j,2])
+				a=which(names(node.ages) == f$sp) # f[j,2]
 				lineage.end = node.ages[[a]]
 
-				h = f[j,1] - lineage.end
+				h = f$hmin[j] - lineage.end # f[j,1]
 
-				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
+				# f[j,2]
+				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$sp[j], position = h)
 
-				f[,2] = map_nodes(f[,2],tree,tmp)
+				f$sp = map_nodes(f$sp,tree,tmp) # f[,2]
 
 				tree = tmp
 			}
@@ -115,11 +115,10 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 		trees[[i]] = ape::drop.tip(tree, unsampled.tips)
 		#trees[[i]]$root.edge = origin - max(n.ages(trees[[i]]))
 	}
-
-	trees
+	return(trees)
 }
 
-#' sim.fbd.age: Simulating Fossilized Birth-Death Trees Of A Fixed Age.
+#' sim.fbd.age: Simulating fossilized birth-death trees of a fixed age.
 #'
 #' @param age Time since origin.
 #' @param numbsim Number of trees to simulate.
@@ -130,15 +129,15 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 #' If tree goes extinct or no tips are sampled, return value is '0'.
 #' If only one extant tip is sampled, return value is '1'.
 #' @examples
-#' age<-1
-#' lambda <- 2.0
-#' mu <- 0.5
-#' psi <-0.6
-#' numbsim<-2
-#' # TODO sim.fbd.age(age,numbsim,lambda,mu,psi)
+#' age = 1
+#' lambda = 2.0
+#' mu = 0.5
+#' psi = 0.6
+#' numbsim = 2
+#' sim.fbd.age(age, numbsim, lambda, mu, psi)
 #' @keywords fossilized birth death
 #' @export
-sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
+sim.fbd.age<-function(age, numbsim, lambda, mu, psi)
 {
 	trees = TreeSim::sim.bd.age(age,numbsim,lambda,mu,complete=T)
 	for(i in 1:length(trees))
@@ -146,12 +145,11 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 		if(!is.numeric(trees[[i]]))
 		{
 			t = trees[[i]]
-			f <- sim.fossils.poisson(t, psi)
+			f <- sim.fossils.poisson(tree = t, rate = psi)
 
-			# TODO f$h has been removed
-			f <- f[order(f$h,decreasing=T),]
+			f <- f[order(f$hmin, decreasing = TRUE),] # f$h
 
-			num_fossils = length(f[,2])
+			num_fossils = length(f$sp) # f[,2]
 			h <- numeric(num_fossils)
 			fl <- character(num_fossils)
 
@@ -162,15 +160,15 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 				for(j in 1:num_fossils)
 				{
 					node.ages = n.ages(tree)
-          # TODO all indexing done on columns is probably invalid with the new format
-					a=which(names(node.ages)==f[j,2])
+					a = which(names(node.ages) == f$sp[j]) # f[j,2]
 					lineage.end = node.ages[[a]]
 
-					h = f[j,1] - lineage.end
+					h = f$hmin[j] - lineage.end # f[j,1]
 
-					tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
+					# f[j,2]
+					tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$sp[j], position = h)
 
-					f[,2] = map_nodes(f[,2],tree,tmp)
+					f$sp = map_nodes(f$sp, tree, tmp) # f[,2]
 
 					tree = tmp
 				}
@@ -183,11 +181,10 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 			trees[[i]]$root.edge = origin - max(n.ages(trees[[i]]))
 		}
 	}
-
-	trees
+	return(trees)
 }
 
-#' sim.fbd.rateshift.taxa: Simulating Fossilized Birth Death Trees Incorporating Rate Shifts.
+#' sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating rate shifts.
 #'
 #' @param n Number of extant sampled tips.
 #' @param numbsim Number of trees to simulate.
@@ -201,17 +198,19 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi)
 #' Time is 0 today and increasing going backwards in time. Specify the vector as times[i]
 #' @return List of numbsim simulated trees with n extant sampled tips.
 #' @examples
-#' n<-10
-#' numbsim<-1
-#' # TODO sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0,0.3))
+#' n = 10
+#' numbsim = 1
+#' sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0.3))
 #' @keywords fossilized birth death
 #' @export
-sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
+# N.B. there was a mistake in this example, psi contained too few values OR times too many values
+# N.B. the functions works but I don't understand why the horizon vector would end up with two zeros
+sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times)
 {
 	if(length(psi) != (length(times) + 1 ))
     	stop("Length mismatch between interval ages and sampling rates")
 
-	trees = TreeSim::sim.rateshift.taxa(n,numbsim,lambda,mu,1,times,complete=T)
+	trees = TreeSim::sim.rateshift.taxa(n, numbsim, lambda, mu, 1, times, complete = TRUE)
 
 	for(i in 1:length(trees))
 	{
@@ -220,12 +219,11 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 
 		horizons = c(0, times, origin)
 
-		f <- sim.fossils.intervals(t, interval.ages = horizons, rates = psi)
+		f <- sim.fossils.intervals(tree = t, interval.ages = horizons, rates = psi)
 
-		# TODO f$h has been removed
-		f <- f[order(f$h,decreasing=T),]
+		f <- f[order(f$hmin, decreasing = TRUE),] # f$h
 
-		num_fossils = length(f[,2])
+		num_fossils = length(f$sp) # f[,2]
 		h <- numeric(num_fossils)
 		fl <- character(num_fossils)
 
@@ -236,15 +234,15 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 			{
 				node.ages = n.ages(tree)
 
-				# TODO all indexing done on columns is probably invalid with the new format
-				a=which(names(node.ages)==f[j,2])
+				a = which(names(node.ages) == f$sp[j]) # f[j,2]
 				lineage.end = node.ages[[a]]
 
-				h = f[j,1] - lineage.end
+				h = f$hmin[j] - lineage.end # f[j,1]
 
-				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
+				# f[j,2]
+				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$sp[j], position = h)
 
-				f[,2] = map_nodes(f[,2],tree,tmp)
+				f$sp = map_nodes(f$sp,tree,tmp) # f[,2]
 
 				tree = tmp
 			}
@@ -256,11 +254,10 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 		trees[[i]] = ape::drop.tip(tree, unsampled.tips)
 		trees[[i]]$root.edge = origin - max(n.ages(trees[[i]]))
 	}
-
-	trees
+	return(trees)
 }
 
-#' sim.fbd.taxa: Simulating Fossilized Birth-Death Trees On A Fixed Number Of Extant Taxa.
+#' sim.fbd.taxa: Simulating fossilized birth-death trees on a fixed number of extant taxa.
 #'
 #' @param n Number of extant sampled tips.
 #' @param numbsim Number of trees to simulate.
@@ -269,26 +266,25 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times)
 #' @param psi Fossil sampling rate.
 #' @return List of numbsim simulated trees with n extant sampled tips.
 #' @examples
-#' n<-10
-#' lambda <- 2.0
-#' mu <- 0.5
-#' psi <-0.6
-#' numbsim<-2
-#' # TODO sim.fbd.taxa(n,numbsim,lambda,mu,psi)
+#' n = 10
+#' lambda = 2.0
+#' mu = 0.5
+#' psi = 0.6
+#' numbsim = 2
+#' sim.fbd.taxa(n, numbsim, lambda, mu, psi)
 #' @keywords fossilized birth death
 #' @export
 sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi)
 {
-	trees = TreeSim::sim.bd.taxa(n,numbsim,lambda,mu,complete=T)
+	trees = TreeSim::sim.bd.taxa(n, numbsim, lambda, mu, complete = TRUE)
 	for(i in 1:length(trees))
 	{
 		t = trees[[i]]
-		f <- sim.fossils.poisson(t, psi)
+		f <- sim.fossils.poisson(tree = t, rate = psi)
 
-		# TODO f$h has been removed
-		f <- f[order(f$h,decreasing=T),]
+		f <- f[order(f$hmin, decreasing = T),] # f$h
 
-		num_fossils = length(f[,2])
+		num_fossils = length(f$sp) # f[,2]
 		h <- numeric(num_fossils)
 		fl <- character(num_fossils)
 
@@ -300,26 +296,25 @@ sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi)
 			{
 				node.ages = n.ages(tree)
 
-				# TODO all indexing done on columns is probably invalid with the new format
-				a=which(names(node.ages)==f[j,2])
+				a = which(names(node.ages) == f$sp[j]) # f[j,2]
 				lineage.end = node.ages[[a]]
 
-				h = f[j,1] - lineage.end
+				h = f$hmin[j] - lineage.end # f[j,1]
 
-				tmp = phytools::bind.tip(tree,paste("fossil",j),edge.length=0.0,where=f[j,2],position=h)
+				# f[j,2]
+				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$sp[j], position = h)
 
-				f[,2] = map_nodes(f[,2],tree,tmp)
+				f$sp = map_nodes(f$sp,tree,tmp) # f[,2]
 
 				tree = tmp
 			}
 		}
 		node.ages = n.ages(tree)
 		fossil.tips = tree$tip.label[which(node.ages[1:length(tree$tip.label)]>1e-7)]
-		unsampled.tips = fossil.tips[!grepl("fossil",fossil.tips)]
+		unsampled.tips = fossil.tips[!grepl("fossil", fossil.tips)]
 
 		trees[[i]] = ape::drop.tip(tree, unsampled.tips)
 		trees[[i]]$root.edge = origin - max(n.ages(trees[[i]]))
 	}
-
-	trees
+	return(trees)
 }

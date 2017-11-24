@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.fbd.R
 \name{sim.fbd.rateshift.taxa}
 \alias{sim.fbd.rateshift.taxa}
-\title{sim.fbd.rateshift.taxa: Simulating Fossilized Birth Death Trees Incorporating Rate Shifts.}
+\title{sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating rate shifts.}
 \usage{
 sim.fbd.rateshift.taxa(n, numbsim, lambda, mu, psi, times)
 }
@@ -27,12 +27,12 @@ Time is 0 today and increasing going backwards in time. Specify the vector as ti
 List of numbsim simulated trees with n extant sampled tips.
 }
 \description{
-sim.fbd.rateshift.taxa: Simulating Fossilized Birth Death Trees Incorporating Rate Shifts.
+sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating rate shifts.
 }
 \examples{
-n<-10
-numbsim<-1
-# TODO sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0,0.3))
+n = 10
+numbsim = 1
+sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0.3))
 }
 \keyword{birth}
 \keyword{death}

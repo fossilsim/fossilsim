@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.fbd.R
 \name{sim.cdfbd.taxa}
 \alias{sim.cdfbd.taxa}
-\title{sim.cdfbd.taxa: Simulating Fossilized Birth Death Trees With Discrete Lineage-Specific Rate Regimes}
+\title{sim.cdfbd.taxa: Simulating fossilized birth death trees with discrete lineage-specific rate regimes}
 \usage{
 sim.cdfbd.taxa(n, numbsim, lambda, mu, psi, rate, pi)
 }
@@ -25,12 +25,12 @@ sim.cdfbd.taxa(n, numbsim, lambda, mu, psi, rate, pi)
 List of numbsim simulated trees with n extant sampled tips.
 }
 \description{
-sim.cdfbd.taxa: Simulating Fossilized Birth Death Trees With Discrete Lineage-Specific Rate Regimes
+sim.cdfbd.taxa: Simulating fossilized birth death trees with discrete lineage-specific rate regimes
 }
 \examples{
-n<-10
-numbsim<-1
-# TODO sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
+n = 10
+numbsim = 1
+sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
 }
 \keyword{birth}
 \keyword{death}

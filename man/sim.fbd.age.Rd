@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.fbd.R
 \name{sim.fbd.age}
 \alias{sim.fbd.age}
-\title{sim.fbd.age: Simulating Fossilized Birth-Death Trees Of A Fixed Age.}
+\title{sim.fbd.age: Simulating fossilized birth-death trees of a fixed age.}
 \usage{
 sim.fbd.age(age, numbsim, lambda, mu, psi)
 }
@@ -23,15 +23,15 @@ If tree goes extinct or no tips are sampled, return value is '0'.
 If only one extant tip is sampled, return value is '1'.
 }
 \description{
-sim.fbd.age: Simulating Fossilized Birth-Death Trees Of A Fixed Age.
+sim.fbd.age: Simulating fossilized birth-death trees of a fixed age.
 }
 \examples{
-age<-1
-lambda <- 2.0
-mu <- 0.5
-psi <-0.6
-numbsim<-2
-# TODO sim.fbd.age(age,numbsim,lambda,mu,psi)
+age = 1
+lambda = 2.0
+mu = 0.5
+psi = 0.6
+numbsim = 2
+sim.fbd.age(age, numbsim, lambda, mu, psi)
 }
 \keyword{birth}
 \keyword{death}

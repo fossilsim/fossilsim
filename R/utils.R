@@ -75,7 +75,7 @@ descendants<-function(edge,tree){
 }
 
 # map a vector of node numbers from one topology to another
-map_nodes<-function(x,t.old,t.new)
+map_nodes<-function(x, t.old, t.new)
 {
   ret = x
   for(i in 1:length(ret))
