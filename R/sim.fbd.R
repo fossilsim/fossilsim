@@ -11,7 +11,7 @@
 #' @examples
 #' n = 10
 #' numbsim = 1
-#' sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
+#' #TODO sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
 #' @keywords fossilized birth death
 #' @export
 sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
@@ -203,8 +203,8 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi)
 #' sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0.3))
 #' @keywords fossilized birth death
 #' @export
-# N.B. there was a mistake in this example, psi contained too few values OR times too many values
-# N.B. the functions works but I don't understand why the horizon vector would end up with two zeros
+# N.B. there was a mistake in this example, psi contained too few values OR times contained too many values
+# N.B. this function works but could do with some error messaging
 sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times)
 {
 	if(length(psi) != (length(times) + 1 ))
