@@ -495,7 +495,11 @@ count.fossils.binned<-function(fossils, interval.ages){
 # assign any given age to one of a set of intervals
 assign.interval<-function(intervals, t){
 
-  #TODO check intervals are ordered youngest to oldest
+  if(is.null(intervals) || is.null(t))
+     stop("specify intervals and time t")
+
+  if(any(intervals < intervals[1]))
+    stop("specify intervals from youngest to oldest")
 
   i = -1
   for(j in 1:length(intervals)){
@@ -565,4 +569,3 @@ reconcile.fossils.taxonomy<-function(fossils, species){
   fossils = as.fossils(fossils, from.taxonomy = TRUE)
   return(fossils)
 }
-
