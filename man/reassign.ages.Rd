@@ -2,11 +2,15 @@
 % Please edit documentation in R/age.assignment.R
 \name{reassign.ages}
 \alias{reassign.ages}
+\title{Reassign fossil ages}
 \usage{
 reassign.ages(fossils, tree = NULL, species = NULL, interval.ages = NULL,
-  basin.age = NULL, strata = NULL, use.species.ages = FALSE)
+  basin.age = NULL, strata = NULL, use.species.ages = FALSE,
+  root.edge = TRUE)
 }
 \arguments{
+\item{fossils}{Fossil object.}
+
 \item{tree}{Phylo object.}
 
 \item{species}{Taxonomy object.}
@@ -18,8 +22,36 @@ reassign.ages(fossils, tree = NULL, species = NULL, interval.ages = NULL,
 \item{strata}{Number of stratigraphic intervals.}
 
 \item{use.species.ages}{If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.}
+
+\item{root.edge}{If TRUE include root edge.}
 }
 \value{
 An object of class fossils.
+}
+\description{
+Reassign exact fossil ages using the minimum and maximum ages of a set of stratigraphic intervals.
+If \code{use.species.ages = TRUE} the function will respect species durations and will not
+return minimum and maximum bounds that may be younger or older than the species durations.
+This requires supplying a phylo or taxonomy object.
+}
+\examples{
+
+# simulate tree
+t <- ape::rtree(8)
+
+# simulate fossils
+rate = 2
+f <- sim.fossils.poisson(rate, t)
+plot(f, t)
+
+# assign a max age based on tree height
+max.age <- basin.age(t)
+
+# define intervals
+times = seq(0, max.age, length.out = 5)
+
+# reassign ages
+f <- reassign.ages(f, t, interval.ages = times)
+
 }
 
