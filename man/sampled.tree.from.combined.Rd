@@ -23,13 +23,12 @@ Extinct tips are only sampled if they are fossils. With default settings all ext
 }
 \examples{
 # simulate tree
-t<-ape::rtree(6)
+t <- ape::rtree(6)
 # simulate fossils
-f<-sim.fossils.poisson(t, 2)
+f <- sim.fossils.poisson(rate = 2, tree = t)
 # transform format
 t2 = combined.tree.with.fossils(t,f)
 # transform to sampled tree
 t3 = sampled.tree.from.combined(t2)
 plot(t3)
 }
-

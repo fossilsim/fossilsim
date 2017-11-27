@@ -54,4 +54,3 @@ times = seq(0, max.age, length.out = 5)
 f <- reassign.ages(f, t, interval.ages = times)
 
 }
-

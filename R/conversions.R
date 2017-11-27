@@ -6,9 +6,9 @@
 #' @return A tree integrating the fossils.
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t <- ape::rtree(6)
 #' # simulate fossils
-#' f<-sim.fossils.poisson(t, 2)
+#' f <- sim.fossils.poisson(rate = 2, tree = t)
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
 #' plot(t2)
@@ -106,9 +106,9 @@ combined.tree.with.fossils = function(tree, fossils) {
 #' @return Sampled tree with fossils.
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t <- ape::rtree(6)
 #' # simulate fossils
-#' f<-sim.fossils.poisson(t, 2)
+#' f <- sim.fossils.poisson(rate = 2, tree = t)
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
 #' # transform to sampled tree
@@ -147,9 +147,9 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' @return Tree with pruned fossils.
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t <- ape::rtree(6)
 #' # simulate fossils
-#' f<-sim.fossils.poisson(t, 2)
+#' f <- sim.fossils.poisson(rate = 2, tree = t)
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
 #' # prune fossils
@@ -188,9 +188,9 @@ prune.fossils = function(tree) {
 #' @return Output of write.tree.
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t <- ape::rtree(6)
 #' # simulate fossils
-#' f<-sim.fossils.poisson(t, 2)
+#' f <- sim.fossils.poisson(rate = 2, tree = t)
 #' # output for BEAST
 #' beast.fbd.format(t, f) # output on the console
 #' beast.fbd.format(t, f, file="example.tre") # output in file

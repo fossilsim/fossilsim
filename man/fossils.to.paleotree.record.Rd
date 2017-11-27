@@ -19,4 +19,3 @@ The converted paleotree record
 \description{
 Transforms a fossils dataframe and either taxonomy or tree into a fossilRecordSimulation object from package paleotree.
 }
-

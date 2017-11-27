@@ -116,7 +116,7 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
 #' strata = 4
 #' probability = rep(0.7, 4)
 #' f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
-#' plot(f, t, strata = strata, show.strata = T)
+#' plot(f, t, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using interval.ages & rates
 #' times = seq(0, max.age, length.out = 4)
@@ -277,21 +277,22 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' t<-ape::rtree(6)
 #'
 #' # assign a max age based on tree height
-#' max = basin.age(t)
+#' max.age = basin.age(t)
 #'
 #' # generate water depth profile
 #' strata = 7
 #' wd<-sim.water.depth(strata)
 #'
 #' # simulate fossils using tree & basin.age and strata
-#' f<-sim.fossils.non.unif.depth(t, basin.age = max, strata = strata,
+#' f<-sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
 #'  depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
-#' plot(f,t, show.proxy = T, proxy.data = wd, strata = strata, show.strata = T)
+#' plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using taxonomy & interval.ages
 #' s <- create.taxonomy(t, 0.1, 0.1, 1)
 #' times = seq(0, max.age, length.out = strata + 1)
-#' f<-sim.fossils.non.unif.depth(species = s, interval.ages = times, depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
+#' f <- sim.fossils.non.unif.depth(species = s, interval.ages = times,
+#'      depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
 #' plot(f,t)
 #'
 #' @keywords non-uniform fossil preseravtion

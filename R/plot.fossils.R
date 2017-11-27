@@ -9,7 +9,7 @@
 #' If no maximum age is specified, the function calculates a maximum interval age slightly older than the root edge (or root age if \code{root.edge = FALSE}),
 #' using the function \code{basin.age}.
 #'
-#' @param fossils Dataframe of sampled fossils (sp = edge labels, h = ages).
+#' @param fossils Fossils object.
 #' @param tree Phylo object.
 #' @param show.fossils If TRUE plot fossils (default = TRUE).
 #' @param show.tree If TRUE plot the tree  (default = TRUE).
@@ -26,17 +26,22 @@
 #' @param preferred.environ Prefferred environmental value (e.g. water depth).
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
+#' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order than the component edge of \code{tree}. If fewer widths are given than the length of edge, then these are recycled.
+#' @param show.tip.label Whether to show the tip labels on the phylogeny (defaults to FALSE).
+#' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).
+#' @param fcex Numeric value giving the factor scaling of the points representing the fossils (Character EXpansion). Only used if \code{show.fossils = TRUE}.
 #' @param fcol Color of fossil occurrences or ranges.
 #' @param ecol Color of extant samples. Right now this only works if binned = F.
+#' @param ... Additional parameters to be passed to \code{plot.default}.
 #'
 #' @examples
 #' set.seed(123)
 #'
 #' ## simulate tree
-#' t<-TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
+#' t <- TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 #'
 #' ## simulate fossils under a Poisson sampling process
-#' f<-sim.fossils.poisson(t,3)
+#' f <- sim.fossils.poisson(rate = 3, tree = t)
 #' plot(f, t)
 #' # add a set of equal length strata
 #' plot(f, t, show.strata = TRUE, strata = 4)
@@ -52,7 +57,7 @@
 #' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)
 #'
 #' @export
-#' @importFrom graphics par points lines
+#' @importFrom graphics par points lines text axis mtext segments
 plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                        # age info/options
                        show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
@@ -162,7 +167,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   yy <- numeric(Ntip + Nnode)
   TIPS <- x$edge[x$edge[, 2] <= Ntip, 2]
   yy[TIPS] <- 1:Ntip
-  z <- reorder(x, order = "postorder")
+  z <- stats::reorder(x, order = "postorder")
 
   #yy <- .nodeHeight(Ntip, Nnode, z$edge, Nedge, yy)
   yy <- .nodeHeight(z$edge, Nedge, yy)
@@ -180,9 +185,9 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   if (is.null(x.lim)) {
     x.lim <- c(0, NA)
     pin1 <- par("pin")[1]
-    strWi <- strwidth(x$tip.label, "inches", cex = cex)
+    strWi <- graphics::strwidth(x$tip.label, "inches", cex = cex)
     xx.tips <- xx[1:Ntip] * 1.04
-    alp <- try(uniroot(function(a) max(a * xx.tips + strWi) - pin1, c(0, 1e+06))$root, silent = TRUE)
+    alp <- try(stats::uniroot(function(a) max(a * xx.tips + strWi) - pin1, c(0, 1e+06))$root, silent = TRUE)
     if (is.character(alp)) {
       tmp <- max(xx.tips)
       if (show.tip.label)
@@ -216,14 +221,14 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     par(xpd=NA) # allow content to protrude into outer margin (and beyond)
     par(mgp=c(1.5, .5, 0)) # to reduce the spacing between the figure plotting region and the axis labels -- axis label at 1.5 rows distance, tick labels at .5 row
     par(fig=c(0,1,0,0.4))
-    plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)
+    graphics::plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)
     par(fig=c(0,1,0.4,1))
   }
   else{
     old.par = par("xpd")
     par(xpd=NA)
     # open a new plot window
-    plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)
+    graphics::plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)
   }
 
   if (plot) {
@@ -269,7 +274,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         else
           col="grey95"
         if(show.strata)
-          rect(xleft = x.left, xright = x.right, ybottom = y.bottom, ytop = y.top, col=col, border=NA)
+          graphics::rect(xleft = x.left, xright = x.right, ybottom = y.bottom, ytop = y.top, col=col, border=NA)
         x.left = x.right
         x.right = x.left + s1[i+1]
         cc = cc + 1
@@ -313,7 +318,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
       # x and y co-ordinates
       adj = 0
-      MAXSTRING <- max(strwidth(x$tip.label, cex = cex))
+      MAXSTRING <- max(graphics::strwidth(x$tip.label, cex = cex))
       loy <- 0
       lox <- label.offset + MAXSTRING * 1.05 * adj
 

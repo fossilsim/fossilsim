@@ -10,9 +10,9 @@
 #' @return Fossils object with min and max ages of fossils.
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t <- ape::rtree(6)
 #' # simulate fossils
-#' f<-sim.fossils.poisson(t, 2)
+#' f <- sim.fossils.poisson(rate = 2, tree = t)
 #' # simulate uncertainty
 #' f = sim.uncertain.ages(f, c(0,TreeSim::getx(t)))
 #' @export
@@ -22,18 +22,19 @@ sim.uncertain.ages = function(fossils, intervals, error_fraction = 0, error_rang
   }
   if(error_fraction > 0 && error_range == 0) {
     warning("Error range is 0, no errors will be added")
-  } 
-  
+  }
+
+  fossils$h = (fossils$hmin + fossils$hmax)/2
   idx = findInterval(fossils$h,intervals)
   if(any(idx == 0) || any(idx == length(intervals))) {
     stop("All fossils must be inside of the specified intervals")
   }
-  
+
   #integrating errors
   if(error_fraction >0 && error_range >0) {
     for(i in 1:length(idx)) {
       if(runif(1) < error_fraction) {
-        repeat { 
+        repeat {
           #add a random error in range of error_range
           error_id = idx[i] + sample(c(1:error_range, -1:-error_range),1)
           #make sure the id+error is still in the intervals
@@ -43,17 +44,17 @@ sim.uncertain.ages = function(fossils, intervals, error_fraction = 0, error_rang
       }
     }
   }
-  
+
   if(is.null(sd_intervals)) sd_intervals = rep(0, length(intervals))
   #hmin and hmax from intervals with maximum uncertainty
   fossils$hmin = intervals[idx] - sd_intervals[idx]
   fossils$hmax = intervals[idx + 1] + sd_intervals[idx + 1]
-  
+
   #optional: save simulation parameters
   if(save_params) {
     attr(fossils, "error_fraction") = error_fraction
     attr(fossils, "error_range") = error_range
   }
-  
+
   fossils
 }

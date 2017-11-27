@@ -13,7 +13,7 @@
   fcex = 1.2, fcol = "darkorange", ecol = NULL, ...)
 }
 \arguments{
-\item{fossils}{Dataframe of sampled fossils (sp = edge labels, h = ages).}
+\item{fossils}{Fossils object.}
 
 \item{tree}{Phylo object.}
 
@@ -47,9 +47,19 @@
 
 \item{hide.edge}{If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).}
 
+\item{edge.width}{A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order than the component edge of \code{tree}. If fewer widths are given than the length of edge, then these are recycled.}
+
+\item{show.tip.label}{Whether to show the tip labels on the phylogeny (defaults to FALSE).}
+
+\item{align.tip.label}{A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).}
+
+\item{fcex}{Numeric value giving the factor scaling of the points representing the fossils (Character EXpansion). Only used if \code{show.fossils = TRUE}.}
+
 \item{fcol}{Color of fossil occurrences or ranges.}
 
 \item{ecol}{Color of extant samples. Right now this only works if binned = F.}
+
+\item{...}{Additional parameters to be passed to \code{plot.default}.}
 }
 \description{
 This function is adapted from the \emph{ape} function \code{plot.phylo} used to phylogenetic trees.
@@ -64,10 +74,10 @@ using the function \code{basin.age}.
 set.seed(123)
 
 ## simulate tree
-t<-TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
+t <- TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 
 ## simulate fossils under a Poisson sampling process
-f<-sim.fossils.poisson(t,3)
+f <- sim.fossils.poisson(rate = 3, tree = t)
 plot(f, t)
 # add a set of equal length strata
 plot(f, t, show.strata = TRUE, strata = 4)
@@ -83,4 +93,3 @@ plot(f, t, show.strata = TRUE, interval.ages = times)
 plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)
 
 }
-

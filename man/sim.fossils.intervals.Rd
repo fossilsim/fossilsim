@@ -49,7 +49,7 @@ max.age <- basin.age(t)
 strata = 4
 probability = rep(0.7, 4)
 f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
-plot(f, t, strata = strata, show.strata = T)
+plot(f, t, strata = strata, show.strata = TRUE)
 
 # simulate fossils using interval.ages & rates
 times = seq(0, max.age, length.out = 4)
@@ -67,4 +67,3 @@ plot(f, t)
 \keyword{non-uniform}
 \keyword{preservation}
 \keyword{uniform}
-
