@@ -72,9 +72,9 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
     rand = rpois(1, blength*rate)
 
     if(rand > 0) {
+      h = runif(rand, min = end, max = start)
+      edge = sapply(h, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
       if(use.exact.times) {
-        h = runif(rand, min = end, max = start)
-        edge = sapply(h, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
         fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
       } else {
         fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
