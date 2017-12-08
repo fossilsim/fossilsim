@@ -47,22 +47,22 @@
 
 \item{hide.edge}{If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).}
 
-\item{edge.width}{A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order than the component edge of \code{tree}. If fewer widths are given than the length of edge, then these are recycled.}
+\item{edge.width}{A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.}
 
 \item{show.tip.label}{Whether to show the tip labels on the phylogeny (defaults to FALSE).}
 
 \item{align.tip.label}{A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).}
 
-\item{fcex}{Numeric value giving the factor scaling of the points representing the fossils (Character EXpansion). Only used if \code{show.fossils = TRUE}.}
+\item{fcex}{Numeric value giving the factor used to scale the points representing the fossils. Only used if \code{show.fossils = TRUE}.}
 
 \item{fcol}{Color of fossil occurrences or ranges.}
 
-\item{ecol}{Color of extant samples. Right now this only works if binned = F.}
+\item{ecol}{Color of extant samples. This only works if binned = FALSE.}
 
 \item{...}{Additional parameters to be passed to \code{plot.default}.}
 }
 \description{
-This function is adapted from the \emph{ape} function \code{plot.phylo} used to phylogenetic trees.
+This function is adapted from the \emph{ape} function \code{plot.phylo} used to plot phylogenetic trees.
 The function can be used to plot simulated fossils (\code{show.fossils = TRUE}), with or without the corresponding tree (\code{show.tree = TRUE}),
 stratigraphic intervals (\code{show.strata = TRUE}), stratigraphic ranges (\code{show.ranges = TRUE}) and sampling proxy data (\code{show.proxy = TRUE}).
 Interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using the

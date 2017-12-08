@@ -25,7 +25,7 @@ The fossil record object contains 5 fields containing for each fossil the follow
 \itemize{
  \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny
  and the species labels in the corresponding taxonomy object
- \item \code{edge} the label of the sampling node in the phylogeny, i.e the node at the end of the edge on which the fossil was sampled
+ \item \code{edge} the label of the sampled node or tip in the phylogeny, i.e the node at the end of the edge along which the fossil was sampled
  \item \code{origin} the label of the node where the corresponding species originated in the phylogeny
  \item \code{hmin} the youngest bound of the time interval in which the fossil was sampled
  \item \code{hmax} the oldest bound of the time interval in which the fossil was sampled.

@@ -81,9 +81,9 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 		  }
 		}
 
-		f <- f[order(f$hmin,decreasing=T),] # f$h
+		f <- f[order(f$hmin,decreasing=T),] # replaced f$h
 
-		num_fossils = length(f$sp) # f[,2]
+		num_fossils = length(f$sp) # replaced f[,2]
 		h <- numeric(num_fossils)
 		fl <- character(num_fossils)
 
@@ -95,15 +95,15 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 			{
 				node.ages = n.ages(tree)
 
-				a=which(names(node.ages) == f$sp) # f[j,2]
+				a=which(names(node.ages) == f$sp) # replaced f[j,2]
 				lineage.end = node.ages[[a]]
 
-				h = f$hmin[j] - lineage.end # f[j,1]
+				h = f$hmin[j] - lineage.end # replaced f[j,1]
 
-				# f[j,2]
+				# replaced f[j,2]
 				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$sp[j], position = h)
 
-				f$sp = map_nodes(f$sp,tree,tmp) # f[,2]
+				f$sp = map_nodes(f$sp,tree,tmp) # replaced f[,2]
 
 				tree = tmp
 			}
@@ -135,6 +135,7 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi)
 #' psi = 0.6
 #' numbsim = 2
 #' sim.fbd.age(age, numbsim, lambda, mu, psi)
+#' #TODO function sometimes returns at error
 #' @keywords fossilized birth death
 #' @export
 sim.fbd.age<-function(age, numbsim, lambda, mu, psi)
@@ -147,9 +148,9 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi)
 			t = trees[[i]]
 			f <- sim.fossils.poisson(tree = t, rate = psi)
 
-			f <- f[order(f$hmin, decreasing = TRUE),] # f$h
+			f <- f[order(f$hmin, decreasing = TRUE),] # replaced f$h
 
-			num_fossils = length(f$sp) # f[,2]
+			num_fossils = length(f$sp) # replaced f[,2]
 			h <- numeric(num_fossils)
 			fl <- character(num_fossils)
 
@@ -160,15 +161,15 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi)
 				for(j in 1:num_fossils)
 				{
 					node.ages = n.ages(tree)
-					a = which(names(node.ages) == f$sp[j]) # f[j,2]
+					a = which(names(node.ages) == f$sp[j]) # replaced f[j,2]
 					lineage.end = node.ages[[a]]
 
-					h = f$hmin[j] - lineage.end # f[j,1]
+					h = f$hmin[j] - lineage.end # replaced f[j,1]
 
-					# f[j,2]
+					# replaced f[j,2]
 					tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$sp[j], position = h)
 
-					f$sp = map_nodes(f$sp, tree, tmp) # f[,2]
+					f$sp = map_nodes(f$sp, tree, tmp) # replaced f[,2]
 
 					tree = tmp
 				}
@@ -203,8 +204,8 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi)
 #' sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0.3))
 #' @keywords fossilized birth death
 #' @export
-# N.B. there was a mistake in this example, psi contained too few values OR times contained too many values
-# N.B. this function works but could do with some error messaging
+# #TODO there was a mistake in this example, psi contained too few values OR times contained too many values
+# #TODO this function works now but could do with some double checking & error messaging to avoid the above
 sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times)
 {
 	if(length(psi) != (length(times) + 1 ))
@@ -219,11 +220,11 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times)
 
 		horizons = c(0, times, origin)
 
-		f <- sim.fossils.intervals(tree = t, interval.ages = horizons, rates = psi)
+		f <- sim.fossils.intervals(tree = t, interval.ages = horizons, rates = psi) # reordered
 
-		f <- f[order(f$hmin, decreasing = TRUE),] # f$h
+		f <- f[order(f$hmin, decreasing = TRUE),] # replaced f$h
 
-		num_fossils = length(f$sp) # f[,2]
+		num_fossils = length(f$sp) # # replaced f[,2]
 		h <- numeric(num_fossils)
 		fl <- character(num_fossils)
 
@@ -234,15 +235,15 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times)
 			{
 				node.ages = n.ages(tree)
 
-				a = which(names(node.ages) == f$sp[j]) # f[j,2]
+				a = which(names(node.ages) == f$sp[j]) # replaced f[j,2]
 				lineage.end = node.ages[[a]]
 
-				h = f$hmin[j] - lineage.end # f[j,1]
+				h = f$hmin[j] - lineage.end # replaced f[j,1]
 
-				# f[j,2]
+				# replaced f[j,2]
 				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$sp[j], position = h)
 
-				f$sp = map_nodes(f$sp,tree,tmp) # f[,2]
+				f$sp = map_nodes(f$sp,tree,tmp) # replaced f[,2]
 
 				tree = tmp
 			}
@@ -282,9 +283,9 @@ sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi)
 		t = trees[[i]]
 		f <- sim.fossils.poisson(tree = t, rate = psi)
 
-		f <- f[order(f$hmin, decreasing = T),] # f$h
+		f <- f[order(f$hmin, decreasing = T),] # replaced f$h
 
-		num_fossils = length(f$sp) # f[,2]
+		num_fossils = length(f$sp) # replaced f[,2]
 		h <- numeric(num_fossils)
 		fl <- character(num_fossils)
 
@@ -296,15 +297,15 @@ sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi)
 			{
 				node.ages = n.ages(tree)
 
-				a = which(names(node.ages) == f$sp[j]) # f[j,2]
+				a = which(names(node.ages) == f$sp[j]) # replaced f[j,2]
 				lineage.end = node.ages[[a]]
 
-				h = f$hmin[j] - lineage.end # f[j,1]
+				h = f$hmin[j] - lineage.end # replaced f[j,1]
 
-				# f[j,2]
+				# replaced f[j,2]
 				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$sp[j], position = h)
 
-				f$sp = map_nodes(f$sp,tree,tmp) # f[,2]
+				f$sp = map_nodes(f$sp,tree,tmp) # replaced f[,2]
 
 				tree = tmp
 			}
