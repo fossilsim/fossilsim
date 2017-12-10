@@ -134,7 +134,6 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
 #' @seealso \code{\link{taxonomy}}
 #'
 #' @export
-# %TODO there is a bug in this function
 add.anagenic.species<-function(tree, species, lambda.a){
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -160,16 +159,10 @@ add.anagenic.species<-function(tree, species, lambda.a){
     # calculate edge start and end times (you could probably extract this info from the sp dataframe now)
     edges = data.frame(edge = numeric(), start = numeric(), end = numeric())
 
-    for(i in unique(tree$edge[,2])){
-      start = node.ages[ancestor(i, tree)]
-      end = node.ages[i]
-      edges = rbind(edges, data.frame(edge = i, start = start, end = end))
+    for(i in unique(species$edge)){
+      edges = rbind(edges, data.frame(edge = i, start = species$edge.start[which(species$edge == i)][1],
+                                      end = species$edge.end[which(species$edge == i)][1]))
     }
-    # deal with the root / root edge
-    root.age = node.ages[root]
-    if(exists("root.edge",tree)){
-      edges = rbind(edges, data.frame(edge = root, start = root.age + tree$root.edge, end = root.age))
-    } else edges = rbind(edges, data.frame(edge = root, start = root.age, end = root.age))
 
     for(i in unique(species$sp)){
 
@@ -220,6 +213,8 @@ add.anagenic.species<-function(tree, species, lambda.a){
 
             parent = s$parent[1]
 
+            cat(1, "sp", sp, "edge", edge, "parent", parent, "start" = start, "end", end, "mode", mode, "origin", edge[1], "edge.start", edge.start, "edge.end", edge.end, "\n", sep = "\t")
+
             species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end,
                                                  mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp,
                                                  edge.start = edge.start, edge.end = edge.end))
@@ -233,6 +228,8 @@ add.anagenic.species<-function(tree, species, lambda.a){
             }
             species.counter = species.counter + 1
           } else if (j == (length(h)+1)){ # species ending the branch
+
+            print(2)
 
             sp = i
             start = h[j-1]
@@ -257,6 +254,8 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # any descendant parent labels associated with this species shouldn't need to change
 
           } else { # intermediate anagenic species
+
+            print(3)
 
             sp = species.counter
             start = h[j-1]
