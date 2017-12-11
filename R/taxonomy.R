@@ -55,24 +55,25 @@ print.taxonomy<-function(x, max.length = 50, round.x = 12, ...){
 #' @param details If TRUE include summary statistics.
 #'
 #' @export
-summary.taxonomy<-function(object, max.length = 50, round.x = 12, details = TRUE, ...){
+summary.taxonomy<-function(x, max.length = 50, round.x = 12, details = TRUE, ...){
 
-  object = data.frame(lapply(object, function(y) if(is.numeric(y)) round(y, round.x) else y))
+  x = data.frame(lapply(x, function(y) if(is.numeric(y)) round(y, round.x) else y))
 
-  if(length(object$sp) > 0){
-    if(length(object$sp) < max.length)
-      max.length = length(object$sp)
-    print(as.data.frame(object)[1:max.length,])
-    if(length(object$sp) > max.length)
+  if(length(x$sp) > 0){
+    if(length(x$sp) < max.length)
+      max.length = length(x$sp)
+    print(as.data.frame(x)[1:max.length,])
+    if(length(x$sp) > max.length)
       cat("...\n")
   }
-  cat("Taxonomy representing", length(unique(object$sp)), "species across", length(unique(object$edge)), "edges.\n")
+  cat("Taxonomy representing", length(unique(x$sp)), "species across", length(unique(x$edge)), "edges.\n")
   if(details){
-    cat("\t", length(which(object$mode == "b")), "budding species\n\t",
-    length(which(object$mode == "s")), "bifurcating species\n\t",
-    length(which(object$mode == "a")), "anagenic species\n\t",
-    length(which(object$mode == "o")), "origin species\n\t",
-    length(which(object$mode == "NA" & object$cryptic == 1)), "cryptic speciation events\n") # %TODO
+    cat("\t", length(unique(x$sp[which(x$mode == "b")])), "budding species\n\t",
+    length(unique(x$sp[which(x$mode == "s")])), "bifurcating species\n\t",
+    length(unique(x$sp[which(x$mode == "a")])), "anagenic species\n\t",
+    length(unique(x$sp[which(x$mode == "o")])), "origin species\n\t",
+    length(unique(x$sp[which(x$mode == "r")])), "root species\n\t",
+    length(unique(x$sp[which(x$cryptic == 1)])), "cryptic speciation events\n")
   }
 }
 
