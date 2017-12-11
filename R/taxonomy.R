@@ -42,14 +42,23 @@ taxonomy<-function(data){
 }
 
 #' @export
-#' @aliases taxonomy
-print.taxonomy<-function(x, max.length = 50, ...){
+#' @rdname summary.taxonomy
+print.taxonomy<-function(x, max.length = 50, round.x = 12, ...){
   summary(x, max.length = max.length, details = FALSE)
 }
 
+#' Display taxonomy object
+#'
+#' @param x Taxonomy object.
+#' @param max.length Max number of rows to print out.
+#' @param round.x Number of decimal places to be used for species and edge ages.
+#' @param details If TRUE include summary statistics.
+#'
 #' @export
-#' @aliases taxomy
-summary.taxonomy<-function(object, max.length = 50, details = TRUE, ...){
+summary.taxonomy<-function(object, max.length = 50, round.x = 12, details = TRUE, ...){
+
+  object = data.frame(lapply(object, function(y) if(is.numeric(y)) round(y, round.x) else y))
+
   if(length(object$sp) > 0){
     if(length(object$sp) < max.length)
       max.length = length(object$sp)
@@ -63,7 +72,7 @@ summary.taxonomy<-function(object, max.length = 50, details = TRUE, ...){
     length(which(object$mode == "s")), "bifurcating species\n\t",
     length(which(object$mode == "a")), "anagenic species\n\t",
     length(which(object$mode == "o")), "origin species\n\t",
-    length(which(object$mode == "NA" & object$cryptic == 1)), "cryptic speciation events\n")
+    length(which(object$mode == "NA" & object$cryptic == 1)), "cryptic speciation events\n") # %TODO
   }
 }
 
