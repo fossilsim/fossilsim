@@ -213,8 +213,6 @@ add.anagenic.species<-function(tree, species, lambda.a){
 
             parent = s$parent[1]
 
-            cat(1, "sp", sp, "edge", edge, "parent", parent, "start" = start, "end", end, "mode", mode, "origin", edge[1], "edge.start", edge.start, "edge.end", edge.end, "\n", sep = "\t")
-
             species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end,
                                                  mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp,
                                                  edge.start = edge.start, edge.end = edge.end))
@@ -228,8 +226,6 @@ add.anagenic.species<-function(tree, species, lambda.a){
             }
             species.counter = species.counter + 1
           } else if (j == (length(h)+1)){ # species ending the branch
-
-            print(2)
 
             sp = i
             start = h[j-1]
@@ -254,8 +250,6 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # any descendant parent labels associated with this species shouldn't need to change
 
           } else { # intermediate anagenic species
-
-            print(3)
 
             sp = species.counter
             start = h[j-1]

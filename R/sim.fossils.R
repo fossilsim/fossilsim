@@ -543,6 +543,10 @@ reconcile.fossils.taxonomy<-function(fossils, species){
   if(!is.null(species) && !"taxonomy" %in% class(species))
     stop("species must be an object of class \"taxonomy\"")
 
+  # if fossils contain edges not in species
+  if(!all(fossils$edge %in% species$edge))
+    stop("incompatible fossils and taxonomy: not all fossil edges found in species")
+
   if(!identical(fossils$hmin, fossils$hmax))
     stop("exact fossil sampling times must be specified to use this function (i.e. hmin = hmax)")
 
