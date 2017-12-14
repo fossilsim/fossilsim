@@ -1,7 +1,8 @@
 # Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
 n.ages<-function(tree){
 
-  node.ages <- TreeSim::getx(tree, sersampling = 1)[1:(tree$Nnode+length(tree$tip))]
+  depth = ape::node.depth.edgelength(tree)
+  node.ages = max(depth) - depth
   names(node.ages) <- 1:(tree$Nnode+length(tree$tip))
 
   # adding possible offset if tree fully extinct
@@ -130,4 +131,22 @@ find.species.in.taxonomy = function(taxonomy, branch, time = NULL) {
 species.record.from.taxonomy = function(taxonomy) {
   taxonomy$edge = NULL
   unique(taxonomy)
+}
+
+# find all egdes between two edges
+# @param i the younger of the two edges
+# @param j the older of the two edges
+# @return a vector including the two edges and any edges in-between
+find.edges.inbetween<-function(i,j,tree){
+  if(i == j) return(i)
+  d = fetch.descendants(j, tree, return.edge.labels = TRUE)
+  if(!i %in% d) stop("i not a descendant of j")
+  parent = ancestor(i,tree)
+  edges = c(i)
+  while(parent != j){
+    edges = c(edges, parent)
+    parent = ancestor(parent,tree)
+  }
+  edges = c(edges,j)
+  return(edges)
 }
