@@ -205,7 +205,6 @@ add.anagenic.species<-function(tree, species, lambda.a){
             edge.start = p$start[which(p$edge %in% edge)]
             edge.end = p$end[which(p$edge %in% edge)]
 
-            #mode = as.character(s$mode[which(s$mode != "NA")])
             mode = s$mode[1]
 
             parent = s$parent[1]

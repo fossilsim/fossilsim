@@ -24,6 +24,8 @@
 #' @param proxy.data Vector of sampling proxy data (default = NULL).
 #' @param show.preferred.environ If TRUE add species prefferred environmental value (e.g. water depth) (default = FALSE).
 #' @param preferred.environ Prefferred environmental value (e.g. water depth).
+#' @param show.taxonomy If TRUE highlight species taxonomy.
+#' @param species Taxonomy object.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
@@ -64,19 +66,17 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
                        # proxy stuff
                        show.proxy = FALSE, proxy.data = NULL,
                        show.preferred.environ = FALSE, preferred.environ = NULL,
+                       # taxonomy
+                       show.taxonomy = FALSE, species = NULL,
                        # tree appearance
                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                        # fossil appearance
                        fcex = 1.2, fcol = "darkorange", ecol = NULL, ...) {
 
-  # TODO probably not appropriate all the time
-  fossils$h = (fossils$hmin + fossils$hmax)/2
-
   x<-tree  # tree
   ba<-max
 
-  if(!show.tree)
-    align.tip.label = TRUE
+  if(!show.tree) align.tip.label = TRUE
 
   # other possible options
   show.node.label = FALSE # this doesn't do anything
@@ -110,9 +110,10 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   if (any(tabulate(x$edge[, 1]) == 1))
     stop("there are single (non-splitting) nodes in your tree; you may need to use collapse.singles()")
 
+  # TODO
   # check edge lengths != null
   # check tree is rooted
-  # check tree is binary
+  # check tree is binary?
 
   if(is.null(x$root.edge))
     root.edge = FALSE
@@ -135,8 +136,14 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         stop("Make sure number of sampling proxy data points matches the number of intervals")
     }
     if(any(is.na(proxy.data)))
-      stop("I can't handle NA proxy values right now, please use 0 for the time being")
+      stop("Function can't handle NA proxy values right now, please use 0 for the time being")
   }
+
+  if(show.taxonomy && is.null(species))
+    stop("Specify taxonomy using species")
+  #TODO check all fossils edges are present in th sp obj
+
+  if(any(fossils$hmin != fossils$hmax)) binned = TRUE # TODO?
 
   # required ape C fxns
   .nodeHeight <- function(edge, Nedge, yy) .C(ape::node_height, as.integer(edge[, 1]), as.integer(edge[, 2]), as.integer(Nedge), as.double(yy))[[4]]
@@ -169,7 +176,6 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   yy[TIPS] <- 1:Ntip
   z <- stats::reorder(x, order = "postorder")
 
-  #yy <- .nodeHeight(Ntip, Nnode, z$edge, Nedge, yy)
   yy <- .nodeHeight(z$edge, Nedge, yy)
   xx <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
 
@@ -233,7 +239,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
   if (plot) {
 
-    if(show.strata || show.axis){
+    if(show.strata || show.axis){ # todo I think this is also required if binned = TRUE
       if( (is.null(interval.ages)) ){
         if(is.null(ba))
           ba = basin.age(x, root.edge = root.edge)
@@ -347,57 +353,136 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
            cex = cex)
     }
 
+    # TODO check all this/ nb I think if binned = T show.axis MUST BE TRUE
+    # TODO what about extant taxa?
+    # not binned
+    if(!binned) fossils$h = fossils$hmin
+    # binned & already assigned to intervals
+    else if (binned & any(fossils$hmin != fossils$hmax))
+      fossils$h = fossils$hmax # (fossils$hmin + fossils$hmax)/2 #todo check for compatibility between interval.ages & fossil intervals or you could take the median and reassign the ages?
+    # binned but not assigned to intervals
+    else if(binned & all(fossils$hmin == fossils$hmax))
+      fossils$h = reassign.ages(fossils, tree, interval.ages = c(0, horizons.max))$hmax
+
+    # taxonomy
+    if(show.taxonomy){
+      sp = length(unique(fossils$sp))
+      # todo work out what to do when sp # > 501
+      all = colors(distinct = TRUE)
+      #all = all[!grepl("gr(a|e)y", all)]; #  all 501; minus gray, grey = 389; minus grey and white = 377; minus light = 335
+      #all = all[!grepl("gr(a|e)y|white|light", all)]
+
+      if(sp > 389)
+        all = colors(distinct = TRUE)
+      else if(sp > 377)
+        all = all[!grepl("gr(a|e)y", all)]
+      else if(sp > 355)
+        all = all[!grepl("gr(a|e)y|white", all)]
+      else
+        all = all[!grepl("gr(a|e)y|white|light", all)]
+      #else if(sp > XXX)
+      #  all = all[!grepl("gr(a|e)y", all)]
+      # wheat3; lavenderblush; light; aliceblue; thistle1; linen; papayawhip; cornsilk2; peachpuff;coral4; blanchedalmond
+      #else if
+
+      col = sample(all, sp)
+      fossils$col = fcol
+      j = 0
+      for(i in unique(fossils$sp)){
+        j = j + 1
+        fossils$col[which(fossils$sp == i)] = col[j]
+      }
+    } else fossils$col = fcol
+    if (ecol != fcol)
+      fossils$col[which(fossils$h == 0), ] = ecol #todo - change the way zero is handled
+
     # fossils
     if(show.fossils){
       if(binned){
-        # TODO check correction
-        #if(attr(fossils, "ages") == "interval.max"){
-        #y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
-        #} else {
-        # treat fossil data as continuous
-        y = sapply(fossils$hmin, function(x) max(which(horizons.min <= x)) )
-        #}
+        y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
         points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$edge] , col = fcol, pch = 19, cex = fcex)
       }
       else{
-        if(fcol == ecol)
-          points(max(xx) - fossils$h, yy[fossils$edge], col = fcol, pch = 19, cex = fcex)
-        else{
-          extant = fossils[which(fossils$h == 0), ]
-          extinct = fossils[which(fossils$h != 0), ]
-          points(max(xx) - extant$h, yy[extant$edge], col = ecol, pch = 19, cex = fcex)
-          points(max(xx) - extinct$h, yy[extinct$edge], col = fcol, pch = 19, cex = fcex)
-        }
+        points(max(xx) - fossils$h, yy[fossils$edge], col = fossils$col, pch = 19, cex = fcex)
       }
     }
 
     # ranges
     if(show.ranges){
-      buffer = 0.01 * max(xx) # buffer for singletons
 
+      buffer = 0.01 * max(xx) # buffer for singletons
       if(binned){
-        if(attr(fossils, "ages") == "interval.max"){
-          y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
-        } else {
-          # treat fossil data as continuous
-          y = sapply(fossils$h, function(x) max(which(horizons.min <= x)) )
-        }
+        y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
         fossils$r = max(xx) - horizons.max[y] + (rev(s1)[y]/2)
       } else {
         fossils$r = max(xx) - fossils$h
       }
 
-      for(i in unique(fossils$edge)) {
+      # for show.taxonomy = TRUE
+      # fetch oldest and youngest edge associated with a species
+      # deal with the oldest part of the ranges
+      # deal with the youngest part of the ranges
+      # everyting inbetween
+      if(show.taxonomy){
 
-        range = fossils$r[which(fossils$edge==i)]
+        for(i in unique(fossils$sp)){
 
-        if(length(range) == 1)
-          range = c(range-buffer,range+buffer)
+          mn = min(fossils$h[which(fossils$sp == i)])
+          mx = max(fossils$h[which(fossils$sp == i)])
+          edge.mn = fossils$edge[which(fossils$sp == i & fossils$h == mn)]
+          edge.mx = fossils$edge[which(fossils$sp == i & fossils$h == mx)]
 
-        species = rep(yy[i], length(range))
+          edges = find.edges.inbetween(edge.mn, edge.mx, tree)
 
-        lines(y = species, x = range, lwd = 6, col=fcol)
+          col = fossils$col[which(fossils$sp == i)]
 
+          for(j in edges){
+
+            print(i); print(col); # get rid of white? snow; if n<whatever without
+
+            # singletons
+            if(mn == mx) {
+              range = fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)]
+              range = c(range - buffer, range + buffer)
+            }
+
+            # single edge
+            else if(edge.mn == edge.mx) range = fossils$r[which(fossils$edge == edge.mn
+                                                                & fossils$sp == i)]
+
+            # multiple edges: FA edge
+            else if(j == edge.mx) {
+              range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
+                         max(xx) - species$edge.end[which(species$edge == j)][1])
+            }
+            # multiple edges: LA edge
+            else if(j == edge.mn){
+              range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
+                         max(xx) - species$edge.start[which(species$edge == j)][1])
+            }
+            # multiple edges: in-between edges
+            else{
+              range =  c(max(xx) - species$edge.start[which(species$edge == j)][1],
+                         max(xx) - species$edge.end[which(species$edge == j)][1])
+            }
+            # plot ranges
+            sp = rep(yy[j], length(range))
+
+            lines(y = sp, x = range, lwd = 6, col = col)
+          }
+        }
+      } else{
+        for(i in unique(fossils$edge)) {
+
+          range = fossils$r[which(fossils$edge == i)]
+
+          if(length(range) == 1)
+            range = c(range - buffer, range + buffer)
+
+          sp = rep(yy[i], length(range))
+
+          lines(y = sp, x = range, lwd = 6, col = fcol)
+        }
       }
       fossils$r = NULL
     }

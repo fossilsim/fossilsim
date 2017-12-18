@@ -86,7 +86,7 @@ reassign.ages<-function(fossils, tree = NULL, species = NULL,
   if(any(fossils$hmin > max(interval.ages)))
     stop("some fossils are older than the oldest bin")
   if(any(fossils$hmin < min(interval.ages)))
-    stop("some fossils are younger than the younger bin")
+    stop("some fossils are younger than the youngest bin")
 
   # for each fossil
   for(i in 1:length(fossils$hmin)){
