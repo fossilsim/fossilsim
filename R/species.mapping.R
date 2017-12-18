@@ -103,9 +103,6 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
 
   species = species[order(species$sp),]
 
-  # %todo - double check with Joelle about this
-  species = transform(species, start = round(start, 9), end = round(end, 9), edge.start = round(edge.start, 9), edge.end = round(edge.end, 9))
-
   species = taxonomy(species)
 
   # simulate anagenic species
@@ -213,8 +210,6 @@ add.anagenic.species<-function(tree, species, lambda.a){
 
             parent = s$parent[1]
 
-            cat(1, "sp", sp, "edge", edge, "parent", parent, "start" = start, "end", end, "mode", mode, "origin", edge[1], "edge.start", edge.start, "edge.end", edge.end, "\n", sep = "\t")
-
             species <- rbind(species, data.frame(sp = sp, edge = edge, parent = parent, start = start, end = end,
                                                  mode = mode, origin = edge[1], cryptic = 0, cryptic.id = sp,
                                                  edge.start = edge.start, edge.end = edge.end))
@@ -228,8 +223,6 @@ add.anagenic.species<-function(tree, species, lambda.a){
             }
             species.counter = species.counter + 1
           } else if (j == (length(h)+1)){ # species ending the branch
-
-            print(2)
 
             sp = i
             start = h[j-1]
@@ -254,8 +247,6 @@ add.anagenic.species<-function(tree, species, lambda.a){
             # any descendant parent labels associated with this species shouldn't need to change
 
           } else { # intermediate anagenic species
-
-            print(3)
 
             sp = species.counter
             start = h[j-1]
@@ -359,7 +350,7 @@ add.cryptic.species<-function(species, kappa){
 #' # simulate fossils
 #' f<-sim.fossils.poisson(tree = t, 2)
 #'
-#' # add extant samples %TODO double check this
+#' # add extant samples
 #' f<-add.extant.occ(t, f, rho = 0.5)
 #'
 #' # asymmetric mapping
@@ -386,6 +377,7 @@ asymmetric.fossil.mapping<-function(tree,fossils){
 #' @param fossils Fossils object.
 #' @param tree Phylo object.
 #' @param rho Extant species sampling probability.
+#' @param tol Rounding error tolerance for tip ages.
 #'
 #' @return An object of class fossils.
 #'
@@ -405,7 +397,7 @@ asymmetric.fossil.mapping<-function(tree,fossils){
 #' plot(f, t)
 #'
 #' @export
-add.extant.occ<-function(fossils, tree = NULL, species = NULL, rho = 1){
+add.extant.occ<-function(fossils, tree = NULL, species = NULL, rho = 1, tol = NULL){
 
   if(!"fossils" %in% class(fossils))
     stop("fossils must be an object of class \"fossils\"")
@@ -436,11 +428,13 @@ add.extant.occ<-function(fossils, tree = NULL, species = NULL, rho = 1){
     from.taxonomy = FALSE
   } else from.taxonomy = TRUE
 
+  tol = min(min(tree$edge.length)/100, 1e-8)
+
   for (i in unique(species$sp)){
 
     end = species$end[which(species$sp == i)][1]
 
-    if(end != 0) next
+    if(!(end > (0 - tol) & end < (0 + tol))) next
 
     if(runif(1) < rho){
       # identify the edge ending zero

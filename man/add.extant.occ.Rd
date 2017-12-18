@@ -4,7 +4,8 @@
 \alias{add.extant.occ}
 \title{Add extant occurrence samples}
 \usage{
-add.extant.occ(fossils, tree = NULL, species = NULL, rho = 1)
+add.extant.occ(fossils, tree = NULL, species = NULL, rho = 1,
+  tol = NULL)
 }
 \arguments{
 \item{fossils}{Fossils object.}
@@ -12,6 +13,8 @@ add.extant.occ(fossils, tree = NULL, species = NULL, rho = 1)
 \item{tree}{Phylo object.}
 
 \item{rho}{Extant species sampling probability.}
+
+\item{tol}{Rounding error tolerance for tip ages.}
 }
 \value{
 An object of class fossils.

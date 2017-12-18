@@ -42,28 +42,38 @@ taxonomy<-function(data){
 }
 
 #' @export
-#' @aliases taxonomy
-print.taxonomy<-function(x, max.length = 50, ...){
+#' @rdname summary.taxonomy
+print.taxonomy<-function(x, max.length = 50, round.x = 12, ...){
   summary(x, max.length = max.length, details = FALSE)
 }
 
+#' Display taxonomy object
+#'
+#' @param x Taxonomy object.
+#' @param max.length Max number of rows to print out.
+#' @param round.x Number of decimal places to be used for species and edge ages.
+#' @param details If TRUE include summary statistics.
+#'
 #' @export
-#' @aliases taxomy
-summary.taxonomy<-function(object, max.length = 50, details = TRUE, ...){
-  if(length(object$sp) > 0){
-    if(length(object$sp) < max.length)
-      max.length = length(object$sp)
-    print(as.data.frame(object)[1:max.length,])
-    if(length(object$sp) > max.length)
+summary.taxonomy<-function(x, max.length = 50, round.x = 12, details = TRUE, ...){
+
+  x = data.frame(lapply(x, function(y) if(is.numeric(y)) round(y, round.x) else y))
+
+  if(length(x$sp) > 0){
+    if(length(x$sp) < max.length)
+      max.length = length(x$sp)
+    print(as.data.frame(x)[1:max.length,])
+    if(length(x$sp) > max.length)
       cat("...\n")
   }
-  cat("Taxonomy representing", length(unique(object$sp)), "species across", length(unique(object$edge)), "edges.\n")
+  cat("Taxonomy representing", length(unique(x$sp)), "species across", length(unique(x$edge)), "edges.\n")
   if(details){
-    cat("\t", length(which(object$mode == "b")), "budding species\n\t",
-    length(which(object$mode == "s")), "bifurcating species\n\t",
-    length(which(object$mode == "a")), "anagenic species\n\t",
-    length(which(object$mode == "o")), "origin species\n\t",
-    length(which(object$mode == "NA" & object$cryptic == 1)), "cryptic speciation events\n")
+    cat("\t", length(unique(x$sp[which(x$mode == "b")])), "budding species\n\t",
+    length(unique(x$sp[which(x$mode == "s")])), "bifurcating species\n\t",
+    length(unique(x$sp[which(x$mode == "a")])), "anagenic species\n\t",
+    length(unique(x$sp[which(x$mode == "o")])), "origin species\n\t",
+    length(unique(x$sp[which(x$mode == "r")])), "root species\n\t",
+    length(unique(x$sp[which(x$cryptic == 1)])), "cryptic speciation events\n")
   }
 }
 
