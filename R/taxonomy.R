@@ -49,15 +49,15 @@ print.taxonomy<-function(x, max.length = 50, round.x = 12, ...){
 
 #' Display taxonomy object
 #'
-#' @param x Taxonomy object.
+#' @param object Taxonomy object.
 #' @param max.length Max number of rows to print out.
 #' @param round.x Number of decimal places to be used for species and edge ages.
 #' @param details If TRUE include summary statistics.
 #'
 #' @export
-summary.taxonomy<-function(x, max.length = 50, round.x = 12, details = TRUE, ...){
+summary.taxonomy<-function(object, max.length = 50, round.x = 12, details = TRUE, ...){
 
-  x = data.frame(lapply(x, function(y) if(is.numeric(y)) round(y, round.x) else y))
+  x = data.frame(lapply(object, function(y) if(is.numeric(y)) round(y, round.x) else y))
 
   if(length(x$sp) > 0){
     if(length(x$sp) < max.length)
@@ -93,5 +93,3 @@ is.taxonomy<-function(data){
   else
     FALSE
 }
-
-#eof

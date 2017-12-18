@@ -11,9 +11,9 @@ add.tip.samples(fossils, tree, species = NULL, rho = 1)
 
 \item{tree}{Phylo object.}
 
-\item{rho}{Tip sampling probability.}
+\item{species}{Taxonomy object.}
 
-\item{specie}{Taxonoy object.}
+\item{rho}{Tip sampling probability.}
 }
 \value{
 An object of class fossils.
