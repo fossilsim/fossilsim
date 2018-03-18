@@ -4,7 +4,7 @@
 \alias{sim.fbd.age}
 \title{sim.fbd.age: Simulating Fossilized Birth-Death Trees Of A Fixed Age.}
 \usage{
-sim.fbd.age(age, numbsim, lambda, mu, psi)
+sim.fbd.age(age, numbsim, lambda, mu, psi, complete = FALSE)
 }
 \arguments{
 \item{age}{Time since origin.}
@@ -16,6 +16,8 @@ sim.fbd.age(age, numbsim, lambda, mu, psi)
 \item{mu}{Extinction rate.}
 
 \item{psi}{Fossil sampling rate.}
+
+\item{complete}{Keep unsampled extinct lineages?}
 }
 \value{
 Array of 'numbsim' trees with the time since origin being 'age'.
