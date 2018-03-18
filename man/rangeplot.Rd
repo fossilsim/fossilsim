@@ -14,3 +14,7 @@ rangeplot(x, complete = FALSE)
 \description{
 rangeplot: Make a stratigaphic range plot from an object of class phylo.fbd
 }
+\examples{
+tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
+rangeplot(tree, complete=TRUE)
+}
