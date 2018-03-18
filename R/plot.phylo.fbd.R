@@ -1,10 +1,15 @@
 #' plot.phylo.fbd: Plot object of class phylo.fbd
 #'
 #' @param tree FBD tree to plot.
+#' @param range.plot Plot stratigraphic ranges?
 #' @param complete Is this a complete FBD tree?
-#' @keywords fossilized birth death
 #' @export
-plot.phylo.fbd <- function(tree, complete=FALSE){
+plot.phylo.fbd <- function(x, range.plot=FALSE, complete=FALSE, ...){
+  if(range.plot==FALSE){
+    ape::plot.phylo(x,...)
+    return()
+  }
+  tree = x
   sa.labels = tree$tip.label[tree$edge[which(tree$edge.length == 0),2]]
 
   tree.sa = ape::drop.tip(tree, sa.labels, collapse.singles=F)

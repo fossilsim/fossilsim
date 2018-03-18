@@ -4,16 +4,15 @@
 \alias{plot.phylo.fbd}
 \title{plot.phylo.fbd: Plot object of class phylo.fbd}
 \usage{
-\method{plot}{phylo.fbd}(tree, complete = FALSE)
+\method{plot}{phylo.fbd}(x, range.plot = FALSE, complete = FALSE, ...)
 }
 \arguments{
-\item{tree}{FBD tree to plot.}
+\item{range.plot}{Plot stratigraphic ranges?}
 
 \item{complete}{Is this a complete FBD tree?}
+
+\item{tree}{FBD tree to plot.}
 }
 \description{
 plot.phylo.fbd: Plot object of class phylo.fbd
 }
-\keyword{birth}
-\keyword{death}
-\keyword{fossilized}
