@@ -54,9 +54,7 @@ rangeplot <- function(tree, complete=FALSE){
 
   # get sampled nodes
   sampled.nodes = c(sa.nodes, extant.tips)
-  if( tree$complete == FALSE ){
-    sampled.nodes = c(sampled.nodes, fossil.tips)
-  }
+  if( tree$complete == FALSE ) sampled.nodes = c(sampled.nodes, fossil.tips)
 
   sampled.ages<-function(x) {
     ret = c()
