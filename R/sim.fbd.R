@@ -122,7 +122,6 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi,complete=FALSE)
 		#trees[[i]]$root.edge = origin - max(node.ages)
 
 		trees[[i]]$complete = complete
-		class(trees[[i]]) <- c("phylo.fbd", class(trees[[i]]))
 	}
 
 	trees
@@ -196,7 +195,6 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi,complete=FALSE)
 			trees[[i]]$root.edge = origin - max(node.ages)
 
 			trees[[i]]$complete = complete
-			class(trees[[i]]) <- c("phylo.fbd", class(trees[[i]]))
 		}
 	}
 
@@ -276,7 +274,6 @@ sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times,complete=FALSE)
 		trees[[i]]$root.edge = origin - max(node.ages)
 
 		trees[[i]]$complete = complete
-		class(trees[[i]]) <- c("phylo.fbd", class(trees[[i]]))
 	}
 
 	trees
@@ -346,7 +343,6 @@ sim.fbd.taxa <- function(n,numbsim,lambda,mu,psi,complete=FALSE)
 		trees[[i]]$root.edge = origin - max(node.ages)
 
 		trees[[i]]$complete = complete
-		class(trees[[i]]) <- c("phylo.fbd", class(trees[[i]]))
 	}
 
 	trees

@@ -1,14 +1,14 @@
-#' rangeplot: Make a stratigaphic range plot from an object of class phylo.fbd
+#' rangeplot: Make a stratigaphic range plot from a tree object of class phylo
 #'
-#' @param x phylo.fbd object to plot.
+#' @param x Tree to plot.
 #' @param complete Plot unsampled species?
 #' @examples
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
 #' rangeplot(tree, complete=TRUE)
 #' @export
 rangeplot <- function(x, complete=FALSE){
-  if(!("phylo.fbd" %in% class(x)) ){
-    stop(paste('object "',class(x),'" is not of class "phylo.fbd"'))
+  if(!("phylo" %in% class(x)) ){
+    stop(paste('object "',class(x),'" is not of class "phylo"',sep=""))
   }
 
   sa.labels <- x$tip.label[x$edge[which(x$edge.length == 0),2]]
