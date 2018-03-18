@@ -1,15 +1,12 @@
-#' plot.phylo.fbd: Plot object of class phylo.fbd
+#' rangeplot: Make a stratigaphic range plot from an object of class phylo.fbd
 #'
-#' @param tree FBD tree to plot.
-#' @param range.plot Plot stratigraphic ranges?
-#' @param complete Is this a complete FBD tree?
+#' @param tree phylo.fbd object to plot.
+#' @param complete Plot completely unsampled species?
 #' @export
-plot.phylo.fbd <- function(x, range.plot=FALSE, complete=FALSE, ...){
-  if(range.plot==FALSE){
-    ape::plot.phylo(x,...)
-    return()
+rangeplot <- function(tree, complete=FALSE){
+  if(!("phylo.fbd" %in% class(tree)) ){
+    stop(paste('object "',class(tree),'" is not of class "phylo.fbd"'))
   }
-  tree = x
   sa.labels = tree$tip.label[tree$edge[which(tree$edge.length == 0),2]]
 
   tree.sa = ape::drop.tip(tree, sa.labels, collapse.singles=F)
@@ -57,7 +54,7 @@ plot.phylo.fbd <- function(x, range.plot=FALSE, complete=FALSE, ...){
 
   # get sampled nodes
   sampled.nodes = c(sa.nodes, extant.tips)
-  if( complete == FALSE ){
+  if( tree$complete == FALSE ){
     sampled.nodes = c(sampled.nodes, fossil.tips)
   }
 
@@ -117,9 +114,11 @@ plot.phylo.fbd <- function(x, range.plot=FALSE, complete=FALSE, ...){
   par(lend=2)
 
   # plot species tree
-  # get sampled bifurcations
+  # get sampled coordinates
   i.s = which(bi != pdi)
   bi.s = bi[i.s]
+  di.s = di[i.s]
+  pdi.s = pdi[i.s]
   anc.s = anc[i.s]
   y.s = (1:length(bi))[i.s]
   # get unsampled bifurcations
@@ -127,12 +126,20 @@ plot.phylo.fbd <- function(x, range.plot=FALSE, complete=FALSE, ...){
   bi.u = bi[i.u]
   anc.u = anc[i.u]
   y.u = (1:length(bi))[i.u]
-  # plot species bifurcations
+  # plot sampled species bifurcations
   segments(bi.s,y.s,bi.s,y.s-anc.s)
-  segments(bi.u,y.u,bi.u,y.u-anc.u, lty=3)
-  # plot species branches
-  segments(bi,1:length(bi),pdi,1:length(pdi))
-  segments(pdi,1:length(pdi),di,1:length(di),lty=3)
+
+  if( complete ){
+    # plot unsampled species bifurcations
+    segments(bi.u,y.u,bi.u,y.u-anc.u, lty=3)
+    # plot sampled/unsampled branches
+    segments(bi,1:length(bi),pdi,1:length(pdi))
+    segments(pdi,1:length(pdi),di,1:length(di),lty=3)
+  } else {
+    # plot sampled branches
+    segments(bi.s,y.s,pdi.s,y.s)
+    segments(pdi.s,y.s,di.s,y.s,lty=3)
+  }
   # plot stratigraphic ranges
   w = 0.1
   rect(oi, sp+w, yi, sp-w,col=rgb(0,0,1,0.2))
