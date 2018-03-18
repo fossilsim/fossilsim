@@ -4,12 +4,12 @@
 \alias{rangeplot}
 \title{rangeplot: Make a stratigaphic range plot from an object of class phylo.fbd}
 \usage{
-rangeplot(tree, complete = FALSE)
+rangeplot(x, complete = FALSE)
 }
 \arguments{
-\item{tree}{phylo.fbd object to plot.}
+\item{x}{phylo.fbd object to plot.}
 
-\item{complete}{Plot completely unsampled species?}
+\item{complete}{Plot unsampled species?}
 }
 \description{
 rangeplot: Make a stratigaphic range plot from an object of class phylo.fbd

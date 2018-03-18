@@ -1,43 +1,59 @@
 #' rangeplot: Make a stratigaphic range plot from an object of class phylo.fbd
 #'
-#' @param tree phylo.fbd object to plot.
-#' @param complete Plot completely unsampled species?
+#' @param x phylo.fbd object to plot.
+#' @param complete Plot unsampled species?
 #' @export
-rangeplot <- function(tree, complete=FALSE){
-  if(!("phylo.fbd" %in% class(tree)) ){
-    stop(paste('object "',class(tree),'" is not of class "phylo.fbd"'))
+rangeplot <- function(x, complete=FALSE){
+  if(!("phylo.fbd" %in% class(x)) ){
+    stop(paste('object "',class(x),'" is not of class "phylo.fbd"'))
   }
-  sa.labels = tree$tip.label[tree$edge[which(tree$edge.length == 0),2]]
 
-  tree.sa = ape::drop.tip(tree, sa.labels, collapse.singles=F)
-  tree.sa$root.edge = tree$root.edge
+  sa.labels = x$tip.label[x$edge[which(x$edge.length == 0),2]]
 
+  # collapse sampled ancestor tips into 2-degree nodes
+  tree.sa = ape::drop.tip(x, sa.labels, collapse.singles=F)
+
+  node.ages = n.ages(tree.sa)
+  origin.age = x$root.edge + max(node.ages)
+
+  node.species = asymmetric.identities(tree.sa)
+
+  tips = 1:length(tree.sa$tip.label)
+  sa.nodes = as.numeric(names(which(table(tree.sa$edge[,1])==1)))
+  fossil.tips = as.numeric(which(node.ages[tips]>1e-7))
+
+  # if we are plotting only sampled species
+  # prune unsampled species tips
+  if(x$complete && complete == FALSE){
+    unsampled.species = node.species[fossil.tips][which(!(node.species[fossil.tips] %in% node.species[sa.nodes]))]
+    unsampled.labels = tree.sa$tip.label[which(node.species[tips] %in% unsampled.species)]
+
+    tree.sa = ape::drop.tip(x, unsampled.labels)
+    tree.sa = ape::drop.tip(tree.sa, sa.labels, collapse.singles=F)
+
+    node.ages = n.ages(tree.sa)
+    node.species = asymmetric.identities(tree.sa)
+
+    tips = 1:length(tree.sa$tip.label)
+    sa.nodes = as.numeric(names(which(table(tree.sa$edge[,1])==1)))
+    fossil.tips = as.numeric(which(node.ages[tips]>1e-7))
+  }
   tree = tree.sa
+  tree$root.edge = origin.age - max(node.ages)
 
-  node.ages = n.ages(tree)
+  species = unique(node.species)
+  num.species = length(species)
+  extant.tips = as.numeric(which(node.ages[tips]<=1e-7))
 
-  sa.nodes = as.numeric(names(which(table(tree$edge[,1])==1)))
-  fossil.tips = as.numeric(which(node.ages[1:length(tree$tip.label)]>1e-7))
-  extant.tips = as.numeric(which(node.ages[1:length(tree$tip.label)]<=1e-7))
+  root=length(tips)+1
+  origin=tree$Nnode+length(tips)+1
 
-  fossil.nodes = c(sa.nodes, fossil.tips)
-
-  node_species = asymmetric.identities(tree)
-  species = unique(node_species)
-  num_species = length(species)
-
-  root=length(tree$tip.label)+1
-  origin=tree$Nnode+length(tree$tip.label)+1
-
-  node.ages[origin] = max(node.ages)+tree$root.edge
+  node.ages[origin] = origin.age
   tree$edge = rbind(tree$edge, c(origin,root))
 
   # find bi, di
-  bi = sapply(species, function(x) max(node.ages[tree$edge[which(tree$edge[,2] %in% which(node_species==x)),1]]))
-  di = sapply(species, function(x) min(node.ages[which(node_species==x)]))
-
-  tip.labels = asymmetric.identities(tree)[1:length(tree$tip.label)]
-  node.labels = asymmetric.identities(tree)[(length(tree$tip.label)+1):(length(tree$tip.label)+tree$Nnode)]
+  bi = sapply(species, function(x) max(node.ages[tree$edge[which(tree$edge[,2] %in% which(node.species==x)),1]]))
+  di = sapply(species, function(x) min(node.ages[which(node.species==x)]))
 
   # get sampled nodes
   sampled.nodes = c(sa.nodes, extant.tips)
@@ -45,7 +61,7 @@ rangeplot <- function(tree, complete=FALSE){
 
   sampled.ages<-function(x) {
     ret = c()
-    sampled_species_nodes = which(sampled.nodes %in% which(node_species==x))
+    sampled_species_nodes = which(sampled.nodes %in% which(node.species==x))
     if( length(sampled_species_nodes) > 0 )
       ret = node.ages[sampled.nodes[sampled_species_nodes]]
     ret
@@ -58,7 +74,7 @@ rangeplot <- function(tree, complete=FALSE){
 
   sa.age = c()
   sa.sp = c()
-  for( s in 1:num_species ) {
+  for( s in 1:num.species ) {
     x = species[s]
     ages = sampled.ages(x)
     if( length( ages ) > 0 ) {
@@ -84,7 +100,7 @@ rangeplot <- function(tree, complete=FALSE){
     for(d in desc) {
       s = is.sampled(d)
       if(s==FALSE){
-        pdi[which(species==node_species[d])] <<- node.ages[node]
+        pdi[which(species==node.species[d])] <<- node.ages[node]
       }
       ret = ret || s
     }
@@ -107,25 +123,26 @@ rangeplot <- function(tree, complete=FALSE){
 
   anc = sapply(bi, anc_branch )
   
-  y = 1:num_species
+  y = 1:num.species
 
-  # get sampled species coordinates
+  # get species coordinates 
+  # lineages with sampled descendants
   i.s = which(bi != pdi)
   bi.s = bi[i.s]
   di.s = di[i.s]
   pdi.s = pdi[i.s]
   y.s = y[i.s]
   anc.s = anc[i.s]
-  # get unsampled species coordinates
+  # lineages with no sampled descendants
   i.u = which(bi == pdi)
   bi.u = bi[i.u]
   di.u = di[i.u]
   y.u = y[i.u]
   anc.u = anc[i.u]
 
-  # if we're not plotting unsampled species
+  # if we're only plotting lineages with sampled descendants
   # condense the coordinates
-  if(complete == FALSE || length(i.u) == 0) {
+  if(complete == FALSE || length(i.u) == 0){
     bi = bi.s
     di = di.s
     anc.s = sapply(bi.s, anc_branch )
@@ -147,26 +164,20 @@ rangeplot <- function(tree, complete=FALSE){
   par(lend=2)
 
   if( complete ){
-    # plot sampled species bifurcations
-    segments(bi.s,y.s,bi.s,y.s-anc.s)
-    # plot unsampled species bifurcations
+    # plot bifurcations with no sampled descendants
     segments(bi.u,y.u,bi.u,y.u-anc.u, lty=3)
-
-    # plot unsampled species
+    # plot lineages with no sampled descendants
     segments(bi.u,y.u,di.u,y.u,lty=3)
-
-    # plot sampled species
-    segments(bi.s,y.s,pdi.s,y.s)
-    segments(pdi.s,y.s,di.s,y.s,lty=3)
   }
-  # plot sampled species bifurcations
+   # plot bifurcations with sampled descendants
   segments(bi.s,y.s,bi.s,y.s-anc.s)
-  # plot sampled branches
+  # plot lineages with sampled descendants
   segments(bi.s,y.s,pdi.s,y.s)
   segments(pdi.s,y.s,di.s,y.s,lty=3)
 
-  # plot stratigraphic ranges
+  # plot sampled ranges
   w = 0.1
   rect(oi, ra.sp+w, yi, ra.sp-w,col=rgb(0,0,1,0.2))
+  # plot sampled points
   points(sa.age, sa.sp, cex=1, pch=18)
 }
