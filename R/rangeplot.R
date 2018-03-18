@@ -24,6 +24,7 @@ rangeplot <- function(tree, complete=FALSE){
 
   node_species = asymmetric.identities(tree)
   species = unique(node_species)
+  num_species = length(species)
 
   root=length(tree$tip.label)+1
   origin=tree$Nnode+length(tree$tip.label)+1
@@ -37,20 +38,6 @@ rangeplot <- function(tree, complete=FALSE){
 
   tip.labels = asymmetric.identities(tree)[1:length(tree$tip.label)]
   node.labels = asymmetric.identities(tree)[(length(tree$tip.label)+1):(length(tree$tip.label)+tree$Nnode)]
-
-  # find the index distance between
-  # each birth time and its parent
-  anc_branch <- function(x) {
-  	a = which(bi > x)
-  	i = which(bi == x)
-  	a = a[a < i]
-  	if( length(a) == 0 )
-  		return(0)
-
-  	i-max(a)
-  }
-
-  anc = sapply(bi, anc_branch )
 
   # get sampled nodes
   sampled.nodes = c(sa.nodes, extant.tips)
@@ -67,11 +54,11 @@ rangeplot <- function(tree, complete=FALSE){
   # find oi, yi
   oi = c()
   yi = c()
-  sp = c()
+  ra.sp = c()
 
   sa.age = c()
   sa.sp = c()
-  for( s in 1:length(species) ) {
+  for( s in 1:num_species ) {
     x = species[s]
     ages = sampled.ages(x)
     if( length( ages ) > 0 ) {
@@ -80,7 +67,7 @@ rangeplot <- function(tree, complete=FALSE){
 
       oi = c(oi, max(ages))
       yi = c(yi, min(ages))
-      sp = c(sp, s)
+      ra.sp = c(ra.sp, s)
 
       sa.age = c(sa.age, min.age, max.age)
       sa.sp = c(sa.sp, s, s)
@@ -106,40 +93,80 @@ rangeplot <- function(tree, complete=FALSE){
 
   is.sampled(origin)
 
+  # find the index distance between
+  # each birth time and its parent
+  anc_branch <- function(x) {
+    a = which(bi > x)
+    i = which(bi == x)
+    a = a[a < i]
+    if( length(a) == 0 )
+      return(0)
+
+    i-max(a)
+  }
+
+  anc = sapply(bi, anc_branch )
+  
+  y = 1:num_species
+
+  # get sampled species coordinates
+  i.s = which(bi != pdi)
+  bi.s = bi[i.s]
+  di.s = di[i.s]
+  pdi.s = pdi[i.s]
+  y.s = y[i.s]
+  anc.s = anc[i.s]
+  # get unsampled species coordinates
+  i.u = which(bi == pdi)
+  bi.u = bi[i.u]
+  di.u = di[i.u]
+  y.u = y[i.u]
+  anc.u = anc[i.u]
+
+  # if we're not plotting unsampled species
+  # condense the coordinates
+  if(complete == FALSE || length(i.u) == 0) {
+    bi = bi.s
+    di = di.s
+    anc.s = sapply(bi.s, anc_branch )
+
+    y.s.new = order(y.s)
+
+    y.map = y
+    y.map[y.s] = y.s.new
+
+    ra.sp = y.map[ra.sp]
+    sa.sp = y.map[sa.sp]
+
+    y.s=y.s.new
+  }
+
   # actually do the plotting
   # make empty plot
   plot(x=NULL,y=NULL,type="n",xlim=c(max(bi),0),ylim=c(0,length(di)),axes=FALSE,xlab="",ylab="")
   par(lend=2)
 
-  # plot species tree
-  # get sampled coordinates
-  i.s = which(bi != pdi)
-  bi.s = bi[i.s]
-  di.s = di[i.s]
-  pdi.s = pdi[i.s]
-  anc.s = anc[i.s]
-  y.s = (1:length(bi))[i.s]
-  # get unsampled bifurcations
-  i.u = which(bi == pdi)
-  bi.u = bi[i.u]
-  anc.u = anc[i.u]
-  y.u = (1:length(bi))[i.u]
-  # plot sampled species bifurcations
-  segments(bi.s,y.s,bi.s,y.s-anc.s)
-
   if( complete ){
+    # plot sampled species bifurcations
+    segments(bi.s,y.s,bi.s,y.s-anc.s)
     # plot unsampled species bifurcations
     segments(bi.u,y.u,bi.u,y.u-anc.u, lty=3)
-    # plot sampled/unsampled branches
-    segments(bi,1:length(bi),pdi,1:length(pdi))
-    segments(pdi,1:length(pdi),di,1:length(di),lty=3)
-  } else {
-    # plot sampled branches
+
+    # plot unsampled species
+    segments(bi.u,y.u,di.u,y.u,lty=3)
+
+    # plot sampled species
     segments(bi.s,y.s,pdi.s,y.s)
     segments(pdi.s,y.s,di.s,y.s,lty=3)
   }
+  # plot sampled species bifurcations
+  segments(bi.s,y.s,bi.s,y.s-anc.s)
+  # plot sampled branches
+  segments(bi.s,y.s,pdi.s,y.s)
+  segments(pdi.s,y.s,di.s,y.s,lty=3)
+
   # plot stratigraphic ranges
   w = 0.1
-  rect(oi, sp+w, yi, sp-w,col=rgb(0,0,1,0.2))
+  rect(oi, ra.sp+w, yi, ra.sp-w,col=rgb(0,0,1,0.2))
   points(sa.age, sa.sp, cex=1, pch=18)
 }
