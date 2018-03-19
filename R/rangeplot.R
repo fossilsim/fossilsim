@@ -182,5 +182,5 @@ rangeplot <- function(x, complete=FALSE){
   w <- 0.1
   rect(oi, ra.sp+w, yi, ra.sp-w,col=rgb(0,0,1,0.2))
   # plot sampled points
-  points(sa.age, sa.sp, cex=1, pch=18)
+  points(sa.age, sa.sp, cex=16/num.species, pch=18)
 }
