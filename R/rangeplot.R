@@ -5,7 +5,7 @@
 #' @examples
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
 #' rangeplot(tree, complete=TRUE)
-#' @export
+# #' @export
 rangeplot <- function(x, complete=FALSE){
   if(!("phylo" %in% class(x)) ){
     stop(paste('object "',class(x),'" is not of class "phylo"',sep=""))
