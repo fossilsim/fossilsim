@@ -1,3 +1,24 @@
+asymmetric.identities<-function(tree){
+
+  parents = rep(0, length(tree$tip.label)+tree$Nnode)
+  # identify the root
+  root=length(tree$tip.label)+1
+  parents[root] = root
+
+  aux = function(node, par) {
+    desc = tree$edge[which(tree$edge[,1] == node), 2]
+    if(length(desc) == 0) return(par)
+    par[desc[1]] = par[node]
+    par = aux(desc[1], par)
+    par[desc[2]] = desc[2]
+    par = aux(desc[2], par)
+    par
+  }
+
+  parents = aux(root, parents)
+  parents
+}
+
 #' rangeplot: Make a stratigaphic range plot from a tree object of class phylo
 #'
 #' @param x Tree to plot.
@@ -5,7 +26,7 @@
 #' @examples
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
 #' rangeplot(tree, complete=TRUE)
-# #' @export
+#' @export
 rangeplot <- function(x, complete=FALSE){
   if(!("phylo" %in% class(x)) ){
     stop(paste('object "',class(x),'" is not of class "phylo"',sep=""))
