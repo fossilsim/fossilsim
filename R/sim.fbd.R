@@ -14,7 +14,7 @@
 #' numbsim<-1
 #' sim.cdfbd.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),1)
 #' @keywords fossilized birth death
-#' @export
+# #' @export
 sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi,complete=FALSE)
 {
 	k = length(psi)
@@ -146,7 +146,7 @@ sim.cdfbd.taxa <- function(n,numbsim,lambda,mu,psi,rate,pi,complete=FALSE)
 #' numbsim<-2
 #' sim.fbd.age(age,numbsim,lambda,mu,psi)
 #' @keywords fossilized birth death
-#' @export
+# #' @export
 sim.fbd.age<-function(age,numbsim,lambda,mu,psi,complete=FALSE)
 {
 	trees = TreeSim::sim.bd.age(age,numbsim,lambda,mu,complete=T)
@@ -220,7 +220,7 @@ sim.fbd.age<-function(age,numbsim,lambda,mu,psi,complete=FALSE)
 #' numbsim<-1
 #' sim.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0,0.3))
 #' @keywords fossilized birth death
-#' @export
+# #' @export
 sim.fbd.rateshift.taxa <- function(n,numbsim,lambda,mu,psi,times,complete=FALSE)
 {
 	if(length(psi) != (length(times) + 1 ))
