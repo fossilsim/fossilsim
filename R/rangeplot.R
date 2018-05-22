@@ -7,7 +7,7 @@
 #' rangeplot(tree, complete=TRUE)
 #'
 #' @export
-rangeplot <- function(x, complete=FALSE){
+rangeplot <- function(x, complete = FALSE){
   if(!("phylo" %in% class(x)) ){
     stop(paste('object "',class(x),'" is not of class "phylo"',sep=""))
   }
