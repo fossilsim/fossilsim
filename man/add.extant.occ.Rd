@@ -12,6 +12,8 @@ add.extant.occ(fossils, tree = NULL, species = NULL, rho = 1,
 
 \item{tree}{Phylo object.}
 
+\item{species}{Taxonomy object.}
+
 \item{rho}{Extant species sampling probability.}
 
 \item{tol}{Rounding error tolerance for tip ages.}

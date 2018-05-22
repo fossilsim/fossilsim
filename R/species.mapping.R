@@ -347,7 +347,7 @@ add.cryptic.species<-function(species, kappa){
 #' Map fossils onto a tree assuming asymmetric (budding) speciation.
 #'
 #' @param tree Phylo object.
-#' @param fossil Fossils object.
+#' @param fossils Fossils object.
 #' @return An object of class fossils.
 #'
 #' @examples
@@ -359,7 +359,7 @@ add.cryptic.species<-function(species, kappa){
 #' f<-sim.fossils.poisson(tree = t, 2)
 #'
 #' # add extant samples
-#' f<-add.extant.occ(f, t, rho = 0.5)
+#' f<-add.extant.occ(f, tree = t, rho = 0.5)
 #'
 #' # asymmetric mapping
 #' f<-asymmetric.fossil.mapping(t, f)
@@ -377,13 +377,13 @@ asymmetric.fossil.mapping<-function(tree,fossils){
   fossils = reconcile.fossils.taxonomy(fossils, species)
 
   return(fossils)
-  # eof
 }
 
 #' Add extant occurrence samples
 #'
 #' @param fossils Fossils object.
 #' @param tree Phylo object.
+#' @param species Taxonomy object.
 #' @param rho Extant species sampling probability.
 #' @param tol Rounding error tolerance for tip ages.
 #'

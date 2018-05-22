@@ -35,7 +35,7 @@ combined.tree.with.fossils = function(tree, fossils) {
 
   #renaming all species not in fossils
   for(i in 1:ntips) {
-    if(!tree$tip.label[i] %in% fossils$sp) {
+    if(!i %in% fossils$sp) {
       tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
     }
   }
@@ -44,8 +44,7 @@ combined.tree.with.fossils = function(tree, fossils) {
   count_spec = 1
   for(i in 1:length(fossils[,1])) {
     if(fossils$sp[i] !=  current_spec) {
-      idx = which(tree$tip.label == current_spec)
-      if(length(idx) >0) tree$tip.label[idx] = paste0(tree$tip.label[idx], "_", count_spec)
+      if(current_spec <= ntips) tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
       current_spec = fossils$sp[i]
       count_spec = 1
     }
@@ -62,11 +61,11 @@ combined.tree.with.fossils = function(tree, fossils) {
     #adding fossil tip
     tree$edge = rbind(tree$edge,c(totalnodes,-i))
     tree$edge.length = c(tree$edge.length,0)
-    tree$tip.label = c(tree$tip.label, paste0(current_spec, "_", count_spec))
+    if(current_spec <= ntips) tree$tip.label = c(tree$tip.label, paste0(tree$tip.label[current_spec], "_", count_spec))
+    else tree$tip.label = c(tree$tip.label, paste0("t", current_spec, "_", count_spec))
     count_spec = count_spec +1
   }
-  idx = which(tree$tip.label == current_spec)
-  if(length(idx) >0) tree$tip.label[idx] = paste0(tree$tip.label[idx], "_", count_spec)
+  if(current_spec <= ntips) tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
 
   #handling root edge again, mrca may have been modified by the inclusion of fossils
   if(!is.null(tree$root.edge)) {
@@ -307,7 +306,7 @@ paleotree.record.to.fossils = function(record) {
                                           parent = names(record)[record[[i]]$taxa.data[['ancestor.id']]], stringsAsFactors = F))
     if(length(record[[i]]$sampling.times)>0)
       fossildf = rbind(fossildf, data.frame(hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
-                                          sp = names(record)[i], edge = sampled_nodes, origin = origin, stringsAsFactors = F))
+                                            sp = names(record)[i], edge = sampled_nodes, origin = origin, stringsAsFactors = F))
   }
 
   row.names(taxonomy) = NULL

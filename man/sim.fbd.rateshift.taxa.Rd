@@ -4,7 +4,7 @@
 \alias{sim.fbd.rateshift.taxa}
 \title{sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating rate shifts.}
 \usage{
-sim.fbd.rateshift.taxa(n, numbsim, lambda, mu, psi, times)
+sim.fbd.rateshift.taxa(n, numbsim, lambda, mu, psi, times, complete = FALSE)
 }
 \arguments{
 \item{n}{Number of extant sampled tips.}
@@ -22,6 +22,8 @@ is the fossil sampling rate prior (ancestral) to time times[i].}
 
 \item{times}{Vector of mass extinction and rate shift times.
 Time is 0 today and increasing going backwards in time. Specify the vector as times[i]}
+
+\item{complete}{Keep unsampled extinct lineages?}
 }
 \value{
 List of numbsim simulated trees with n extant sampled tips.

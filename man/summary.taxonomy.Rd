@@ -7,15 +7,15 @@
 \usage{
 \method{print}{taxonomy}(x, max.length = 50, round.x = 12, ...)
 
-\method{summary}{taxonomy}(x, max.length = 50, round.x = 12,
+\method{summary}{taxonomy}(object, max.length = 50, round.x = 12,
   details = TRUE, ...)
 }
 \arguments{
-\item{x}{Taxonomy object.}
-
 \item{max.length}{Max number of rows to print out.}
 
 \item{round.x}{Number of decimal places to be used for species and edge ages.}
+
+\item{object}{Taxonomy object.}
 
 \item{details}{If TRUE include summary statistics.}
 }

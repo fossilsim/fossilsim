@@ -17,7 +17,6 @@ ancestor<-function(edge,tree){
   parent<-tree$edge[,1][which(tree$edge[,2]==edge)]
 
   return(parent)
-  #eof
 }
 
 # Identify tips
@@ -29,12 +28,7 @@ ancestor<-function(edge,tree){
 # t<-ape::rtree(6)
 # is.tip(t$edge[,2][6],t)
 is.tip<-function(taxa,tree){
-
-  if (length(which(tree$edge[,1]==taxa)) < 1)
-    return(1)
-  else return(0)
-
-  # EOF
+  return (length(which(tree$edge[,1]==taxa)) < 1)
 }
 
 # Identify extant tips
@@ -55,11 +49,7 @@ is.extant<-function(taxa,tree,tol=NULL){
 
   end = ages[taxa]
 
-  if(end > (0 - tol) & end < (0 + tol))
-    return(1)
-  else return(0)
-
-  # EOF
+  return(abs(end) < tol)
 }
 
 
@@ -69,7 +59,6 @@ root<-function(tree){
   root = length(tree$tip.label) + 1
 
   return(root)
-  #eof
 }
 
 # Test is root
@@ -77,11 +66,7 @@ is.root<-function(edge,tree){
 
   root=length(tree$tip.label)+1
 
-  if(edge == root)
-    return(TRUE)
-  else
-    return(FALSE)
-  #eof
+  return(edge == root)
 }
 
 # fetch immediate descendants
@@ -93,7 +78,6 @@ descendants<-function(edge,tree){
     decs = NULL
 
   return(decs)
-  #eof
 }
 
 # map a vector of node numbers from one topology to another

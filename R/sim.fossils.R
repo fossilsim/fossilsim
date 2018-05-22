@@ -1,3 +1,86 @@
+#' Simulate fossils under an exponential sampling model
+#'
+#' @param tree Phylo object.
+#' @param rate Exponential sampling rate.
+#' @param root.edge If TRUE include the root edge (default = TRUE).
+#' @return An object of class fossils.
+#' sp = node labels. h = ages.
+#' The label is for the node just below the sampled fossil.
+#' @examples
+#' # simulate tree
+#' t<-ape::rtree(4)
+#' # simulate fossils
+#' rate = 2
+#' f<-sim.fossils.exponential(t, rate)
+#' plot(f, t)
+#' @keywords uniform preservation
+#' @export
+sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
+
+  node.ages<-n.ages(tree)
+
+  fossils<-data.frame(h=numeric(),sp=numeric())
+
+  root = length(tree$tip.label) + 1
+
+  if(root.edge && exists("root.edge",tree) ){
+
+    lineages = c(tree$edge[,2], root)
+
+  } else lineages = tree$edge[,2]
+
+  for (i in lineages){ # internal nodes + tips
+
+    if(i == root){
+
+      # root age
+      a=which(names(node.ages)==root)
+      lineage.end=node.ages[[a]]
+
+      # origin time
+      b=tree$root.edge
+      lineage.start=lineage.end+b
+
+    } else {
+
+      # work out the max age of the lineage (e.g. when that lineage became extant)
+      # & get ancestor
+      row=which(tree$edge[,2]==i)
+      ancestor=tree$edge[,1][row]
+
+      # get the age of the ancestor
+      a=which(names(node.ages)==ancestor)
+      lineage.start=node.ages[[a]]
+
+      # work out the min age of the lineage (e.g. when that lineage became extinct)
+      # & get the branch length
+      b=tree$edge.length[row]
+      lineage.end=lineage.start-b # branch length
+    }
+
+    t = 0
+    while(TRUE){
+      t = t + rexp(1, rate);
+      if (t < b) { # make fossil
+        fossils<-rbind(fossils, data.frame(h=(lineage.start-t),sp=i))
+      }
+      else break
+    }
+
+    # sample fossil numbers from the Poisson distribution
+    #rand=rpois(1,b*rate)
+
+    #if(rand > 0){
+    #  h=runif(rand,min=lineage.end,max=lineage.start)
+    #  fossils<-rbind(fossils,data.frame(h=h,sp=i))
+    #}
+  }
+
+  fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
+  return(fossils) # in this data frame h=fossil age and sp=lineage
+  # EOF
+}
+
 #' Simulate fossils under a Poisson sampling model
 #'
 #' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
