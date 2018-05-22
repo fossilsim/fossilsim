@@ -49,7 +49,7 @@ print.taxonomy<-function(x, max.length = 50, round.x = 12, ...){
 
 #' Display taxonomy object
 #'
-#' @param object Taxonomy object.
+#' @param x Taxonomy object.
 #' @param max.length Max number of rows to print out.
 #' @param round.x Number of decimal places to be used for species and edge ages.
 #' @param details If TRUE include summary statistics.
@@ -88,8 +88,5 @@ as.taxonomy.default<-function(data, ...){
 #' @export
 #' @rdname taxonomy
 is.taxonomy<-function(data){
-  if(inherits(taxonomy, "taxonomy"))
-    TRUE
-  else
-    FALSE
+  inherits(taxonomy, "taxonomy")
 }

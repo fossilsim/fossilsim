@@ -62,8 +62,8 @@ print.fossils <- function(x, max.length = 10, ...){
 
 #' @export
 #' @aliases fossils
-summary.fossils <- function(x, max.length = 10, ...){
-  print(x, max.length = max.length)
+summary.fossils <- function(object, max.length = 10, ...){
+  print(object, max.length = max.length)
 }
 
 #' @export

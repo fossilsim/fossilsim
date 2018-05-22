@@ -15,6 +15,8 @@
 #' plot(f, t)
 #' @keywords uniform preservation
 #' @export
+#'
+#' @importFrom stats rexp
 sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
 
   node.ages<-n.ages(tree)
@@ -112,8 +114,7 @@ sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
 #' @keywords uniform preservation
 #' @export
 #'
-#' @importFrom stats rpois
-#' @importFrom stats runif
+#' @importFrom stats rpois runif
 sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRUE) {
 
   if(is.null(tree) && is.null(species))
