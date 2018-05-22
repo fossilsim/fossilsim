@@ -25,7 +25,6 @@ An object of class fossils.
 Add extant occurrence samples
 }
 \examples{
-
 # simulate tree
 lambda = 0.1
 mu = 0.05

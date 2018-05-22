@@ -18,7 +18,6 @@ An object of class fossils.
 Map fossils onto a tree assuming asymmetric (budding) speciation.
 }
 \examples{
-
 # simulate tree
 t<-ape::rtree(6)
 

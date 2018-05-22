@@ -547,6 +547,7 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 #' @examples
 #' t<-ape::rtree(6)
 #' basin.age(t, root.edge = FALSE)
+#'
 #' @export
 basin.age<-function(tree,root.edge=TRUE){
   node.ages<-n.ages(tree)

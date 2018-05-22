@@ -43,7 +43,7 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
                       end = numeric(),
                       mode = character(),
                       origin = integer(),
-                      cryptic = integer(),
+                      cryptic = logical(),
                       cryptic.id = integer(),
                       edge.start = numeric(),
                       edge.end = numeric()
@@ -351,7 +351,6 @@ add.cryptic.species<-function(species, kappa){
 #' @return An object of class fossils.
 #'
 #' @examples
-#'
 #' # simulate tree
 #' t<-ape::rtree(6)
 #'
@@ -390,7 +389,6 @@ asymmetric.fossil.mapping<-function(tree,fossils){
 #' @return An object of class fossils.
 #'
 #' @examples
-#'
 #' # simulate tree
 #' lambda = 0.1
 #' mu = 0.05
@@ -459,7 +457,6 @@ add.extant.occ<-function(fossils, tree = NULL, species = NULL, rho = 1, tol = NU
   #eof
 }
 
-
 #' Add extant and extinct tip samples
 #'
 #' The tree is required to identify which edges are terminal.
@@ -472,9 +469,6 @@ add.extant.occ<-function(fossils, tree = NULL, species = NULL, rho = 1, tol = NU
 #' @return An object of class fossils.
 #'
 #' @examples
-#'
-#' @examples
-#'
 #' # simulate tree
 #' t<-ape::rtree(6)
 #'

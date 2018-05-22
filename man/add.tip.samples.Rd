@@ -22,8 +22,6 @@ An object of class fossils.
 The tree is required to identify which edges are terminal.
 }
 \examples{
-
-
 # simulate tree
 t<-ape::rtree(6)
 
