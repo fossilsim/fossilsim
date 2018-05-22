@@ -42,17 +42,18 @@ taxonomy<-function(data){
 }
 
 #' @export
-#' @rdname summary.taxonomy
+#' @aliases taxonomy
 print.taxonomy<-function(x, max.length = 50, round.x = 12, ...){
   summary(x, max.length = max.length, details = FALSE)
 }
 
 #' Display taxonomy object
 #'
-#' @param x Taxonomy object.
+#' @param object Taxonomy object.
 #' @param max.length Max number of rows to print out.
 #' @param round.x Number of decimal places to be used for species and edge ages.
 #' @param details If TRUE include summary statistics.
+#' @param ... Additional parameters to be passed to \code{summary.default}.
 #'
 #' @export
 summary.taxonomy<-function(object, max.length = 50, round.x = 12, details = TRUE, ...){

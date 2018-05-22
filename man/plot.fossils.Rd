@@ -4,7 +4,7 @@
 \alias{plot.fossils}
 \title{Plot simulated fossils}
 \usage{
-\method{plot}{fossils}(fossils, tree, show.fossils = TRUE, show.tree = TRUE,
+\method{plot}{fossils}(x, tree, show.fossils = TRUE, show.tree = TRUE,
   show.ranges = FALSE, show.strata = FALSE, strata = 1, max = NULL,
   interval.ages = NULL, binned = FALSE, show.axis = TRUE,
   show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
@@ -14,7 +14,7 @@
   fcol = "darkorange", ecol = NULL, ...)
 }
 \arguments{
-\item{fossils}{Fossils object.}
+\item{x}{Fossils object.}
 
 \item{tree}{Phylo object.}
 

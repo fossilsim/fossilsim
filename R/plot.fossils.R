@@ -9,7 +9,7 @@
 #' If no maximum age is specified, the function calculates a maximum interval age slightly older than the root edge (or root age if \code{root.edge = FALSE}),
 #' using the function \code{basin.age}.
 #'
-#' @param fossils Fossils object.
+#' @param x Fossils object.
 #' @param tree Phylo object.
 #' @param show.fossils If TRUE plot fossils (default = TRUE).
 #' @param show.tree If TRUE plot the tree  (default = TRUE).
@@ -61,7 +61,7 @@
 #' @export
 #' @importFrom graphics par points lines text axis mtext segments rect plot
 #' @importFrom grDevices colors rgb
-plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
+plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                        # age info/options
                        show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
                        # proxy stuff
@@ -74,7 +74,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
                        # fossil appearance
                        fcex = 1.2, fcol = "darkorange", ecol = NULL, ...) {
 
-  x<-tree  # tree
+  fossils<-x
   ba<-max
 
   if(!show.tree) align.tip.label = TRUE
@@ -103,12 +103,12 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     stop("fossils must be an object of class \"fossils\"")
 
   # check the tree
-  Ntip <- length(x$tip.label)
+  Ntip <- length(tree$tip.label)
   if (Ntip < 2) {
     warning("found less than 2 tips in the tree")
     return(NULL)
   }
-  if (any(tabulate(x$edge[, 1]) == 1))
+  if (any(tabulate(tree$edge[, 1]) == 1))
     stop("there are single (non-splitting) nodes in your tree; you may need to use collapse.singles()")
 
   if(!ape::is.rooted(tree))
@@ -121,7 +121,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   if(is.null(tree$edge.length))
     stop("tree must have edge lengths")
 
-  if(is.null(x$root.edge))
+  if(is.null(tree$root.edge))
     root.edge = FALSE
 
   if(show.strata || show.proxy){
@@ -151,9 +151,9 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
   if(any(fossils$hmin != fossils$hmax)) binned = TRUE # TODO?
 
-  Nedge <- dim(x$edge)[1]
-  Nnode <- x$Nnode
-  if (any(x$edge < 1) || any(x$edge > Ntip + Nnode))
+  Nedge <- dim(tree$edge)[1]
+  Nnode <- tree$Nnode
+  if (any(tree$edge < 1) || any(tree$edge > Ntip + Nnode))
     stop("tree badly conformed; cannot plot. Check the edge matrix.")
   ROOT <- Ntip + 1
 
@@ -171,28 +171,28 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   phyloORclado <- TRUE # = "phylogram"
   horizontal <- TRUE # = "rightwards"
 
-  xe <- x$edge # used in the last part of the fxn
+  xe <- tree$edge # used in the last part of the fxn
   yy <- numeric(Ntip + Nnode)
-  TIPS <- x$edge[x$edge[, 2] <= Ntip, 2]
+  TIPS <- tree$edge[tree$edge[, 2] <= Ntip, 2]
   yy[TIPS] <- 1:Ntip
-  z <- stats::reorder(x, order = "postorder")
+  z <- stats::reorder(tree, order = "postorder")
 
-  yy <- ape::node.height(x)
-  xx  <- ape::node.depth.edgelength(x)
+  yy <- ape::node.height(tree)
+  xx  <- ape::node.depth.edgelength(tree)
 
   if (root.edge) {
-    xx <- xx + x$root.edge
+    xx <- xx + tree$root.edge
   }
 
   #if (no.margin)
   # par(mai = rep(0, 4))
   if (show.tip.label)
-    nchar.tip.label <- nchar(x$tip.label)
+    nchar.tip.label <- nchar(tree$tip.label)
   max.yy <- max(yy)
   if (is.null(x.lim)) {
     x.lim <- c(0, NA)
     pin1 <- par("pin")[1]
-    strWi <- graphics::strwidth(x$tip.label, "inches", cex = cex)
+    strWi <- graphics::strwidth(tree$tip.label, "inches", cex = cex)
     xx.tips <- xx[1:Ntip] * 1.04
     alp <- try(stats::uniroot(function(a) max(a * xx.tips + strWi) - pin1, c(0, 1e+06))$root, silent = TRUE)
     if (is.character(alp)) {
@@ -243,7 +243,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
     if(show.strata || show.axis){ # todo I think this is also required if binned = TRUE
       if( (is.null(interval.ages)) ){
         if(is.null(ba))
-          ba = basin.age(x, root.edge = root.edge)
+          ba = basin.age(tree, root.edge = root.edge)
         s1 = ba / strata # horizon length (= max age of youngest horizon)
         horizons.max = seq(s1, ba, length = strata)
         horizons.min = horizons.max - s1
@@ -301,7 +301,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
     # plot the tree
     if(show.tree)
-      ape::phylogram.plot(x$edge, Ntip, Nnode, xx, yy, horizontal, edge.color, edge.width, edge.lty)
+      ape::phylogram.plot(tree$edge, Ntip, Nnode, xx, yy, horizontal, edge.color, edge.width, edge.lty)
 
     # format the root edge
     if (root.edge && show.tree && !hide.edge) {
@@ -316,7 +316,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
       else 1
 
       # plot the root edge
-      segments(0, yy[ROOT], x$root.edge, yy[ROOT], col = rootcol, lwd = rootw, lty = rootlty)
+      segments(0, yy[ROOT], tree$root.edge, yy[ROOT], col = rootcol, lwd = rootw, lty = rootlty)
 
     }
 
@@ -325,14 +325,14 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
       # x and y co-ordinates
       adj = 0
-      MAXSTRING <- max(graphics::strwidth(x$tip.label, cex = cex))
+      MAXSTRING <- max(graphics::strwidth(tree$tip.label, cex = cex))
       loy <- 0
       lox <- label.offset + MAXSTRING * 1.05 * adj
 
-      if (is.expression(x$tip.label))
+      if (is.expression(tree$tip.label))
         underscore <- TRUE
       if (!underscore)
-        x$tip.label <- gsub("_", " ", x$tip.label)
+        tree$tip.label <- gsub("_", " ", tree$tip.label)
       if (phyloORclado) {
         if (align.tip.label) {
           xx.tmp <- max(xx[1:Ntip])
@@ -343,14 +343,14 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
           xx.tmp <- xx[1:Ntip]
           yy.tmp <- yy[1:Ntip]
         }
-        text(xx.tmp + lox, yy.tmp + loy, x$tip.label,adj = adj, font = font, srt = srt, cex = cex, col = tip.color)
+        text(xx.tmp + lox, yy.tmp + loy, tree$tip.label,adj = adj, font = font, srt = srt, cex = cex, col = tip.color)
       }
     }
 
     # add node labels
     if (show.node.label){
       text(xx[ROOT:length(xx)] + label.offset, yy[ROOT:length(yy)],
-           x$node.label, adj = adj, font = font, srt = srt,
+           tree$node.label, adj = adj, font = font, srt = srt,
            cex = cex)
     }
 
@@ -502,7 +502,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
             show.node.label = show.node.label, font = font, cex = cex,
             adj = adj, srt = srt, no.margin = no.margin, label.offset = label.offset,
             x.lim = x.lim, y.lim = y.lim, direction = direction,
-            tip.color = tip.color, Ntip = Ntip, Nnode = Nnode, root.time = x$root.time,
+            tip.color = tip.color, Ntip = Ntip, Nnode = Nnode, root.time = tree$root.time,
             align.tip.label = align.tip.label)
   assign("last_plot.phylo", c(L, list(edge = xe, xx = xx, yy = yy)),
          envir = ape::.PlotPhyloEnv)
