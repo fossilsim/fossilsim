@@ -185,3 +185,33 @@ rangeplot <- function(x, complete=FALSE){
   # plot sampled points
   points(sa.age, sa.sp, cex=16/num.species, pch=18)
 }
+
+# Sample asymmetric lineages from a tree object
+#
+# @param tree Phylo object.
+# @return
+# Vector of asymmetric edge labels.
+# @examples
+# t<-ape::rtree(6)
+# asymmetric.identities(t)
+asymmetric.identities<-function(tree){
+
+  parents = rep(0, length(tree$tip.label)+tree$Nnode)
+  # identify the root
+  root=length(tree$tip.label)+1
+  parents[root] = root
+
+  aux = function(node, par) {
+    desc = tree$edge[which(tree$edge[,1] == node), 2]
+    if(length(desc) == 0) return(par)
+    par[desc[1]] = par[node]
+    par = aux(desc[1], par)
+    par[desc[2]] = desc[2]
+    par = aux(desc[2], par)
+    par
+  }
+
+  parents = aux(root, parents)
+  parents
+}
+

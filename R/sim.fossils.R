@@ -609,7 +609,7 @@ reconcile.fossils.taxonomy<-function(fossils, species){
 # plot(f, t)
 # @keywords uniform preservation
 #
-# @importFrom stats rexp
+#' @importFrom stats rexp
 sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
 
   node.ages<-n.ages(tree)

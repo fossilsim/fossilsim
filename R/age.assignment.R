@@ -17,7 +17,6 @@
 #' @return An object of class fossils.
 #'
 #' @examples
-#'
 #' # simulate tree
 #' t <- ape::rtree(8)
 #'

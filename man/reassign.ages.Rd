@@ -35,7 +35,6 @@ return minimum and maximum bounds that may be younger or older than the species 
 This requires supplying a phylo or taxonomy object.
 }
 \examples{
-
 # simulate tree
 t <- ape::rtree(8)
 
