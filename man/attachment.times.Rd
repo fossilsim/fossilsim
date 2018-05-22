@@ -17,13 +17,12 @@ Dataframe containing the speciation & extinction times in an incompletely sample
 \description{
 The age at which a species attaches to a tree may not be equivalent to the time of origin of a species
 if sampling is incomplete.
-This function takes an object of class fossils and the corresponding phylo and calculates
+This function takes an object of class fossils and the corresponding phylo object and calculates
 the speciation (= attachment) times taking into account incomplete sampling.
 The function assumes all speciation events are asymmetric (budding).
 If the fossil object does not represent asymmetric species, the function converts species to asymmetric using the corresponding tree.
 }
 \examples{
-
 # simulate tree
 t<-ape::rtree(6)
 
@@ -31,7 +30,7 @@ t<-ape::rtree(6)
 f<-sim.fossils.poisson(2, t)
 
 # add extant samples?
-#f<-add.extant.occ(t, f, rho = 0.5)
+#f<-add.extant.occ(f, t, rho = 0.5)
 
 # calculate attachment times
 attachment.times(t, f)

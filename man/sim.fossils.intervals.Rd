@@ -25,7 +25,7 @@ sim.fossils.intervals(tree = NULL, species = NULL, interval.ages = NULL,
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
-\item{use.exact.times}{If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding interval. Default = TRUE.}
+\item{use.exact.times}{If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.}
 }
 \value{
 An object of class fossils.
@@ -35,10 +35,12 @@ Intervals can be specified by specifying the interval boundaries using \code{int
 In the second scenario all intervals will be of equal length.
 Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 or \code{probabilities}, which represent the probabilities of sampling per interval.
-When using \code{probabilities}, at most one fossil per species will be sampled per interval.
+When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
+Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+If both are specified, the function uses taxonomy.
+If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
 }
 \examples{
-
 # simulate tree
 t <- ape::rtree(6)
 

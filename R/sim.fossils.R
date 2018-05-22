@@ -1,93 +1,8 @@
-#' Simulate fossils under an exponential sampling model
-#'
-#' @param tree Phylo object.
-#' @param rate Exponential sampling rate.
-#' @param root.edge If TRUE include the root edge (default = TRUE).
-#' @return An object of class fossils.
-#' sp = node labels. h = ages.
-#' The label is for the node just below the sampled fossil.
-#' @examples
-#' # simulate tree
-#' t<-ape::rtree(4)
-#' # simulate fossils
-#' rate = 2
-#' f<-sim.fossils.exponential(t, rate)
-#' plot(f, t)
-#' @keywords uniform preservation
-#' @export
-#'
-#' @importFrom stats rexp
-sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
-
-  node.ages<-n.ages(tree)
-
-  fossils<-data.frame(h=numeric(),sp=numeric())
-
-  root = length(tree$tip.label) + 1
-
-  if(root.edge && exists("root.edge",tree) ){
-
-    lineages = c(tree$edge[,2], root)
-
-  } else lineages = tree$edge[,2]
-
-  for (i in lineages){ # internal nodes + tips
-
-    if(i == root){
-
-      # root age
-      a=which(names(node.ages)==root)
-      lineage.end=node.ages[[a]]
-
-      # origin time
-      b=tree$root.edge
-      lineage.start=lineage.end+b
-
-    } else {
-
-      # work out the max age of the lineage (e.g. when that lineage became extant)
-      # & get ancestor
-      row=which(tree$edge[,2]==i)
-      ancestor=tree$edge[,1][row]
-
-      # get the age of the ancestor
-      a=which(names(node.ages)==ancestor)
-      lineage.start=node.ages[[a]]
-
-      # work out the min age of the lineage (e.g. when that lineage became extinct)
-      # & get the branch length
-      b=tree$edge.length[row]
-      lineage.end=lineage.start-b # branch length
-    }
-
-    t = 0
-    while(TRUE){
-      t = t + rexp(1, rate);
-      if (t < b) { # make fossil
-        fossils<-rbind(fossils, data.frame(h=(lineage.start-t),sp=i))
-      }
-      else break
-    }
-
-    # sample fossil numbers from the Poisson distribution
-    #rand=rpois(1,b*rate)
-
-    #if(rand > 0){
-    #  h=runif(rand,min=lineage.end,max=lineage.start)
-    #  fossils<-rbind(fossils,data.frame(h=h,sp=i))
-    #}
-  }
-
-  fossils<-fossils(fossils, age = "continuous", speciation.mode = "symmetric")
-  return(fossils) # in this data frame h=fossil age and sp=lineage
-  # EOF
-}
-
 #' Simulate fossils under a Poisson sampling model
 #'
 #' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
 #' If both are specified, the function uses taxonomy.
-#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. \code{beta = 1}).
+#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
 #'
 #' @param rate Poisson sampling rate.
 #' @param tree Phylo object.
@@ -97,7 +12,6 @@ sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
 #' @return An object of class fossils.
 #'
 #' @examples
-#'
 #' # simulate tree
 #' t <- ape::rtree(6)
 #'
@@ -181,21 +95,23 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
 #' In the second scenario all intervals will be of equal length.
 #' Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 #' or \code{probabilities}, which represent the probabilities of sampling per interval.
-#' When using \code{probabilities}, at most one fossil per species will be sampled per interval.
+#' When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
+#' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+#' If both are specified, the function uses taxonomy.
+#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
 #'
 #' @param tree Phylo object.
 #' @param species Taxonomy object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
-#' @param probabilities Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals.
 #' @param rates Poisson sampling rate for each interval. The number of rates should match the number of intervals.
+#' @param probabilities Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
-#' @param use.exact.times If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding interval. Default = TRUE.
+#' @param use.exact.times If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.
 #' @return An object of class fossils.
 #'
 #' @examples
-#'
 #' # simulate tree
 #' t <- ape::rtree(6)
 #'
@@ -344,31 +260,30 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' \emph{PA} is the probability of sampling an occurrence at this depth.
 #' \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 #' Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
-#' maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}.
-#'
+#' maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
+#' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+#' If both are specified, the function uses taxonomy.
+#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
 #'
 #' @param tree Phylo object.
 #' @param species Taxonomy object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
-#' @param depth.profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.
+#' @param depth.profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.
 #' @param PA Peak adbundance parameter.
 #' @param PD Preferred depth parameter.
 #' @param DT Depth tolerance parameter.
 #' @param use.rates If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
-#' @param use.exact.times If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding interval. Default = TRUE.
+#' @param use.exact.times If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.
 #'
 #' @return An object of class fossils.
-#' sp = node labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
-#' The label is for the node just below the sampled fossil.
 #'
 #' @references
 #' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.
 #'
 #' @examples
-#'
 #' # simulate tree
 #' t<-ape::rtree(6)
 #'
@@ -616,14 +531,13 @@ assign.interval<-function(intervals, t){
 #' Reconcile existing fossil and taxonomy objects
 #'
 #' This function uses edge identifiers (\code{edge}) and fossil sampling times (\code{hmin}) to reassign fossil species identifiers (\code{sp, origin}) using an existing taxonomy object.
-#' It can only be used if exact fossil sampling times are known (i.e. hmin = hmax), otherwise edges containing multiple species may be indistinguishable.
+#' It can only be used if exact fossil sampling times are known (i.e. \code{hmin = hmax}), otherwise edges containing multiple species may be indistinguishable.
 #'
 #' @param fossils Fossils object.
 #' @param species Taxonomy object.
 #'
 #' @return An object of class fossils.
 #' @examples
-#'
 #' # simulate tree
 #' t <- ape::rtree(6)
 #'
@@ -676,4 +590,80 @@ reconcile.fossils.taxonomy<-function(fossils, species){
   }
   fossils = as.fossils(fossils, from.taxonomy = TRUE)
   return(fossils)
+}
+
+# Simulate fossils under an exponential sampling model
+#
+# @param tree Phylo object.
+# @param rate Exponential sampling rate.
+# @param root.edge If TRUE include the root edge (default = TRUE).
+# @return An object of class fossils.
+# sp = node labels. h = ages.
+# The label is for the node just below the sampled fossil.
+# @examples
+# # simulate tree
+# t<-ape::rtree(4)
+# # simulate fossils
+# rate = 2
+# f<-sim.fossils.exponential(t, rate)
+# plot(f, t)
+# @keywords uniform preservation
+#
+# @importFrom stats rexp
+sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
+
+  node.ages<-n.ages(tree)
+
+  fossils<-data.frame(h=numeric(),sp=numeric())
+
+  root = length(tree$tip.label) + 1
+
+  if(root.edge && exists("root.edge",tree) ){
+
+    lineages = c(tree$edge[,2], root)
+
+  } else lineages = tree$edge[,2]
+
+  for (i in lineages){ # internal nodes + tips
+
+    if(i == root){
+
+      # root age
+      a=which(names(node.ages)==root)
+      lineage.end=node.ages[[a]]
+
+      # origin time
+      b=tree$root.edge
+      lineage.start=lineage.end+b
+
+    } else {
+
+      # work out the max age of the lineage (e.g. when that lineage became extant)
+      # & get ancestor
+      row=which(tree$edge[,2]==i)
+      ancestor=tree$edge[,1][row]
+
+      # get the age of the ancestor
+      a=which(names(node.ages)==ancestor)
+      lineage.start=node.ages[[a]]
+
+      # work out the min age of the lineage (e.g. when that lineage became extinct)
+      # & get the branch length
+      b=tree$edge.length[row]
+      lineage.end=lineage.start-b # branch length
+    }
+
+    t = 0
+    while(TRUE){
+      t = t + rexp(1, rate);
+      if (t < b) { # make fossil
+        fossils<-rbind(fossils, data.frame(h=(lineage.start-t),sp=i))
+      }
+      else break
+    }
+  }
+
+  fossils <- as.fossils(fossils, from.taxonomy)
+  return(fossils) # in this data frame h=fossil age and sp=lineage
+  # EOF
 }

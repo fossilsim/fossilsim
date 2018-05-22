@@ -20,7 +20,7 @@ sim.fossils.non.unif.depth(tree = NULL, species = NULL,
 
 \item{strata}{Number of stratigraphic intervals.}
 
-\item{depth.profile}{Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should 1 less than the length of interval.ages.}
+\item{depth.profile}{Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.}
 
 \item{PA}{Peak adbundance parameter.}
 
@@ -32,12 +32,10 @@ sim.fossils.non.unif.depth(tree = NULL, species = NULL,
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
-\item{use.exact.times}{If TRUE use exact sampling times. If FALSE hmin and hmax will equal the start and end times of the corresponding interval. Default = TRUE.}
+\item{use.exact.times}{If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.}
 }
 \value{
 An object of class fossils.
-sp = node labels. h = fossil or interval ages. If convert.rate = TRUE, h = specimen age, if convert.rate = FALSE, h = max horizon age.
-The label is for the node just below the sampled fossil.
 }
 \description{
 This function uses a three parameter Guassian model to simulate non-uniform fossil preservation along a specified phylogeny.
@@ -48,10 +46,12 @@ where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{D
 \emph{PA} is the probability of sampling an occurrence at this depth.
 \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
-maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}.
+maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
+Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+If both are specified, the function uses taxonomy.
+If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
 }
 \examples{
-
 # simulate tree
 t<-ape::rtree(6)
 

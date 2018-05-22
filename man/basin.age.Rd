@@ -21,4 +21,5 @@ Function returns an age slightly older than the root.age or origin time using th
 \examples{
 t<-ape::rtree(6)
 basin.age(t, root.edge = FALSE)
+
 }

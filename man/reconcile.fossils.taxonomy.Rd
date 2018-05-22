@@ -16,10 +16,9 @@ An object of class fossils.
 }
 \description{
 This function uses edge identifiers (\code{edge}) and fossil sampling times (\code{hmin}) to reassign fossil species identifiers (\code{sp, origin}) using an existing taxonomy object.
-It can only be used if exact fossil sampling times are known (i.e. hmin = hmax), otherwise edges containing multiple species may be indistinguishable.
+It can only be used if exact fossil sampling times are known (i.e. \code{hmin = hmax}), otherwise edges containing multiple species may be indistinguishable.
 }
 \examples{
-
 # simulate tree
 t <- ape::rtree(6)
 
