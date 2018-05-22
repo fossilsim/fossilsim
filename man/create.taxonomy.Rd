@@ -22,7 +22,8 @@ create.taxonomy(tree, beta = 0, lambda.a = 0, kappa = 0,
 An object of class taxonomy.
 }
 \description{
-Create taxonomy
+Create a taxonomy object relating species identity to a phylo object under a mixed model of speciation.
+Anagenic and cryptic species can also be added later using the \code{add.anagenic.species} and \code{add.cryptic.species} functions.
 }
 \examples{
 t = ape::rtree(10)

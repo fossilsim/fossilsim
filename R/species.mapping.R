@@ -1,5 +1,8 @@
 #' Create taxonomy
 #'
+#' Create a taxonomy object relating species identity to a phylo object under a mixed model of speciation.
+#' Anagenic and cryptic species can also be added later using the \code{add.anagenic.species} and \code{add.cryptic.species} functions.
+#'
 #' @param tree Phylo object.
 #' @param beta Probability of bifurcating speciation. Default = 0.
 #' @param lambda.a Rate of anagenic speciation. Default = 0.
@@ -23,6 +26,12 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
     stop("lambda.a must be zero or positive")
   if(!(kappa >= 0 && kappa <= 1))
     stop("kappa must be a probability between 0 and 1")
+
+  if(is.null(tree$edge.length))
+    stop("tree must have edge lengths")
+
+  if(!ape::is.rooted(tree))
+    stop("tree must be rooted")
 
   # assign symmetric and asymmetric species
   node.ages = n.ages(tree)
@@ -350,7 +359,7 @@ add.cryptic.species<-function(species, kappa){
 #' f<-sim.fossils.poisson(tree = t, 2)
 #'
 #' # add extant samples
-#' f<-add.extant.occ(t, f, rho = 0.5)
+#' f<-add.extant.occ(f, t, rho = 0.5)
 #'
 #' # asymmetric mapping
 #' f<-asymmetric.fossil.mapping(t, f)
@@ -457,7 +466,7 @@ add.extant.occ<-function(fossils, tree = NULL, species = NULL, rho = 1, tol = NU
 #'
 #' @param fossils Fossils object.
 #' @param tree Phylo object.
-#' @param specie Taxonoy object.
+#' @param species Taxonomy object.
 #' @param rho Tip sampling probability.
 #'
 #' @return An object of class fossils.

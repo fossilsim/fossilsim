@@ -4,26 +4,26 @@
 #' Create a taxonomy object relating species identity to a phylo object.
 #'
 #' @details
-#' The taxonomy object includes the following 7 fields for each edge in the phylo object:
+#' The taxonomy object includes the following 7 fields for each edge in the corresponding phylo object:
 #' \itemize{
 #' \item{\code{sp} true species identity label.
 #' If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest) associated with each species.
-#' This may not be case if the data set also contains anagenic species, when multiple species may be associated with a single edge.}
+#' This may not be case if the data set also contains anagenic species, when multiple species may be associated with a single edge}
 #' \item{\code{edge} edge label of the branch in the corresponding phylo object.
-#' Note some species may be associated with multiple edges.}
+#' Note some species may be associated with multiple edges}
 #' \item{\code{parent} = ancestor of species \code{sp}. Parent labels follow the same convention as species.
-#' The label assigned to the parent of the origin or root will be zero.}
-#' \item{\code{start} = origin time of species.}
-#' \item{\code{end} = end time of species. }
+#' The label assigned to the parent of the origin or root will be zero}
+#' \item{\code{start} = origin time of species}
+#' \item{\code{end} = end time of species}
 #' \item{\code{mode} = speciation mode. "o" = origin or "r" = root (the edge/species that began the process).
-#' "b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenic speciation.}
-#' \item{\code{origin} = edge beginning the species.}
+#' "b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenic speciation}
+#' \item{\code{origin} = edge beginning the species}
 #' }
 #'
 #' Optional fields:
 #' \itemize{
-#' \item{\code{cryptic = TRUE} if speciation event was cryptic otherwise the function assumes \code{cryptic = FALSE}.}
-#' \item{\code{cryptic.id} = cryptic species identity. If cryptic = TRUE \code{cryptic.id} will differ from the true species identity \code{sp}.}
+#' \item{\code{cryptic = TRUE} if speciation event was cryptic otherwise the function assumes \code{cryptic = FALSE}}
+#' \item{\code{cryptic.id} = cryptic species identity. If cryptic = TRUE \code{cryptic.id} will differ from the true species identity \code{sp}}
 #' }
 #'
 #' @param data Dataframe of species taxonomy. See Details for the list of required fields.

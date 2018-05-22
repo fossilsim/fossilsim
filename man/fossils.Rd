@@ -15,13 +15,13 @@ is.fossils(data)
 \arguments{
 \item{data}{Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, the function creates an empty fossils object.}
 
-\item{from.taxonomy}{Boolean indicating whether the fossils were sampled using a taxonomy object. Default = FALSE.}
+\item{from.taxonomy}{Boolean indicating whether the fossils were sampled using a taxonomy object, as opposed to a tree object. Default = FALSE.}
 }
 \description{
 Create a fossil record object. The input is taken to be a dataframe or list.
 }
 \details{
-The fossil record object contains 5 fields containing for each fossil the following data:
+The fossil record object contains 5 fields for each fossil with the following information:
 \itemize{
  \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny
  and the species labels in the corresponding taxonomy object

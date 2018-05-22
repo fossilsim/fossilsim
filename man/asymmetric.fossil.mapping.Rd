@@ -26,7 +26,7 @@ t<-ape::rtree(6)
 f<-sim.fossils.poisson(tree = t, 2)
 
 # add extant samples
-f<-add.extant.occ(t, f, rho = 0.5)
+f<-add.extant.occ(f, t, rho = 0.5)
 
 # asymmetric mapping
 f<-asymmetric.fossil.mapping(t, f)

@@ -45,6 +45,12 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
   if(!is.null(tree) && !is.null(species))
     warning("tree and species both defined, using species taxonomy")
 
+  if(is.null(species) && is.null(tree$edge.length))
+    stop("tree must have edge lengths")
+
+  if(is.null(species) && !ape::is.rooted(tree))
+    stop("tree must be rooted")
+
   if(is.null(species)){
     species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
@@ -148,6 +154,12 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 
   if(!is.null(tree) && !is.null(species))
     warning("tree and species both defined, using species taxonomy")
+
+  if(is.null(species) && is.null(tree$edge.length))
+    stop("tree must have edge lengths")
+
+  if(is.null(species) && !ape::is.rooted(tree))
+    stop("tree must be rooted")
 
   if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
     stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
@@ -313,6 +325,12 @@ sim.fossils.non.unif.depth<-function(tree = NULL, species = NULL,
 
   if(!is.null(tree) && !is.null(species))
     warning("tree and species both defined, using species taxonomy")
+
+  if(is.null(species) && is.null(tree$edge.length))
+    stop("tree must have edge lengths")
+
+  if(is.null(species) && !ape::is.rooted(tree))
+    stop("tree must be rooted")
 
   if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
     stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")

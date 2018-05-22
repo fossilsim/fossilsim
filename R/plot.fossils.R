@@ -110,10 +110,15 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   if (any(tabulate(x$edge[, 1]) == 1))
     stop("there are single (non-splitting) nodes in your tree; you may need to use collapse.singles()")
 
-  # TODO
-  # check edge lengths != null
-  # check tree is rooted
+  if(!ape::is.rooted(tree))
+    stop("tree must be rooted")
+
+  #TODO
   # check tree is binary?
+  # what happens if this isn't the case?
+
+  if(is.null(tree$edge.length))
+    stop("tree must have edge lengths")
 
   if(is.null(x$root.edge))
     root.edge = FALSE
