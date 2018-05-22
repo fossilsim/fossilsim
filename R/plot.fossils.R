@@ -150,11 +150,6 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
 
   if(any(fossils$hmin != fossils$hmax)) binned = TRUE # TODO?
 
-  # required ape C fxns
-  .nodeHeight <- function(edge, Nedge, yy) .C(ape::node_height, as.integer(edge[, 1]), as.integer(edge[, 2]), as.integer(Nedge), as.double(yy))[[4]]
-  .nodeDepth <- function(Ntip, Nnode, edge, Nedge, node.depth) .C(ape::node_depth, as.integer(Ntip), as.integer(edge[, 1]), as.integer(edge[, 2]), as.integer(Nedge), double(Ntip + Nnode), as.integer(node.depth))[[5]]
-  .nodeDepthEdgelength <- function(Ntip, Nnode, edge, Nedge, edge.length) .C(ape::node_depth_edgelength, as.integer(edge[, 1]), as.integer(edge[, 2]), as.integer(Nedge), as.double(edge.length), double(Ntip + Nnode))[[5]]
-
   Nedge <- dim(x$edge)[1]
   Nnode <- x$Nnode
   if (any(x$edge < 1) || any(x$edge > Ntip + Nnode))
@@ -181,8 +176,8 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
   yy[TIPS] <- 1:Ntip
   z <- stats::reorder(x, order = "postorder")
 
-  yy <- .nodeHeight(z$edge, Nedge, yy)
-  xx <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
+  yy <- ape::node.height(x)
+  xx  <- ape::node.depth.edgelength(x)
 
   if (root.edge) {
     xx <- xx + x$root.edge
