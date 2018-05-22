@@ -59,7 +59,8 @@
 #' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)
 #'
 #' @export
-#' @importFrom graphics par points lines text axis mtext segments
+#' @importFrom graphics par points lines text axis mtext segments rect plot
+#' @importFrom grDevices colors rgb
 plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                        # age info/options
                        show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
@@ -280,7 +281,7 @@ plot.fossils<-function(fossils, tree, show.fossils = TRUE, show.tree = TRUE, sho
         else
           col="grey95"
         if(show.strata)
-          graphics::rect(xleft = x.left, xright = x.right, ybottom = y.bottom, ytop = y.top, col=col, border=NA)
+          rect(xleft = x.left, xright = x.right, ybottom = y.bottom, ytop = y.top, col=col, border=NA)
         x.left = x.right
         x.right = x.left + s1[i+1]
         cc = cc + 1
