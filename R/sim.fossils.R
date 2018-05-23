@@ -666,7 +666,7 @@ sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
     }
   }
 
-  fossils <- as.fossils(fossils, from.taxonomy)
+  fossils <- as.fossils(fossils, FALSE)
   return(fossils) # in this data frame h=fossil age and sp=lineage
   # EOF
 }

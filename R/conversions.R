@@ -214,12 +214,14 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #'
 #' The returned tree is in paleotree format, with zero-length edges leading to tips at bifurcation and anagenic events.
 #' Fossils and taxonomy are only specified on non-zero-length edges.
+#' The label assigned to the parent of the origin or root will be zero.
 #'
 #' @param record fossilRecordSimulation object.
+#' @param alphanumeric If TRUE function will return alphanumeric species labels (i.e. species labels contain the "t" prefix) (default). If FALSE function will return numeric only species labels.
 #' @return A list containing the converted tree, taxonomy and fossils
 #' @examples
 #' # simulate record
-#' record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
+#' record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1, nTotalTaxa=c(30,40),
 #'     nExtant=0, nSamp = c(5,25))
 #'
 #' # transform format
@@ -228,10 +230,11 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' l_tf$taxonomy
 #' l_tf$fossils
 #' @export
+#' @seealso \code{\link{taxonomy}}, \code{\link{fossils}}
 # NB: taxonomy times not branch specific
 # NB: modes not branch specific
 # NB: cryptic speciation: parent id is true parent, ie can be = cryptic id
-paleotree.record.to.fossils = function(record) {
+paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
   # check that paleotree is installed - should be but you never know
   if (!requireNamespace("paleotree", quietly = TRUE)) {
     stop("Paleotree needed for this function to work. Please install it.", call. = FALSE)
@@ -241,8 +244,8 @@ paleotree.record.to.fossils = function(record) {
   # recording node labels to keep track after changing the phylogeny
   tree$node.label = (length(tree$tip.label)+1):(length(tree$tip.label)+tree$Nnode)
   fossildf = fossils()
-  taxonomy = data.frame(edge=numeric(),sp=numeric(),start=numeric(),end=numeric(),mode = character(),
-                        cryptic = numeric(), cryptic.id = numeric(), parent = numeric(),stringsAsFactors = F)
+  taxonomy = data.frame(edge = numeric(), sp = numeric(), start = numeric(), end = numeric(), mode = character(),
+                        cryptic = numeric(), cryptic.id = numeric(), parent = numeric(), stringsAsFactors = F)
   ages = n.ages(tree)
 
   root_time = 0
@@ -298,9 +301,11 @@ paleotree.record.to.fossils = function(record) {
     }
 
     if(is.na(record[[i]]$taxa.data[["ancestor.id"]])) { #root species
-      origin = NA
-      mode = 'root'
+      parent = "t0"
+      origin = 0
+      mode = 'r'
     } else {
+      parent = names(record)[record[[i]]$taxa.data[['ancestor.id']]]
       origin = tree$edge[which(tree$edge[,2] == node_idx),1]
       orig_edge = which(tree$edge[,2] == origin)
       if(length(orig_edge) == 0 || tree$edge.length[orig_edge] > 0) {
@@ -312,19 +317,28 @@ paleotree.record.to.fossils = function(record) {
       }
     }
 
-    taxonomy = rbind(taxonomy, data.frame(edge = all_nodes, sp = names(record)[i],start=record[[i]]$taxa.data[['orig.time']],end=record[[i]]$taxa.data[['ext.time']],
+    taxonomy = rbind(taxonomy, data.frame(sp = names(record)[i], edge = all_nodes, parent = parent,
+                                          start = record[[i]]$taxa.data[['orig.time']], end = record[[i]]$taxa.data[['ext.time']],
                                           mode = mode, cryptic = !(record[[i]]$taxa.data[['taxon.id']] == record[[i]]$taxa.data[['looks.like']]),
                                           cryptic.id = names(record)[record[[i]]$taxa.data[['looks.like']]],
-                                          parent = names(record)[record[[i]]$taxa.data[['ancestor.id']]], stringsAsFactors = F))
+                                          stringsAsFactors = F))
     if(length(record[[i]]$sampling.times)>0)
-      fossildf = rbind(fossildf, data.frame(hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
-                                            sp = names(record)[i], edge = sampled_nodes, origin = origin, stringsAsFactors = F))
+      fossildf = rbind(fossildf, data.frame(sp = names(record)[i], edge = sampled_nodes, origin = origin,
+                                            hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
+                                            stringsAsFactors = F))
   }
 
   row.names(taxonomy) = NULL
   row.names(fossildf) = NULL
   fossildf = as.fossils(fossildf, TRUE)
   taxonomy = as.taxonomy(taxonomy)
+
+  if(!alphanumeric){
+    fossildf$sp = gsub("t", "", fossildf$sp)
+    taxonomy$sp = gsub("t", "", taxonomy$sp)
+    taxonomy$cryptic.id = gsub("t", "", taxonomy$cryptic.id)
+    taxonomy$parent = gsub("t", "", taxonomy$parent)
+  }
 
   tree$root.edge = root_time - tree$root.time
   tree$origin.time = root_time
@@ -338,20 +352,48 @@ paleotree.record.to.fossils = function(record) {
 #' @param tree phylo object containing the tree. If provided and taxonomy = NULL, all speciation is assumed symmetric
 #' @param taxonomy taxonomy object. If both tree and taxonomy are provided, only taxonomy will be used.
 #' @return The converted paleotree record
+#' @examples
+#' # simulate tree
+#' t = ape::rtree(6)
+#' # simulate fossils using taxonomy
+#' s = create.taxonomy(t, 0.5, 1, 0.5)
+#' f = sim.fossils.poisson(2, species = s)
+#' # transform format
+#' record = fossils.to.paleotree.record(f, taxonomy = s)
 #' @export
 fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
   if(is.null(taxonomy) && is.null(tree)) stop("Either tree or taxonomy needs to be provided")
 
   rec_names = c("taxon.id","ancestor.id","orig.time","ext.time", "still.alive","looks.like")
 
+  if(length(fossils$sp) > 0 & !any(grepl("t", fossils$sp))){
+    fossils$sp = paste0("t", fossils$sp)
+  }
+
   if(!is.null(taxonomy)) {
     # then record based purely on taxonomy
+
+    # remove edge data not required for paleotree (otherwise it prevents the loop below from working)
+    taxonomy$edge = NULL
+    taxonomy$edge.end = NULL
+    taxonomy$edge.start = NULL
+    taxonomy = unique(taxonomy)
+
+    # add "t" prefix if missing
+    if(length(taxonomy$sp) > 0 & !any(grepl("t", taxonomy$sp))){
+      taxonomy$sp = paste0("t", taxonomy$sp)
+      taxonomy$parent = paste0("t", taxonomy$parent)
+      taxonomy$cryptic.id = paste0("t", taxonomy$cryptic.id)
+    }
+
+    # order by species id
+    taxonomy = taxonomy[order(as.numeric(gsub("t", "", taxonomy$sp))),]
+
     species = species.record.from.taxonomy(taxonomy)
     record = vector("list", length = length(species$sp))
     names(record) = species$sp
     for(i in 1:length(species$sp)) {
-      if(is.na(species$parent[i])) anc = NA
-      else anc = which(names(record) == species$parent[i])
+      if(is.na(species$parent[i]) | species$parent[i] == 0 | species$parent[i] == "t0") anc = NA else anc = which(names(record) == species$parent[i])
       record[[i]] = list(taxa.data = c(i, anc, species$start[i], species$end[i], (species$end[i] < 1e-5), which(names(record) == species$cryptic.id[i])),
                          sampling.times = numeric())
       names(record[[i]]$taxa.data) = rec_names
