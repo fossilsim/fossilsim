@@ -26,6 +26,7 @@
 #' plot(f, t)
 #'
 #' @keywords uniform preservation
+#' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}
 #' @export
 #'
 #' @importFrom stats rpois runif
@@ -137,6 +138,7 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
 #'
 #' @keywords uniform fossil preservation
 #' @keywords non-uniform fossil preservation
+#' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.non.unif.depth}}
 #' @export
 sim.fossils.intervals<-function(tree = NULL, species = NULL,
                                 interval.ages = NULL, basin.age = NULL, strata = NULL,
@@ -307,6 +309,7 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' plot(f,t)
 #'
 #' @keywords non-uniform fossil preseravtion
+#' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}
 #' @export
 sim.fossils.non.unif.depth<-function(tree = NULL, species = NULL,
                                 interval.ages = NULL, basin.age = NULL, strata = NULL,

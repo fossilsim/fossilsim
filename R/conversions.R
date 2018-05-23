@@ -7,8 +7,10 @@
 #' @examples
 #' # simulate tree
 #' t = ape::rtree(6)
+#'
 #' # simulate fossils
 #' f = sim.fossils.poisson(rate = 2, tree = t)
+#'
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
 #' plot(t2)
@@ -106,10 +108,13 @@ combined.tree.with.fossils = function(tree, fossils) {
 #' @examples
 #' # simulate tree
 #' t = ape::rtree(6)
+#'
 #' # simulate fossils
 #' f = sim.fossils.poisson(rate = 2, tree = t)
+#'
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
+#'
 #' # transform to sampled tree
 #' t3 = sampled.tree.from.combined(t2)
 #' plot(t3)
@@ -147,12 +152,16 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' @examples
 #' # simulate tree
 #' t = ape::rtree(6)
+#'
 #' # simulate fossils
 #' f = sim.fossils.poisson(rate = 2, tree = t)
+#'
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
+#'
 #' # prune fossils
 #' t4 = prune.fossils(t2)
+#'
 #' # or transform to sampled tree first
 #' t3 = sampled.tree.from.combined(t2)
 #' t4 = prune.fossils(t3)
@@ -188,8 +197,10 @@ prune.fossils = function(tree) {
 #' @examples
 #' # simulate tree
 #' t = ape::rtree(6)
+#'
 #' # simulate fossils
 #' f = sim.fossils.poisson(rate = 2, tree = t)
+#'
 #' # output for BEAST
 #' beast.fbd.format(t, f) # output on the console
 #' beast.fbd.format(t, f, file="example.tre") # output in file
@@ -210,6 +221,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' # simulate record
 #' record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
 #'     nExtant=0, nSamp = c(5,25))
+#'
 #' # transform format
 #' l_tf = paleotree.record.to.fossils(record)
 #' l_tf$tree

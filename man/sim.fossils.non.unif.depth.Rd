@@ -78,6 +78,9 @@ plot(f,t)
 \references{
 Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.
 }
+\seealso{
+\code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}
+}
 \keyword{fossil}
 \keyword{non-uniform}
 \keyword{preseravtion}

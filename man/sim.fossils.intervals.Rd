@@ -65,6 +65,9 @@ f = sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
 plot(f, t)
 
 }
+\seealso{
+\code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.non.unif.depth}}
+}
 \keyword{fossil}
 \keyword{non-uniform}
 \keyword{preservation}

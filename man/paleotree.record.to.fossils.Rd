@@ -20,6 +20,7 @@ Fossils and taxonomy are only specified on non-zero-length edges.
 # simulate record
 record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
     nExtant=0, nSamp = c(5,25))
+
 # transform format
 l_tf = paleotree.record.to.fossils(record)
 l_tf$tree

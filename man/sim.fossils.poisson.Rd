@@ -38,5 +38,8 @@ f = sim.fossils.poisson(rate, species = s)
 plot(f, t)
 
 }
+\seealso{
+\code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}
+}
 \keyword{preservation}
 \keyword{uniform}
