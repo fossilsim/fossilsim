@@ -6,9 +6,9 @@
 #' @return A tree integrating the fossils.
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(6)
+#' t = ape::rtree(6)
 #' # simulate fossils
-#' f <- sim.fossils.poisson(rate = 2, tree = t)
+#' f = sim.fossils.poisson(rate = 2, tree = t)
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
 #' plot(t2)
@@ -105,9 +105,9 @@ combined.tree.with.fossils = function(tree, fossils) {
 #' @return Sampled tree with fossils.
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(6)
+#' t = ape::rtree(6)
 #' # simulate fossils
-#' f <- sim.fossils.poisson(rate = 2, tree = t)
+#' f = sim.fossils.poisson(rate = 2, tree = t)
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
 #' # transform to sampled tree
@@ -146,9 +146,9 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' @return Tree with pruned fossils.
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(6)
+#' t = ape::rtree(6)
 #' # simulate fossils
-#' f <- sim.fossils.poisson(rate = 2, tree = t)
+#' f = sim.fossils.poisson(rate = 2, tree = t)
 #' # transform format
 #' t2 = combined.tree.with.fossils(t,f)
 #' # prune fossils
@@ -187,9 +187,9 @@ prune.fossils = function(tree) {
 #' @return Output of write.tree.
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(6)
+#' t = ape::rtree(6)
 #' # simulate fossils
-#' f <- sim.fossils.poisson(rate = 2, tree = t)
+#' f = sim.fossils.poisson(rate = 2, tree = t)
 #' # output for BEAST
 #' beast.fbd.format(t, f) # output on the console
 #' beast.fbd.format(t, f, file="example.tre") # output in file
@@ -199,7 +199,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
   ape::write.tree(proc_tree, ...)
 }
 
-#' Transforms a fossilRecordSimulation object from package paleotree to a tree and taxonomy and fossils dataframes.
+#' Transforms a fossilRecordSimulation object from package paleotree to a tree and taxonomy and fossils objects.
 #'
 #' The returned tree is in paleotree format, with zero-length edges leading to tips at bifurcation and anagenic events.
 #' Fossils and taxonomy are only specified on non-zero-length edges.
@@ -208,7 +208,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' @return A list containing the converted tree, taxonomy and fossils
 #' @examples
 #' # simulate record
-#' record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
+#' record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
 #'     nExtant=0, nSamp = c(5,25))
 #' # transform format
 #' l_tf = paleotree.record.to.fossils(record)

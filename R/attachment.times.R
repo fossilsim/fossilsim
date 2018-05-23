@@ -14,13 +14,13 @@
 #'
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t = ape::rtree(6)
 #'
 #' # simulate fossils
-#' f<-sim.fossils.poisson(2, t)
+#' f = sim.fossils.poisson(2, t)
 #'
 #' # add extant samples?
-#' #f<-add.extant.occ(f, t, rho = 0.5)
+#' f = add.extant.occ(f, t, rho = 0.5)
 #'
 #' # calculate attachment times
 #' attachment.times(t, f)
@@ -145,7 +145,7 @@ attachment.times<-function(tree,fossils){
 #' @param tree Phylo object.
 #' @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
 #' @examples
-#' t<-ape::rtree(6)
+#' t = ape::rtree(6)
 #' fetch.descendants(7,t)
 #' fetch.descendants(7,t,return.edge.labels=TRUE)
 #' @return

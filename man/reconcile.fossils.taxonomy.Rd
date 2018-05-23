@@ -20,16 +20,16 @@ It can only be used if exact fossil sampling times are known (i.e. \code{hmin = 
 }
 \examples{
 # simulate tree
-t <- ape::rtree(6)
+t = ape::rtree(6)
 
 # simulate fossils using the tree
 rate = 2
-f <- sim.fossils.poisson(rate, tree = t)
+f = sim.fossils.poisson(rate, tree = t)
 plot(f, t)
 
 # simulate fossils using taxonomy
-s <- create.taxonomy(t, 0.5, 1, 0.5)
-f <- reconcile.fossils.taxonomy(f, s)
+s = create.taxonomy(t, 0.5, 1, 0.5)
+f = reconcile.fossils.taxonomy(f, s)
 plot(f, t)
 
 }

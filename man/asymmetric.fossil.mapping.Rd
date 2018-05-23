@@ -19,15 +19,15 @@ Map fossils onto a tree assuming asymmetric (budding) speciation.
 }
 \examples{
 # simulate tree
-t<-ape::rtree(6)
+t = ape::rtree(6)
 
 # simulate fossils
-f<-sim.fossils.poisson(tree = t, 2)
+f = sim.fossils.poisson(tree = t, 2)
 
 # add extant samples
-f<-add.extant.occ(f, tree = t, rho = 0.5)
+f = add.extant.occ(f, tree = t, rho = 0.5)
 
 # asymmetric mapping
-f<-asymmetric.fossil.mapping(t, f)
+f = asymmetric.fossil.mapping(t, f)
 
 }

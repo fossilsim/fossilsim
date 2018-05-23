@@ -20,7 +20,7 @@ Vector of symmetric descendants
 Fetch descendant lineages in a symmetric tree
 }
 \examples{
-t<-ape::rtree(6)
+t = ape::rtree(6)
 fetch.descendants(7,t)
 fetch.descendants(7,t,return.edge.labels=TRUE)
 }

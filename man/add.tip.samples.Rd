@@ -23,13 +23,13 @@ The tree is required to identify which edges are terminal.
 }
 \examples{
 # simulate tree
-t<-ape::rtree(6)
+t = ape::rtree(6)
 
 # simulate fossils
-f<-sim.fossils.poisson(2, t)
+f = sim.fossils.poisson(2, t)
 
 # add tip samples
-f<-add.tip.samples(f, t, rho = 0.5)
+f = add.tip.samples(f, t, rho = 0.5)
 plot(f, t)
 
 }

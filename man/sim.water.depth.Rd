@@ -21,7 +21,7 @@ Function returns water depth profile using the sine wave function \eqn{y = depth
 }
 \examples{
 strata = 100
-wd<-sim.water.depth(strata)
+wd = sim.water.depth(strata)
 plot(wd, type="l")
 }
 \keyword{fossil}

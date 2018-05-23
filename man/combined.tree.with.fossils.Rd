@@ -21,9 +21,9 @@ Sampled ancestors are represented as tips on zero-length edges to maintain compa
 }
 \examples{
 # simulate tree
-t <- ape::rtree(6)
+t = ape::rtree(6)
 # simulate fossils
-f <- sim.fossils.poisson(rate = 2, tree = t)
+f = sim.fossils.poisson(rate = 2, tree = t)
 # transform format
 t2 = combined.tree.with.fossils(t,f)
 plot(t2)

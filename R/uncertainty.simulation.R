@@ -10,9 +10,9 @@
 #' @return Fossils object with min and max ages of fossils.
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(6)
+#' t = ape::rtree(6)
 #' # simulate fossils
-#' f <- sim.fossils.poisson(rate = 2, tree = t)
+#' f = sim.fossils.poisson(rate = 2, tree = t)
 #' # simulate uncertainty
 #' f = sim.uncertain.ages(f, c(0,TreeSim::getx(t)))
 #' @export

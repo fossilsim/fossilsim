@@ -25,7 +25,7 @@ ancestor<-function(edge,tree){
 # @param tree Phylo object.
 # @return Boolean (true/false).
 # @examples
-# t<-ape::rtree(6)
+# t = ape::rtree(6)
 # is.tip(t$edge[,2][6],t)
 is.tip<-function(taxa,tree){
   return (length(which(tree$edge[,1]==taxa)) < 1)
@@ -38,7 +38,7 @@ is.tip<-function(taxa,tree){
 # @param tol Rounding error tolerance.
 # @return Boolean (true/false).
 # @examples
-# t<-ape::rtree(6)
+# t = ape::rtree(6)
 # is.extant(t$edge[,2][6],t)
 is.extant<-function(taxa,tree,tol=NULL){
 

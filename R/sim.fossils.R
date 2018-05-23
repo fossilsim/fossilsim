@@ -13,16 +13,16 @@
 #'
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(6)
+#' t = ape::rtree(6)
 #'
 #' # simulate fossils using the tree
 #' rate = 2
-#' f <- sim.fossils.poisson(rate, tree = t)
+#' f = sim.fossils.poisson(rate, tree = t)
 #' plot(f, t)
 #'
 #' # simulate fossils using taxonomy
-#' s <- create.taxonomy(t, 0.5, 1, 0.5)
-#' f <- sim.fossils.poisson(rate, species = s)
+#' s = create.taxonomy(t, 0.5, 1, 0.5)
+#' f = sim.fossils.poisson(rate, species = s)
 #' plot(f, t)
 #'
 #' @keywords uniform preservation
@@ -113,26 +113,26 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
 #'
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(6)
+#' t = ape::rtree(6)
 #'
 #' # assign a max age based on tree height
-#' max.age <- basin.age(t)
+#' max.age = basin.age(t)
 #'
 #' # simulate fossils using basin.age and strata & probabilities
 #' strata = 4
 #' probability = rep(0.7, 4)
-#' f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
+#' f = sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
 #' plot(f, t, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using interval.ages & rates
 #' times = seq(0, max.age, length.out = 4)
 #' rates = c(5, 0, 5)
-#' f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
+#' f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
 #' plot(f, t)
 #'
 #' # simulate fossils using taxonomy
-#' s <- create.taxonomy(t, 0.1, 0.1, 1)
-#' f <- sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
+#' s = create.taxonomy(t, 0.1, 0.1, 1)
+#' f = sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
 #' plot(f, t)
 #'
 #' @keywords uniform fossil preservation
@@ -285,24 +285,24 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #'
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t = ape::rtree(6)
 #'
 #' # assign a max age based on tree height
 #' max.age = basin.age(t)
 #'
 #' # generate water depth profile
 #' strata = 7
-#' wd<-sim.water.depth(strata)
+#' wd = sim.water.depth(strata)
 #'
 #' # simulate fossils using tree & basin.age and strata
-#' f<-sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
+#' f = sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
 #'  depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
 #' plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using taxonomy & interval.ages
-#' s <- create.taxonomy(t, 0.1, 0.1, 1)
+#' s = create.taxonomy(t, 0.1, 0.1, 1)
 #' times = seq(0, max.age, length.out = strata + 1)
-#' f <- sim.fossils.non.unif.depth(species = s, interval.ages = times,
+#' f = sim.fossils.non.unif.depth(species = s, interval.ages = times,
 #'      depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
 #' plot(f,t)
 #'
@@ -428,7 +428,7 @@ sim.fossils.non.unif.depth<-function(tree = NULL, species = NULL,
 #' @return dataframe of sampled water depths.
 #' @examples
 #' strata = 100
-#' wd<-sim.water.depth(strata)
+#' wd = sim.water.depth(strata)
 #' plot(wd, type="l")
 #' @keywords non-uniform fossil preservation
 #' @export
@@ -460,7 +460,7 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @return basin age
 #' @examples
-#' t<-ape::rtree(6)
+#' t = ape::rtree(6)
 #' basin.age(t, root.edge = FALSE)
 #'
 #' @export
@@ -539,16 +539,16 @@ assign.interval<-function(intervals, t){
 #' @return An object of class fossils.
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(6)
+#' t = ape::rtree(6)
 #'
 #' # simulate fossils using the tree
 #' rate = 2
-#' f <- sim.fossils.poisson(rate, tree = t)
+#' f = sim.fossils.poisson(rate, tree = t)
 #' plot(f, t)
 #'
 #' # simulate fossils using taxonomy
-#' s <- create.taxonomy(t, 0.5, 1, 0.5)
-#' f <- reconcile.fossils.taxonomy(f, s)
+#' s = create.taxonomy(t, 0.5, 1, 0.5)
+#' f = reconcile.fossils.taxonomy(f, s)
 #' plot(f, t)
 #'
 #' @export
@@ -602,10 +602,10 @@ reconcile.fossils.taxonomy<-function(fossils, species){
 # The label is for the node just below the sampled fossil.
 # @examples
 # # simulate tree
-# t<-ape::rtree(4)
+# t = ape::rtree(4)
 # # simulate fossils
 # rate = 2
-# f<-sim.fossils.exponential(t, rate)
+# f = sim.fossils.exponential(t, rate)
 # plot(f, t)
 # @keywords uniform preservation
 #

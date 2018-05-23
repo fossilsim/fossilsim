@@ -53,24 +53,24 @@ If no taxonomic information is provided, the function assumes all speciation is 
 }
 \examples{
 # simulate tree
-t<-ape::rtree(6)
+t = ape::rtree(6)
 
 # assign a max age based on tree height
 max.age = basin.age(t)
 
 # generate water depth profile
 strata = 7
-wd<-sim.water.depth(strata)
+wd = sim.water.depth(strata)
 
 # simulate fossils using tree & basin.age and strata
-f<-sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
+f = sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
  depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
 plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 
 # simulate fossils using taxonomy & interval.ages
-s <- create.taxonomy(t, 0.1, 0.1, 1)
+s = create.taxonomy(t, 0.1, 0.1, 1)
 times = seq(0, max.age, length.out = strata + 1)
-f <- sim.fossils.non.unif.depth(species = s, interval.ages = times,
+f = sim.fossils.non.unif.depth(species = s, interval.ages = times,
      depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
 plot(f,t)
 

@@ -40,10 +40,10 @@
 #' set.seed(123)
 #'
 #' ## simulate tree
-#' t <- TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
+#' t = TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 #'
 #' ## simulate fossils under a Poisson sampling process
-#' f <- sim.fossils.poisson(rate = 3, tree = t)
+#' f = sim.fossils.poisson(rate = 3, tree = t)
 #' plot(f, t)
 #' # add a set of equal length strata
 #' plot(f, t, show.strata = TRUE, strata = 4)
@@ -53,7 +53,7 @@
 #' max = basin.age(t)
 #' times = c(0, 0.3, 1, max)
 #' rates = c(4, 1, 0.1)
-#' f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
+#' f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
 #' plot(f, t, show.strata = TRUE, interval.ages = times)
 #' # add proxy data
 #' plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)

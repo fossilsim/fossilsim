@@ -2,7 +2,7 @@
 % Please edit documentation in R/conversions.R
 \name{paleotree.record.to.fossils}
 \alias{paleotree.record.to.fossils}
-\title{Transforms a fossilRecordSimulation object from package paleotree to a tree and taxonomy and fossils dataframes.}
+\title{Transforms a fossilRecordSimulation object from package paleotree to a tree and taxonomy and fossils objects.}
 \usage{
 paleotree.record.to.fossils(record)
 }
@@ -18,7 +18,7 @@ Fossils and taxonomy are only specified on non-zero-length edges.
 }
 \examples{
 # simulate record
-record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
+record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
     nExtant=0, nSamp = c(5,25))
 # transform format
 l_tf = paleotree.record.to.fossils(record)

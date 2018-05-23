@@ -352,16 +352,16 @@ add.cryptic.species<-function(species, kappa){
 #'
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t = ape::rtree(6)
 #'
 #' # simulate fossils
-#' f<-sim.fossils.poisson(tree = t, 2)
+#' f = sim.fossils.poisson(tree = t, 2)
 #'
 #' # add extant samples
-#' f<-add.extant.occ(f, tree = t, rho = 0.5)
+#' f = add.extant.occ(f, tree = t, rho = 0.5)
 #'
 #' # asymmetric mapping
-#' f<-asymmetric.fossil.mapping(t, f)
+#' f = asymmetric.fossil.mapping(t, f)
 #'
 #' @export
 asymmetric.fossil.mapping<-function(tree,fossils){
@@ -393,13 +393,13 @@ asymmetric.fossil.mapping<-function(tree,fossils){
 #' lambda = 0.1
 #' mu = 0.05
 #' tips = 8
-#' t<-TreeSim::sim.bd.taxa(tips, 1, lambda, mu)[[1]]
+#' t = TreeSim::sim.bd.taxa(tips, 1, lambda, mu)[[1]]
 #'
 #' # simulate fossils
-#' f<-sim.fossils.poisson(0.5, t)
+#' f = sim.fossils.poisson(0.5, t)
 #'
 #' # add extant samples
-#' f<-add.extant.occ(f, t, rho = 0.5)
+#' f = add.extant.occ(f, t, rho = 0.5)
 #' plot(f, t)
 #'
 #' @export
@@ -470,13 +470,13 @@ add.extant.occ<-function(fossils, tree = NULL, species = NULL, rho = 1, tol = NU
 #'
 #' @examples
 #' # simulate tree
-#' t<-ape::rtree(6)
+#' t = ape::rtree(6)
 #'
 #' # simulate fossils
-#' f<-sim.fossils.poisson(2, t)
+#' f = sim.fossils.poisson(2, t)
 #'
 #' # add tip samples
-#' f<-add.tip.samples(f, t, rho = 0.5)
+#' f = add.tip.samples(f, t, rho = 0.5)
 #' plot(f, t)
 #'
 #' @export

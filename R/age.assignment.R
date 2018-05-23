@@ -18,21 +18,21 @@
 #'
 #' @examples
 #' # simulate tree
-#' t <- ape::rtree(8)
+#' t = ape::rtree(8)
 #'
 #' # simulate fossils
 #' rate = 2
-#' f <- sim.fossils.poisson(rate, t)
+#' f = sim.fossils.poisson(rate, t)
 #' plot(f, t)
 #'
 #' # assign a max age based on tree height
-#' max.age <- basin.age(t)
+#' max.age = basin.age(t)
 #'
 #' # define intervals
 #' times = seq(0, max.age, length.out = 5)
 #'
 #' # reassign ages
-#' f <- reassign.ages(f, t, interval.ages = times)
+#' f = reassign.ages(f, t, interval.ages = times)
 #'
 #' @export
 reassign.ages<-function(fossils, tree = NULL, species = NULL,

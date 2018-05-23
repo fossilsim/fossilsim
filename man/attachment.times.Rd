@@ -24,13 +24,13 @@ If the fossil object does not represent asymmetric species, the function convert
 }
 \examples{
 # simulate tree
-t<-ape::rtree(6)
+t = ape::rtree(6)
 
 # simulate fossils
-f<-sim.fossils.poisson(2, t)
+f = sim.fossils.poisson(2, t)
 
 # add extant samples?
-#f<-add.extant.occ(f, t, rho = 0.5)
+f = add.extant.occ(f, t, rho = 0.5)
 
 # calculate attachment times
 attachment.times(t, f)

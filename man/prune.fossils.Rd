@@ -19,9 +19,9 @@ Can be used with sampled or complete trees. If only one fossil is present for a 
 }
 \examples{
 # simulate tree
-t <- ape::rtree(6)
+t = ape::rtree(6)
 # simulate fossils
-f <- sim.fossils.poisson(rate = 2, tree = t)
+f = sim.fossils.poisson(rate = 2, tree = t)
 # transform format
 t2 = combined.tree.with.fossils(t,f)
 # prune fossils

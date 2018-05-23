@@ -19,7 +19,7 @@ Function returns an age slightly older than the root.age or origin time using th
 \eqn{round(max,1) + 0.1}, where max is the root.age or origin time.
 }
 \examples{
-t<-ape::rtree(6)
+t = ape::rtree(6)
 basin.age(t, root.edge = FALSE)
 
 }

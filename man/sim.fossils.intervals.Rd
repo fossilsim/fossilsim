@@ -42,26 +42,26 @@ If no taxonomic information is provided, the function assumes all speciation is 
 }
 \examples{
 # simulate tree
-t <- ape::rtree(6)
+t = ape::rtree(6)
 
 # assign a max age based on tree height
-max.age <- basin.age(t)
+max.age = basin.age(t)
 
 # simulate fossils using basin.age and strata & probabilities
 strata = 4
 probability = rep(0.7, 4)
-f <- sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
+f = sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
 plot(f, t, strata = strata, show.strata = TRUE)
 
 # simulate fossils using interval.ages & rates
 times = seq(0, max.age, length.out = 4)
 rates = c(5, 0, 5)
-f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
+f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
 plot(f, t)
 
 # simulate fossils using taxonomy
-s <- create.taxonomy(t, 0.1, 0.1, 1)
-f <- sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
+s = create.taxonomy(t, 0.1, 0.1, 1)
+f = sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
 plot(f, t)
 
 }

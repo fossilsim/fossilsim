@@ -30,9 +30,9 @@ Allows a fraction of error on the correct stratigraphic interval.
 }
 \examples{
 # simulate tree
-t <- ape::rtree(6)
+t = ape::rtree(6)
 # simulate fossils
-f <- sim.fossils.poisson(rate = 2, tree = t)
+f = sim.fossils.poisson(rate = 2, tree = t)
 # simulate uncertainty
 f = sim.uncertain.ages(f, c(0,TreeSim::getx(t)))
 }
