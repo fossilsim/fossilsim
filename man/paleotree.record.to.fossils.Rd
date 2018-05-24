@@ -31,5 +31,6 @@ l_tf$taxonomy
 l_tf$fossils
 }
 \seealso{
-\code{\link{taxonomy}}, \code{\link{fossils}}
+\code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{fossils.to.paleotree.record}}
 }
+

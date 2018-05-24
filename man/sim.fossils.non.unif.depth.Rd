@@ -84,3 +84,4 @@ Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 
 \keyword{fossil}
 \keyword{non-uniform}
 \keyword{preseravtion}
+
