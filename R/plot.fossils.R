@@ -114,10 +114,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   if(!ape::is.rooted(tree))
     stop("tree must be rooted")
 
-  #TODO
-  # check tree is binary?
-  # what happens if this isn't the case?
-
   if(is.null(tree$edge.length))
     stop("tree must have edge lengths")
 
@@ -146,12 +142,12 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   }
 
   if(show.taxonomy && is.null(species))
-    stop("Specify taxonomy using species")
+    stop("Specify taxonomy using 'species'")
   #TODO check all fossils edges are present in th sp obj
 
   if(any(fossils$hmin != fossils$hmax)) binned = TRUE # TODO?
 
-  Nedge <- dim(tree$edge)[1]
+  #Nedge <- dim(tree$edge)[1] DELETE
   Nnode <- tree$Nnode
   if (any(tree$edge < 1) || any(tree$edge > Ntip + Nnode))
     stop("tree badly conformed; cannot plot. Check the edge matrix.")
@@ -175,7 +171,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   yy <- numeric(Ntip + Nnode)
   TIPS <- tree$edge[tree$edge[, 2] <= Ntip, 2]
   yy[TIPS] <- 1:Ntip
-  z <- stats::reorder(tree, order = "postorder")
+  #z <- stats::reorder(tree, order = "postorder") DELETE
 
   yy <- ape::node.height(tree)
   xx  <- ape::node.depth.edgelength(tree)
@@ -186,12 +182,15 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
   #if (no.margin)
   # par(mai = rep(0, 4))
-  if (show.tip.label)
-    nchar.tip.label <- nchar(tree$tip.label)
-  max.yy <- max(yy)
+
+  #if (show.tip.label)
+  #  nchar.tip.label <- nchar(tree$tip.label) DELETE
+
+  #max.yy <- max(yy) DELETE
+
   if (is.null(x.lim)) {
     x.lim <- c(0, NA)
-    pin1 <- par("pin")[1]
+    #pin1 <- par("pin")[1] DELETE
     strWi <- graphics::strwidth(tree$tip.label, "inches", cex = cex)
     xx.tips <- xx[1:Ntip] * 1.04
     alp <- try(stats::uniroot(function(a) max(a * xx.tips + strWi) - pin1, c(0, 1e+06))$root, silent = TRUE)
@@ -240,7 +239,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
   if (plot) {
 
-    if(show.strata || show.axis){ # todo I think this is also required if binned = TRUE
+    if(show.strata || show.axis || binned || show.proxy){
       if( (is.null(interval.ages)) ){
         if(is.null(ba))
           ba = basin.age(tree, root.edge = root.edge)
@@ -259,7 +258,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
     # add colored strata
     # rect(xleft, ybottom, xright, ytop)
-    if(show.strata || show.axis){
+    if(show.strata || show.axis || show.proxy){
 
       # y-axis:
       #y.bottom = 0
@@ -509,16 +508,14 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   invisible(L)
 }
 
-add.depth.profile<-function(depth.profile,axis.strata,strata,show.axis,add.depth.axis,show.preferred.depth=TRUE,PD=NULL,x.labs=FALSE){
-  par(fig=c(0,1,0,0.4), new = T)
+add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.depth.axis, show.preferred.depth = TRUE, PD = NULL, x.labs = FALSE){
+  par(fig = c(0,1,0,0.4), new = T)
   # change the y-axis scale for depth
   u = par("usr") # current scale
   depth.profile = rev(depth.profile)
   depth = depth.profile # there is some redundancy here
   tol = max(depth) * 0.1
   par(usr = c(u[1], u[2], min(depth) - tol, max(depth) + tol))
-  # define x-axis values (time)
-  #time = axis.strata[1:strata] + ((axis.strata[2] - axis.strata[1])/2)
   time = c()
   depth = c()
   for(i in 1:length(depth.profile)){
