@@ -89,7 +89,8 @@ map_nodes<-function(x, t.old, t.new)
     if(x[i] > length(t.old$tip.label))
     {
       st = ape::extract.clade(t.old,x[i])$tip.label
-      ret[i] = phytools::findMRCA(t.new,st)
+      #ret[i] = phytools::findMRCA(t.new,st)
+      ret[i] = ape::getMRCA(t.new,st)
     }
     else
     {

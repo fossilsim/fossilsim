@@ -34,7 +34,7 @@ t = TreeSim::sim.bd.taxa(tips, 1, lambda, mu)[[1]]
 # simulate fossils
 f = sim.fossils.poisson(0.5, t)
 
-# add extant samples
+# simulate extant samples
 f = sim.extant.samples(f, t, rho = 0.5)
 plot(f, t)
 

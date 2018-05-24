@@ -35,7 +35,7 @@
 #' f = sim.interval.ages(f, t, interval.ages = times)
 #'
 #' @export
-sim.interval.ages<-function(fossils, tree = NULL, species = NULL,
+sim.interval.ages = function(fossils, tree = NULL, species = NULL,
                         interval.ages = NULL, basin.age = NULL, strata = NULL,
                         use.species.ages = FALSE, root.edge = TRUE){
 
