@@ -220,6 +220,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' @param alphanumeric If TRUE function will return alphanumeric species labels (i.e. species labels contain the "t" prefix) (default). If FALSE function will return numeric only species labels.
 #' @return A list containing the converted tree, taxonomy and fossils
 #' @examples
+#' if (require("paleotree", quietly = TRUE)) {
 #' # simulate record
 #' record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1, nTotalTaxa=c(30,40),
 #'     nExtant=0, nSamp = c(5,25))
@@ -229,6 +230,8 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' l_tf$tree
 #' l_tf$taxonomy
 #' l_tf$fossils
+#' }
+#' 
 #' @export
 #' @seealso \code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{fossils.to.paleotree.record}}
 # NB: taxonomy times not branch specific
@@ -236,7 +239,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 # NB: cryptic speciation: parent id is true parent, ie can be = cryptic id
 paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
   # check that paleotree is installed - should be but you never know
-  if (!requireNamespace("paleotree", quietly = TRUE)) {
+  if (!require("paleotree", quietly = TRUE)) {
     stop("Paleotree needed for this function to work. Please install it.", call. = FALSE)
   }
 
