@@ -363,7 +363,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
       fossils$h = fossils$hmax # (fossils$hmin + fossils$hmax)/2 #todo check for compatibility between interval.ages & fossil intervals or you could take the median and reassign the ages?
     # binned but not assigned to intervals
     else if(binned & all(fossils$hmin == fossils$hmax))
-      fossils$h = reassign.ages(fossils, tree, interval.ages = c(0, horizons.max))$hmax
+      fossils$h = sim.interval.ages(fossils, tree, interval.ages = c(0, horizons.max))$hmax
 
     # taxonomy
     if(show.taxonomy){

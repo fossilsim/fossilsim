@@ -60,7 +60,7 @@ f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
 plot(f, t)
 
 # simulate fossils using taxonomy
-s = create.taxonomy(t, 0.1, 0.1, 1)
+s = sim.taxonomy(t, 0.1, 0.1, 1)
 f = sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
 plot(f, t)
 

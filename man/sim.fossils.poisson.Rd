@@ -33,7 +33,7 @@ f = sim.fossils.poisson(rate, tree = t)
 plot(f, t)
 
 # simulate fossils using taxonomy
-s = create.taxonomy(t, 0.5, 1, 0.5)
+s = sim.taxonomy(t, 0.5, 1, 0.5)
 f = sim.fossils.poisson(rate, species = s)
 plot(f, t)
 

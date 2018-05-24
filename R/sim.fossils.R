@@ -21,7 +21,7 @@
 #' plot(f, t)
 #'
 #' # simulate fossils using taxonomy
-#' s = create.taxonomy(t, 0.5, 1, 0.5)
+#' s = sim.taxonomy(t, 0.5, 1, 0.5)
 #' f = sim.fossils.poisson(rate, species = s)
 #' plot(f, t)
 #'
@@ -51,7 +51,7 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
     stop("tree must be rooted")
 
   if(is.null(species)){
-    species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
+    species = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
@@ -132,7 +132,7 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
 #' plot(f, t)
 #'
 #' # simulate fossils using taxonomy
-#' s = create.taxonomy(t, 0.1, 0.1, 1)
+#' s = sim.taxonomy(t, 0.1, 0.1, 1)
 #' f = sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
 #' plot(f, t)
 #'
@@ -173,7 +173,7 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
   if(is.null(probabilities) && is.null(rates)) stop("Either rates or probabilities need to be specified")
 
   if(is.null(species)){
-    species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
+    species = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
@@ -192,7 +192,7 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
   }
 
   if(is.null(species))
-    species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
+    species = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
 
   fdf = fossils()
 
@@ -302,7 +302,7 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using taxonomy & interval.ages
-#' s = create.taxonomy(t, 0.1, 0.1, 1)
+#' s = sim.taxonomy(t, 0.1, 0.1, 1)
 #' times = seq(0, max.age, length.out = strata + 1)
 #' f = sim.fossils.non.unif.depth(species = s, interval.ages = times,
 #'      depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
@@ -358,7 +358,7 @@ sim.fossils.non.unif.depth<-function(tree = NULL, species = NULL,
   }
 
   if(is.null(species)){
-    species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
+    species = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
@@ -550,7 +550,7 @@ assign.interval<-function(intervals, t){
 #' plot(f, t)
 #'
 #' # simulate fossils using taxonomy
-#' s = create.taxonomy(t, 0.5, 1, 0.5)
+#' s = sim.taxonomy(t, 0.5, 1, 0.5)
 #' f = reconcile.fossils.taxonomy(f, s)
 #' plot(f, t)
 #'

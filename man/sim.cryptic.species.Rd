@@ -19,8 +19,8 @@ Simulate cryptic species on a taxonomy object
 }
 \examples{
 t = ape::rtree(10)
-sp = create.taxonomy(t, 1)
-add.cryptic.species(sp, 0.5)
+sp = sim.taxonomy(t, 1)
+sim.cryptic.species(sp, 0.5)
 
 }
 \seealso{

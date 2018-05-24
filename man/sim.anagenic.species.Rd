@@ -21,8 +21,8 @@ Simulate anagenic species on a taxonomy object
 }
 \examples{
 t = ape::rtree(10)
-sp = create.taxonomy(t, 1)
-add.anagenic.species(t, sp, 0.1)
+sp = sim.taxonomy(t, 1)
+sim.anagenic.species(t, sp, 0.1)
 
 }
 \seealso{

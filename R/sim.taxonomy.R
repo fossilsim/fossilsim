@@ -1,7 +1,7 @@
-#' Create taxonomy
+#' Simulate taxonomy
 #'
-#' Create a taxonomy object relating species identity to a phylo object under a mixed model of speciation.
-#' Anagenic and cryptic species can also be added later using the \code{add.anagenic.species} and \code{add.cryptic.species} functions.
+#' Simulate a taxonomy object relating species identity to a phylo object under a mixed model of speciation.
+#' Anagenic and cryptic species can also be added later using the \code{sim.anagenic.species} and \code{sim.cryptic.species} functions.
 #'
 #' @param tree Phylo object.
 #' @param beta Probability of bifurcating speciation. Default = 0.
@@ -115,10 +115,10 @@ sim.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE
   species = taxonomy(species)
 
   # simulate anagenic species
-  if(lambda.a > 0) species = add.anagenic.species(tree, species, lambda.a)
+  if(lambda.a > 0) species = sim.anagenic.species(tree, species, lambda.a)
 
   # simulate cryptic species
-  if(kappa > 0) species = add.cryptic.species(species, kappa)
+  if(kappa > 0) species = sim.cryptic.species(species, kappa)
 
   rownames(species) = NULL
   return(species)
@@ -134,8 +134,8 @@ sim.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE
 #'
 #' @examples
 #' t = ape::rtree(10)
-#' sp = create.taxonomy(t, 1)
-#' add.anagenic.species(t, sp, 0.1)
+#' sp = sim.taxonomy(t, 1)
+#' sim.anagenic.species(t, sp, 0.1)
 #'
 #' @seealso \code{\link{taxonomy}}
 #'
@@ -302,8 +302,8 @@ sim.anagenic.species<-function(tree, species, lambda.a){
 #'
 #' @examples
 #' t = ape::rtree(10)
-#' sp = create.taxonomy(t, 1)
-#' add.cryptic.species(sp, 0.5)
+#' sp = sim.taxonomy(t, 1)
+#' sim.cryptic.species(sp, 0.5)
 #'
 #' @seealso \code{\link{taxonomy}}
 #'

@@ -134,3 +134,87 @@ find.edges.inbetween<-function(i,j,tree){
   edges = c(edges,j)
   return(edges)
 }
+
+# Fetch descendant lineages in a symmetric tree
+#
+# @param edge Edge label.
+# @param tree Phylo object.
+# @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
+# @examples
+# t = ape::rtree(6)
+# fetch.descendants(7,t)
+# fetch.descendants(7,t,return.edge.labels=TRUE)
+# @return
+# Vector of symmetric descendants
+# @export
+# required by find.edges.inbetween
+fetch.descendants<-function(edge,tree,return.edge.labels=F){
+  ancestor<-edge
+
+  if(is.tip(edge, tree))
+    return(NULL)
+
+  # create vectors for nodes, tips & tracking descendents
+  tips<-c()
+  done<-c() # this vector contains descendants (nodes+tips)
+
+  coi=ancestor # clade of interest
+  process.complete=0
+  # count=0 # debugging code
+
+  if(is.tip(ancestor,tree)){
+    tip.label=tree$tip[ancestor]
+    tips<-c(tips,tip.label)
+  }
+  else{
+
+    while(process.complete==0) {
+
+      # fetch the two descendants
+      row=which(tree$edge[,1]==ancestor)
+      descendants=tree$edge[,2][row]
+      d1<-descendants[1]
+      d2<-descendants[2]
+
+      if(!d1 %in% done) {
+        if ((is.tip(d1,tree)) == 1) {
+          done<-c(done, d1)
+          tip.label=tree$tip[d1]
+          tips<-c(tips,tip.label)
+        }
+        else {
+          ancestor=d1
+        }
+      }
+      else if (!d2 %in% done) {
+        if ((is.tip(d2,tree)) == 1) {
+          done<-c(done, d2)
+          tip.label=tree$tip[d2]
+          tips<-c(tips,tip.label)
+        }
+        else {
+          ancestor=d2
+        }
+      }
+      else {
+        if(ancestor==coi){
+          process.complete=1
+        }
+        else {
+          done<-c(done, ancestor)
+          row=which(tree$edge[,2]==ancestor)
+          ancestor=tree$edge[,1][row]
+        }
+      }
+      #	if (count==100) {
+      #		process.complete=1
+      #	}
+
+      # count=count+1
+    }
+  }
+  if(return.edge.labels) return(done)
+  else return(tips)
+  # eof
+}
+

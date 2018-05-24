@@ -32,10 +32,10 @@
 #' times = seq(0, max.age, length.out = 5)
 #'
 #' # reassign ages
-#' f = reassign.ages(f, t, interval.ages = times)
+#' f = sim.interval.ages(f, t, interval.ages = times)
 #'
 #' @export
-reassign.ages<-function(fossils, tree = NULL, species = NULL,
+sim.interval.ages<-function(fossils, tree = NULL, species = NULL,
                         interval.ages = NULL, basin.age = NULL, strata = NULL,
                         use.species.ages = FALSE, root.edge = TRUE){
 
@@ -63,7 +63,7 @@ reassign.ages<-function(fossils, tree = NULL, species = NULL,
     #  warning("using tree, assumming all speciation is symmetric")
 
     if(is.null(species)){
-      species = create.taxonomy(tree, beta = 1, root.edge = root.edge)
+      species = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
       from.taxonomy = FALSE
     } else from.taxonomy = TRUE
 

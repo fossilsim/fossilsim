@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.taxonomy.R
 \name{sim.taxonomy}
 \alias{sim.taxonomy}
-\title{Create taxonomy}
+\title{Simulate taxonomy}
 \usage{
 sim.taxonomy(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE)
 }
@@ -21,8 +21,8 @@ sim.taxonomy(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE)
 An object of class taxonomy.
 }
 \description{
-Create a taxonomy object relating species identity to a phylo object under a mixed model of speciation.
-Anagenic and cryptic species can also be added later using the \code{add.anagenic.species} and \code{add.cryptic.species} functions.
+Simulate a taxonomy object relating species identity to a phylo object under a mixed model of speciation.
+Anagenic and cryptic species can also be added later using the \code{sim.anagenic.species} and \code{sim.cryptic.species} functions.
 }
 \examples{
 t = ape::rtree(10)

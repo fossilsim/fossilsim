@@ -68,7 +68,7 @@ f = sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
 plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 
 # simulate fossils using taxonomy & interval.ages
-s = create.taxonomy(t, 0.1, 0.1, 1)
+s = sim.taxonomy(t, 0.1, 0.1, 1)
 times = seq(0, max.age, length.out = strata + 1)
 f = sim.fossils.non.unif.depth(species = s, interval.ages = times,
      depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
