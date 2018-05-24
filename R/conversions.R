@@ -230,7 +230,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' l_tf$taxonomy
 #' l_tf$fossils
 #' @export
-#' @seealso \code{\link{taxonomy}}, \code{\link{fossils}}
+#' @seealso \code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{fossils.to.paleotree.record}}
 # NB: taxonomy times not branch specific
 # NB: modes not branch specific
 # NB: cryptic speciation: parent id is true parent, ie can be = cryptic id
@@ -360,6 +360,7 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
 #' f = sim.fossils.poisson(2, species = s)
 #' # transform format
 #' record = fossils.to.paleotree.record(f, taxonomy = s)
+#' @seealso \code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{paleotree.record.to.fossils}}
 #' @export
 fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
   if(is.null(taxonomy) && is.null(tree)) stop("Either tree or taxonomy needs to be provided")

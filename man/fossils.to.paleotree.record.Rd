@@ -28,3 +28,7 @@ f = sim.fossils.poisson(2, species = s)
 # transform format
 record = fossils.to.paleotree.record(f, taxonomy = s)
 }
+\seealso{
+\code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{paleotree.record.to.fossils}}
+}
+

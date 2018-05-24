@@ -31,3 +31,4 @@ f = add.extant.occ(f, tree = t, rho = 0.5)
 f = asymmetric.fossil.mapping(t, f)
 
 }
+

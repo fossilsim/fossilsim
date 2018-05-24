@@ -39,3 +39,4 @@ f = add.extant.occ(f, t, rho = 0.5)
 plot(f, t)
 
 }
+

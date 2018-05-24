@@ -33,3 +33,4 @@ f = add.tip.samples(f, t, rho = 0.5)
 plot(f, t)
 
 }
+
