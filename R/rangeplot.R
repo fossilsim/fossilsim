@@ -1,4 +1,4 @@
-#' rangeplot: Make a stratigaphic range plot from a tree object of class phylo
+#' rangeplot: Make a stratigraphic range plot from a tree object of class phylo
 #'
 #' @param x Tree to plot.
 #' @param complete Plot unsampled species?

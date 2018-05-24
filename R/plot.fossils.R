@@ -22,8 +22,8 @@
 #' @param binned If TRUE fossils are plotted at the mid point of each interval.
 #' @param show.proxy If TRUE add water depth profile (default = FALSE).
 #' @param proxy.data Vector of sampling proxy data (default = NULL).
-#' @param show.preferred.environ If TRUE add species prefferred environmental value (e.g. water depth) (default = FALSE).
-#' @param preferred.environ Prefferred environmental value (e.g. water depth).
+#' @param show.preferred.environ If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE).
+#' @param preferred.environ Preferred environmental value (e.g. water depth).
 #' @param show.taxonomy If TRUE highlight species taxonomy.
 #' @param species Taxonomy object.
 #' @param root.edge If TRUE include the root edge (default = TRUE).

@@ -254,7 +254,7 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
 #'
 #' @description
-#' This function uses a three parameter Guassian model to simulate non-uniform fossil preservation along a specified phylogeny.
+#' This function uses a three parameter Gaussian model to simulate non-uniform fossil preservation along a specified phylogeny.
 #' Preservation varies with respect to water depth, which is used as a proxy for changes in sedimentary environment.
 #' The per interval probability of sampling is \deqn{P(collection) = PA e ^ (-(d - PD)^2 / 2*DT^2 ) }
 #' where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{DT} is depth tolerance and \emph{d} is current water depth.
@@ -273,7 +273,7 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
 #' @param depth.profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.
-#' @param PA Peak adbundance parameter.
+#' @param PA Peak abundance parameter.
 #' @param PD Preferred depth parameter.
 #' @param DT Depth tolerance parameter.
 #' @param use.rates If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.

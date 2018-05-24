@@ -40,9 +40,9 @@
 
 \item{proxy.data}{Vector of sampling proxy data (default = NULL).}
 
-\item{show.preferred.environ}{If TRUE add species prefferred environmental value (e.g. water depth) (default = FALSE).}
+\item{show.preferred.environ}{If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE).}
 
-\item{preferred.environ}{Prefferred environmental value (e.g. water depth).}
+\item{preferred.environ}{Preferred environmental value (e.g. water depth).}
 
 \item{show.taxonomy}{If TRUE highlight species taxonomy.}
 

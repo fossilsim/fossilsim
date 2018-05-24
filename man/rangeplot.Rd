@@ -2,7 +2,7 @@
 % Please edit documentation in R/rangeplot.R
 \name{rangeplot}
 \alias{rangeplot}
-\title{rangeplot: Make a stratigaphic range plot from a tree object of class phylo}
+\title{rangeplot: Make a stratigraphic range plot from a tree object of class phylo}
 \usage{
 rangeplot(x, complete = FALSE)
 }
@@ -12,7 +12,7 @@ rangeplot(x, complete = FALSE)
 \item{complete}{Plot unsampled species?}
 }
 \description{
-rangeplot: Make a stratigaphic range plot from a tree object of class phylo
+rangeplot: Make a stratigraphic range plot from a tree object of class phylo
 }
 \examples{
 tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
