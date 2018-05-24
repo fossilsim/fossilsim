@@ -20,6 +20,7 @@ Fossils and taxonomy are only specified on non-zero-length edges.
 The label assigned to the parent of the origin or root will be zero.
 }
 \examples{
+if (requireNamespace("paleotree", quietly = TRUE)) {
 # simulate record
 record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1, nTotalTaxa=c(30,40),
     nExtant=0, nSamp = c(5,25))
@@ -29,6 +30,8 @@ l_tf = paleotree.record.to.fossils(record)
 l_tf$tree
 l_tf$taxonomy
 l_tf$fossils
+}
+
 }
 \seealso{
 \code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{fossils.to.paleotree.record}}
