@@ -12,12 +12,12 @@
 #'
 #' @examples
 #' t = ape::rtree(10)
-#' create.taxonomy(t, 0.5, 0.1, 0.5)
+#' sim.taxonomy(t, 0.5, 0.1, 0.5)
 #'
 #' @seealso \code{\link{taxonomy}}
 #'
 #' @export
-create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE){
+sim.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE){
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!(beta >= 0 && beta <= 1))
@@ -125,7 +125,7 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
   # eof
 }
 
-#' Add anagenic species to a taxonomy object
+#' Simulate anagenic species on a taxonomy object
 #'
 #' @param tree Phylo object.
 #' @param species Taxonomy object.
@@ -140,7 +140,7 @@ create.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = T
 #' @seealso \code{\link{taxonomy}}
 #'
 #' @export
-add.anagenic.species<-function(tree, species, lambda.a){
+sim.anagenic.species<-function(tree, species, lambda.a){
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!"taxonomy" %in% class(species))
@@ -294,7 +294,7 @@ add.anagenic.species<-function(tree, species, lambda.a){
   return(species)
 }
 
-#' Add cryptic species to a taxonomy object
+#' Simulate cryptic species on a taxonomy object
 #'
 #' @param species Taxonomy object.
 #' @param kappa Probability that speciation event is cryptic.
@@ -308,7 +308,7 @@ add.anagenic.species<-function(tree, species, lambda.a){
 #' @seealso \code{\link{taxonomy}}
 #'
 #' @export
-add.cryptic.species<-function(species, kappa){
+sim.cryptic.species<-function(species, kappa){
   if(!"taxonomy" %in% class(species))
     stop("species must be an object of class \"taxonomy\"")
   if(!(kappa >= 0 && kappa <= 1))
@@ -340,193 +340,4 @@ add.cryptic.species<-function(species, kappa){
     }
   }
   return(species)
-}
-
-#' Map asymmetric fossil lineages
-#'
-#' Map fossils onto a tree assuming asymmetric (budding) speciation.
-#'
-#' @param tree Phylo object.
-#' @param fossils Fossils object.
-#' @return An object of class fossils.
-#'
-#' @examples
-#' # simulate tree
-#' t = ape::rtree(6)
-#'
-#' # simulate fossils
-#' f = sim.fossils.poisson(tree = t, 2)
-#'
-#' # add extant samples
-#' f = add.extant.occ(f, tree = t, rho = 0.5)
-#'
-#' # asymmetric mapping
-#' f = asymmetric.fossil.mapping(t, f)
-#'
-#' @export
-asymmetric.fossil.mapping<-function(tree,fossils){
-
-  if(!"phylo" %in% class(tree))
-    stop("tree must be an object of class \"phylo\"")
-  if(!"fossils" %in% class(fossils))
-    stop("fossils must be an object of class \"fossils\"")
-
-  species = create.taxonomy(tree)
-
-  fossils = reconcile.fossils.taxonomy(fossils, species)
-
-  return(fossils)
-}
-
-#' Add extant occurrence samples
-#'
-#' @param fossils Fossils object.
-#' @param tree Phylo object.
-#' @param species Taxonomy object.
-#' @param rho Extant species sampling probability.
-#' @param tol Rounding error tolerance for tip ages.
-#'
-#' @return An object of class fossils.
-#'
-#' @examples
-#' # simulate tree
-#' lambda = 0.1
-#' mu = 0.05
-#' tips = 8
-#' t = TreeSim::sim.bd.taxa(tips, 1, lambda, mu)[[1]]
-#'
-#' # simulate fossils
-#' f = sim.fossils.poisson(0.5, t)
-#'
-#' # add extant samples
-#' f = add.extant.occ(f, t, rho = 0.5)
-#' plot(f, t)
-#'
-#' @export
-add.extant.occ<-function(fossils, tree = NULL, species = NULL, rho = 1, tol = NULL){
-
-  if(!"fossils" %in% class(fossils))
-    stop("fossils must be an object of class \"fossils\"")
-
-  if(is.null(tree) && is.null(species))
-    stop("Specify phylo or taxonomy object")
-
-  if(!is.null(tree) && !"phylo" %in% class(tree))
-    stop("tree must be an object of class \"phylo\"")
-
-  if(!is.null(species) && !"taxonomy" %in% class(species))
-    stop("species must be an object of class \"taxonomy\"")
-
-  if(!is.null(tree) && !is.null(species))
-    warning("tree and species both defined, using species taxonomy")
-
-  if(!is.null(attr(fossils, "from.taxonomy"))){
-    from.taxonomy = attr(fossils, "from.taxonomy")
-    if(!is.null(species) & !from.taxonomy)
-      stop("species taxonomy defined but fossils not based on taxonomy")
-  }
-
-  if(!(rho >= 0 && rho <= 1))
-    stop("rho must be a probability between 0 and 1")
-
-  if(is.null(species)){
-    species = create.taxonomy(tree, beta = 1)
-    from.taxonomy = FALSE
-  } else from.taxonomy = TRUE
-
-  tol = min(min(tree$edge.length)/100, 1e-8)
-
-  for (i in unique(species$sp)){
-
-    end = species$end[which(species$sp == i)][1]
-
-    if(!(end > (0 - tol) & end < (0 + tol))) next
-
-    if(runif(1) < rho){
-      # identify the edge ending zero
-      edge = species$edge[which(species$sp == i & species$edge.end == 0)]
-      origin = species$origin[which(species$sp == i)][1]
-
-      fossils<-rbind(fossils, data.frame(sp = i, edge = edge, origin = origin, hmin = 0, hmax = 0))
-    }
-
-  }
-  if(!is.fossils(fossils))
-    fossils = as.fossils(fossils, from.taxonomy = from.taxonomy)
-  return(fossils)
-  #eof
-}
-
-#' Add extant and extinct tip samples
-#'
-#' The tree is required to identify which edges are terminal.
-#'
-#' @param fossils Fossils object.
-#' @param tree Phylo object.
-#' @param species Taxonomy object.
-#' @param rho Tip sampling probability.
-#'
-#' @return An object of class fossils.
-#'
-#' @examples
-#' # simulate tree
-#' t = ape::rtree(6)
-#'
-#' # simulate fossils
-#' f = sim.fossils.poisson(2, t)
-#'
-#' # add tip samples
-#' f = add.tip.samples(f, t, rho = 0.5)
-#' plot(f, t)
-#'
-#' @export
-add.tip.samples<-function(fossils, tree, species = NULL, rho = 1){
-
-  if(!"fossils" %in% class(fossils))
-    stop("fossils must be an object of class \"fossils\"")
-
-  if(!"phylo" %in% class(tree))
-    stop("tree must be an object of class \"phylo\"")
-
-  if(!is.null(species) && !"taxonomy" %in% class(species))
-    stop("species must be an object of class \"taxonomy\"")
-
-  if(!is.null(tree) && !is.null(species))
-    warning("tree and species both defined, using species taxonomy")
-
-  if(!is.null(attr(fossils, "from.taxonomy"))){
-    from.taxonomy = attr(fossils, "from.taxonomy")
-    if(!is.null(species) & !from.taxonomy)
-      stop("species taxonomy defined but fossils not based on taxonomy")
-  }
-
-  if(!(rho >= 0 && rho <= 1))
-    stop("rho must be a probability between 0 and 1")
-
-  if(is.null(species)){
-    species = create.taxonomy(tree, beta = 1)
-    from.taxonomy = FALSE
-  } else from.taxonomy = TRUE
-
-  for (i in unique(species$sp)){
-
-    # identify the terminal most edge
-    end = species$end[which(species$sp == i)][1]
-    edge = species$edge[which(species$sp == i & species$edge.end == end)][1]
-
-    if(is.tip(edge,tree)){
-
-      if(runif(1) < rho){
-        # identify the edge ending zero
-        origin = species$origin[which(species$sp == i)][1]
-
-        fossils<-rbind(fossils, data.frame(sp = i, edge = edge, origin = origin, hmin = end, hmax = end))
-      }
-    }
-
-  }
-  if(!is.fossils(fossils))
-    fossils = as.fossils(fossils, from.taxonomy = from.taxonomy)
-  return(fossils)
-  #eof
 }

@@ -17,4 +17,3 @@ Vector of extinct samples corresponding to each interval. Note the last value co
 \description{
 Count the total number of fossils per interval
 }
-

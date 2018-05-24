@@ -39,4 +39,3 @@ sim.fbd.age(age, numbsim, lambda, mu, psi)
 \keyword{birth}
 \keyword{death}
 \keyword{fossilized}
-

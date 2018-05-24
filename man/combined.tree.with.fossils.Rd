@@ -30,4 +30,3 @@ f = sim.fossils.poisson(rate = 2, tree = t)
 t2 = combined.tree.with.fossils(t,f)
 plot(t2)
 }
-

@@ -35,4 +35,3 @@ t3 = sampled.tree.from.combined(t2)
 t4 = prune.fossils(t3)
 plot(t4)
 }
-

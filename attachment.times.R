@@ -222,3 +222,39 @@ fetch.descendants<-function(edge,tree,return.edge.labels=F){
   # eof
 }
 
+
+#' Map asymmetric fossil lineages
+#'
+#' Map fossils onto a tree assuming asymmetric (budding) speciation.
+#'
+#' @param tree Phylo object.
+#' @param fossils Fossils object.
+#' @return An object of class fossils.
+#'
+#' @examples
+#' # simulate tree
+#' t = ape::rtree(6)
+#'
+#' # simulate fossils
+#' f = sim.fossils.poisson(tree = t, 2)
+#'
+#' # add extant samples
+#' f = add.extant.occ(f, tree = t, rho = 0.5)
+#'
+#' # asymmetric mapping
+#' f = asymmetric.fossil.mapping(t, f)
+#'
+#' @export
+asymmetric.fossil.mapping<-function(tree,fossils){
+  
+  if(!"phylo" %in% class(tree))
+    stop("tree must be an object of class \"phylo\"")
+  if(!"fossils" %in% class(fossils))
+    stop("fossils must be an object of class \"fossils\"")
+  
+  species = create.taxonomy(tree)
+  
+  fossils = reconcile.fossils.taxonomy(fossils, species)
+  
+  return(fossils)
+}

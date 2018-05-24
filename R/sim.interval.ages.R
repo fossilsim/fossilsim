@@ -1,4 +1,4 @@
-#' Reassign fossil ages
+#' Reassign fossil ages to user-specified stratigraphic intervals
 #'
 #' Reassign exact fossil ages using the minimum and maximum ages of a set of stratigraphic intervals.
 #' If \code{use.species.ages = TRUE} the function will respect species durations and will not

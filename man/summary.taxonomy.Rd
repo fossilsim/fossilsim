@@ -21,4 +21,3 @@
 \description{
 Display taxonomy object
 }
-

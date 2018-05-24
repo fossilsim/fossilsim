@@ -37,4 +37,3 @@ numbsim = 1
 \keyword{birth}
 \keyword{death}
 \keyword{fossilized}
-
