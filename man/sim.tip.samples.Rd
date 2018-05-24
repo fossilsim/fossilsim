@@ -28,8 +28,8 @@ t = ape::rtree(6)
 # simulate fossils
 f = sim.fossils.poisson(2, t)
 
-# add tip samples
-f = add.tip.samples(f, t, rho = 0.5)
+# simulate tip samples
+f = sim.tip.samples(f, t, rho = 0.5)
 plot(f, t)
 
 }

@@ -30,7 +30,7 @@
 #' @export
 #'
 #' @importFrom stats rpois runif
-sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRUE) {
+sim.fossils.poisson = function(rate, tree = NULL, species = NULL, root.edge = TRUE) {
 
   if(is.null(tree) && is.null(species))
     stop("Specify phylo or taxonomy object")
@@ -140,7 +140,7 @@ sim.fossils.poisson<-function(rate, tree = NULL, species = NULL, root.edge = TRU
 #' @keywords non-uniform fossil preservation
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.non.unif.depth}}
 #' @export
-sim.fossils.intervals<-function(tree = NULL, species = NULL,
+sim.fossils.intervals = function(tree = NULL, species = NULL,
                                 interval.ages = NULL, basin.age = NULL, strata = NULL,
                                 probabilities = NULL, rates = NULL,
                                 root.edge = TRUE, use.exact.times = TRUE){
@@ -311,7 +311,7 @@ sim.fossils.intervals<-function(tree = NULL, species = NULL,
 #' @keywords non-uniform fossil preseravtion
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}
 #' @export
-sim.fossils.non.unif.depth<-function(tree = NULL, species = NULL,
+sim.fossils.non.unif.depth = function(tree = NULL, species = NULL,
                                 interval.ages = NULL, basin.age = NULL, strata = NULL,
                                 depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5, use.rates = FALSE,
                                 root.edge = TRUE, use.exact.times = TRUE){
@@ -435,7 +435,7 @@ sim.fossils.non.unif.depth<-function(tree = NULL, species = NULL,
 #' plot(wd, type="l")
 #' @keywords non-uniform fossil preservation
 #' @export
-sim.water.depth<-function(strata,depth=2,cycles=2){
+sim.water.depth = function(strata,depth=2,cycles=2){
 
   # define the x-axis values
   x = seq(0,2,length.out=strata)
@@ -467,7 +467,7 @@ sim.water.depth<-function(strata,depth=2,cycles=2){
 #' basin.age(t, root.edge = FALSE)
 #'
 #' @export
-basin.age<-function(tree,root.edge=TRUE){
+basin.age = function(tree,root.edge=TRUE){
   node.ages<-n.ages(tree)
   if(root.edge && exists("root.edge",tree) )
     ba = max(node.ages) + tree$root.edge
@@ -484,7 +484,7 @@ basin.age<-function(tree,root.edge=TRUE){
 #' @return Number of extinct samples.
 #'
 #' @export
-count.fossils<-function(fossils){
+count.fossils = function(fossils){
   k = length(fossils$sp[which(fossils$h > 0)])
   return(k)
 }
@@ -497,7 +497,7 @@ count.fossils<-function(fossils){
 #' @return Vector of extinct samples corresponding to each interval. Note the last value corresponds to the number of samples > the maximum age of the oldest interval.
 #'
 #' @export
-count.fossils.binned<-function(fossils, interval.ages){
+count.fossils.binned = function(fossils, interval.ages){
   intervals<-interval.ages
 
   k = rep(0, length(intervals))
@@ -515,7 +515,7 @@ count.fossils.binned<-function(fossils, interval.ages){
 }
 
 # assign any given age to one of a set of intervals
-assign.interval<-function(intervals, t){
+assign.interval = function(intervals, t){
 
   if(is.null(intervals) || is.null(t))
      stop("specify intervals and time t")
@@ -555,7 +555,7 @@ assign.interval<-function(intervals, t){
 #' plot(f, t)
 #'
 #' @export
-reconcile.fossils.taxonomy<-function(fossils, species){
+reconcile.fossils.taxonomy = function(fossils, species){
 
   if(!is.null(fossils) && !"fossils" %in% class(fossils))
     stop("fossils must be an object of class \"fossils\"")
@@ -613,7 +613,7 @@ reconcile.fossils.taxonomy<-function(fossils, species){
 # @keywords uniform preservation
 #
 #' @importFrom stats rexp
-sim.fossils.exponential<-function(tree,rate,root.edge=TRUE){
+sim.fossils.exponential = function(tree,rate,root.edge=TRUE){
 
   node.ages<-n.ages(tree)
 

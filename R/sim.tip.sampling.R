@@ -18,7 +18,7 @@
 #' # simulate fossils
 #' f = sim.fossils.poisson(0.5, t)
 #'
-#' # add extant samples
+#' # simulate extant samples
 #' f = sim.extant.samples(f, t, rho = 0.5)
 #' plot(f, t)
 #'
@@ -64,7 +64,7 @@ sim.extant.samples = function(fossils, tree = NULL, species = NULL, rho = 1, tol
 
     if(runif(1) < rho){
       # identify the edge ending zero
-      edge = species$edge[which(species$sp == i & species$edge.end == 0)]
+      edge = species$edge[which(species$sp == i & species$edge.end == end)]
       origin = species$origin[which(species$sp == i)][1]
 
       fossils<-rbind(fossils, data.frame(sp = i, edge = edge, origin = origin, hmin = 0, hmax = 0))
@@ -93,8 +93,8 @@ sim.extant.samples = function(fossils, tree = NULL, species = NULL, rho = 1, tol
 #' # simulate fossils
 #' f = sim.fossils.poisson(2, t)
 #'
-#' # add tip samples
-#' f = add.tip.samples(f, t, rho = 0.5)
+#' # simulate tip samples
+#' f = sim.tip.samples(f, t, rho = 0.5)
 #' plot(f, t)
 #'
 #' @export

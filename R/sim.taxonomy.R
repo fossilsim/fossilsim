@@ -17,7 +17,7 @@
 #' @seealso \code{\link{taxonomy}}
 #'
 #' @export
-sim.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE){
+sim.taxonomy = function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE){
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!(beta >= 0 && beta <= 1))
@@ -140,7 +140,7 @@ sim.taxonomy<-function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE
 #' @seealso \code{\link{taxonomy}}
 #'
 #' @export
-sim.anagenic.species<-function(tree, species, lambda.a){
+sim.anagenic.species = function(tree, species, lambda.a){
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!"taxonomy" %in% class(species))
@@ -308,7 +308,7 @@ sim.anagenic.species<-function(tree, species, lambda.a){
 #' @seealso \code{\link{taxonomy}}
 #'
 #' @export
-sim.cryptic.species<-function(species, kappa){
+sim.cryptic.species = function(species, kappa){
   if(!"taxonomy" %in% class(species))
     stop("species must be an object of class \"taxonomy\"")
   if(!(kappa >= 0 && kappa <= 1))
