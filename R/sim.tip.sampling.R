@@ -6,7 +6,7 @@
 #' @param rho Extant species sampling probability.
 #' @param tol Rounding error tolerance for tip ages.
 #'
-#' @return An object of class fossils.
+#' @return An object of class fossils containing extant tip samples equal to the age of the tips (i.e. 0.0).
 #'
 #' @examples
 #' # simulate tree
@@ -84,7 +84,7 @@ sim.extant.samples = function(fossils, tree = NULL, species = NULL, rho = 1, tol
 #' @param species Taxonomy object.
 #' @param rho Tip sampling probability.
 #'
-#' @return An object of class fossils.
+#' @return An object of class fossils containing extant or extinct tip samples equal to the age of the tips.
 #'
 #' @examples
 #' # simulate tree

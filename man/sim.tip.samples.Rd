@@ -16,7 +16,7 @@ sim.tip.samples(fossils, tree, species = NULL, rho = 1)
 \item{rho}{Tip sampling probability.}
 }
 \value{
-An object of class fossils.
+An object of class fossils containing extant or extinct tip samples equal to the age of the tips.
 }
 \description{
 Include extant and extinct tip samples in the fossil object, with optional rho sampling.

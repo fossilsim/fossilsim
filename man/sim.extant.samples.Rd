@@ -19,7 +19,7 @@ sim.extant.samples(fossils, tree = NULL, species = NULL, rho = 1,
 \item{tol}{Rounding error tolerance for tip ages.}
 }
 \value{
-An object of class fossils.
+An object of class fossils containing extant tip samples equal to the age of the tips (i.e. 0.0).
 }
 \description{
 Include extant samples in the fossil object, with optional rho sampling.
