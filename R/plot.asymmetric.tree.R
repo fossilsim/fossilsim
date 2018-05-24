@@ -4,12 +4,13 @@
 #' @param complete Plot unsampled species?
 #' @examples
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
-#' rangeplot(tree, complete=TRUE)
+#' plot(SAtree(tree), complete=TRUE)
 #'
 #' @export
-rangeplot <- function(x, complete = FALSE){
-  if(!("phylo" %in% class(x)) ){
-    stop(paste('object "',class(x),'" is not of class "phylo"',sep=""))
+plot.SAtree <- function(x, complete = FALSE, ...){
+  if(!("SAtree" %in% class(x)) ){
+    if("phylo" %in% class(x)) x = SAtree(x)
+    else stop(paste('object "',class(x),'" is not of class "SAtree"',sep=""))
   }
 
   sa.labels <- x$tip.label[x$edge[which(x$edge.length == 0),2]]
@@ -61,7 +62,7 @@ rangeplot <- function(x, complete = FALSE){
 
   # get sampled nodes
   sampled.nodes <- c(sa.nodes, extant.tips)
-  if( tree$complete == FALSE ) sampled.nodes <- c(sampled.nodes, fossil.tips)
+  if( !tree$complete ) sampled.nodes <- c(sampled.nodes, fossil.tips)
 
   sampled.ages<-function(x) {
     ret <- c()
@@ -103,7 +104,7 @@ rangeplot <- function(x, complete = FALSE){
     desc <- tree$edge[which(tree$edge[,1] == node), 2]
     for(d in desc) {
       s <- is.sampled(d)
-      if(s==FALSE){
+      if(!s){
         pdi[which(species==node.species[d])] <<- node.ages[node]
       }
       ret <- ret || s

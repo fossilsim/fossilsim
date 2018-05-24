@@ -77,8 +77,5 @@ as.fossils.default<-function(data, ...){
 #' @export
 #' @rdname  fossils
 is.fossils<-function(data){
-  if(inherits(data, "fossils"))
-    TRUE
-  else
-    FALSE
+  inherits(data, "fossils")
 }

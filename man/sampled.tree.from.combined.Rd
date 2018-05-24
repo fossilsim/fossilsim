@@ -29,7 +29,7 @@ t = ape::rtree(6)
 f = sim.fossils.poisson(rate = 2, tree = t)
 
 # transform format
-t2 = combined.tree.with.fossils(t,f)
+t2 = SAtree.from.fossils(t,f)
 
 # transform to sampled tree
 t3 = sampled.tree.from.combined(t2)
