@@ -2,17 +2,17 @@
 % Please edit documentation in R/plot.asymmetric.tree.R
 \name{plot.SAtree}
 \alias{plot.SAtree}
-\title{rangeplot: Make a stratigraphic range plot from a tree object of class phylo}
+\title{Make a stratigraphic range plot from a tree object of class SAtree}
 \usage{
 \method{plot}{SAtree}(x, complete = FALSE, ...)
 }
 \arguments{
-\item{x}{Tree to plot.}
+\item{x}{SAtree to plot.}
 
 \item{complete}{Plot unsampled species?}
 }
 \description{
-rangeplot: Make a stratigraphic range plot from a tree object of class phylo
+Make a stratigraphic range plot from a tree object of class SAtree
 }
 \examples{
 tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]

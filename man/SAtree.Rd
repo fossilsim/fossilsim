@@ -2,10 +2,13 @@
 % Please edit documentation in R/SAtree.R
 \name{SAtree}
 \alias{SAtree}
-\title{this is doc}
+\title{Tree with sampled ancestors represented as zero-length edges}
 \usage{
 SAtree(tree)
 }
+\arguments{
+\item{tree}{Phylo object.}
+}
 \description{
-this is doc
+Converts a phylo object to SAtree
 }
