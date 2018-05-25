@@ -96,8 +96,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   adj = NULL
   srt = 0
 
-  if(is.null(ecol))
-    ecol = fcol
+  if(is.null(ecol)) ecol = fcol
 
   if(!(is.fossils(fossils)))
     stop("fossils must be an object of class \"fossils\"")
@@ -364,46 +363,58 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     else if(binned & all(fossils$hmin == fossils$hmax))
       fossils$h = sim.interval.ages(fossils, tree, interval.ages = c(0, horizons.max))$hmax
 
-    # taxonomy
+    fossils$col = fcol
+
+    # taxonomy colours
     if(show.taxonomy){
-      sp = length(unique(fossils$sp))
-      # todo work out what to do when sp # > 501
-      all = colors(distinct = TRUE)
-      #all = all[!grepl("gr(a|e)y", all)]; #  all 501; minus gray, grey = 389; minus grey and white = 377; minus light = 335
-      #all = all[!grepl("gr(a|e)y|white|light", all)]
+      sps = unique(fossils$sp)
+      # # todo work out what to do when sp # > 501
+      # all = colors(distinct = TRUE)
+      # #all = all[!grepl("gr(a|e)y", all)]; #  all 501; minus gray, grey = 389; minus grey and white = 377; minus light = 335
+      # #all = all[!grepl("gr(a|e)y|white|light", all)]
+      #
+      # if(sp > 389)
+      #   all = colors(distinct = TRUE)
+      # else if(sp > 377)
+      #   all = all[!grepl("gr(a|e)y", all)]
+      # else if(sp > 355)
+      #   all = all[!grepl("gr(a|e)y|white", all)]
+      # else
+      #   all = all[!grepl("gr(a|e)y|white|light", all)]
+      # #else if(sp > XXX)
+      # #  all = all[!grepl("gr(a|e)y", all)]
+      # # wheat3; lavenderblush; light; aliceblue; thistle1; linen; papayawhip; cornsilk2; peachpuff;coral4; blanchedalmond
+      # #else if
+      #
+      # col = sample(all, sp)
 
-      if(sp > 389)
-        all = colors(distinct = TRUE)
-      else if(sp > 377)
-        all = all[!grepl("gr(a|e)y", all)]
-      else if(sp > 355)
-        all = all[!grepl("gr(a|e)y|white", all)]
-      else
-        all = all[!grepl("gr(a|e)y|white|light", all)]
-      #else if(sp > XXX)
-      #  all = all[!grepl("gr(a|e)y", all)]
-      # wheat3; lavenderblush; light; aliceblue; thistle1; linen; papayawhip; cornsilk2; peachpuff;coral4; blanchedalmond
-      #else if
-
-      col = sample(all, sp)
-      fossils$col = fcol
+      col = grDevices::rainbow(length(sps))
       j = 0
-      for(i in unique(fossils$sp)){
+      for(i in sps){
         j = j + 1
         fossils$col[which(fossils$sp == i)] = col[j]
       }
-    } else fossils$col = fcol
+    }
+
     if (ecol != fcol)
-      fossils$col[which(fossils$h == 0), ] = ecol #todo - change the way zero is handled
+      fossils$col[which(fossils$h < 1e-8), ] = ecol #todo - change the way zero is handled
+
+    if(show.fossils || show.ranges) {
+      if(binned) {
+        y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
+        fossils$r = max(xx) - horizons.max[y] + (rev(s1)[y]/2)
+      } else {
+        fossils$r = max(xx) - fossils$h
+      }
+    }
 
     # fossils
     if(show.fossils){
-      if(binned){
-        y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
-        points(max(xx) - horizons.max[y] + (rev(s1)[y]/2), yy[fossils$edge] , col = fcol, pch = 19, cex = fcex)
+      if(binned) {
+        points(fossils$r, yy[fossils$edge] , col = fcol, pch = 19, cex = fcex)
       }
-      else{
-        points(max(xx) - fossils$h, yy[fossils$edge], col = fossils$col, pch = 19, cex = fcex)
+      else {
+        points(fossils$r, yy[fossils$edge], col = fossils$col, pch = 19, cex = fcex)
       }
     }
 
@@ -411,12 +422,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     if(show.ranges){
 
       buffer = 0.01 * max(xx) # buffer for singletons
-      if(binned){
-        y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
-        fossils$r = max(xx) - horizons.max[y] + (rev(s1)[y]/2)
-      } else {
-        fossils$r = max(xx) - fossils$h
-      }
 
       # for show.taxonomy = TRUE
       # fetch oldest and youngest edge associated with a species
@@ -484,8 +489,8 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
           lines(y = sp, x = range, lwd = 6, col = fcol)
         }
       }
-      fossils$r = NULL
     }
+    fossils$r = NULL
 
     # water depth profile
     add.depth.axis = TRUE
