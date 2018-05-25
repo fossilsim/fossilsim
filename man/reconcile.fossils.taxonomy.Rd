@@ -4,12 +4,12 @@
 \alias{reconcile.fossils.taxonomy}
 \title{Reconcile existing fossil and taxonomy objects}
 \usage{
-reconcile.fossils.taxonomy(fossils, species)
+reconcile.fossils.taxonomy(fossils, taxonomy)
 }
 \arguments{
 \item{fossils}{Fossils object.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 }
 \value{
 An object of class fossils.

@@ -131,7 +131,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' l_tf$taxonomy
 #' l_tf$fossils
 #' }
-#' 
+#'
 #' @export
 #' @seealso \code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{fossils.to.paleotree.record}}
 # NB: taxonomy times not branch specific
@@ -260,7 +260,7 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
 #' t = ape::rtree(6)
 #' # simulate fossils using taxonomy
 #' s = sim.taxonomy(t, 0.5, 1, 0.5)
-#' f = sim.fossils.poisson(2, species = s)
+#' f = sim.fossils.poisson(2, taxonomy = s)
 #' # transform format
 #' record = fossils.to.paleotree.record(f, taxonomy = s)
 #' @seealso \code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{paleotree.record.to.fossils}}

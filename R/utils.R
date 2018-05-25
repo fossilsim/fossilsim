@@ -1,21 +1,21 @@
 # Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
 n.ages<-function(tree){
-  
+
   depth = ape::node.depth.edgelength(tree)
   node.ages = max(depth) - depth
   names(node.ages) <- 1:(tree$Nnode+length(tree$tip))
-  
+
   # adding possible offset if tree fully extinct
   if(!is.null(tree$root.time)) node.ages = node.ages + tree$root.time - max(node.ages)
-  
+
   return(node.ages)
 }
 
 # Identify parent nodes
 ancestor<-function(edge,tree){
-  
+
   parent<-tree$edge[,1][which(tree$edge[,2]==edge)]
-  
+
   return(parent)
 }
 
@@ -41,42 +41,42 @@ is.tip<-function(taxa,tree){
 # t = ape::rtree(6)
 # is.extant(t$edge[,2][6],t)
 is.extant<-function(taxa,tree,tol=NULL){
-  
+
   if(is.null(tol))
     tol = min((min(tree$edge.length)/100),1e-8)
-  
+
   ages = n.ages(tree)
-  
+
   end = ages[taxa]
-  
+
   return(abs(end) < tol)
 }
 
 
 # Identify the root
 root<-function(tree){
-  
+
   root = length(tree$tip.label) + 1
-  
+
   return(root)
 }
 
 # Test is root
 is.root<-function(edge,tree){
-  
+
   root=length(tree$tip.label)+1
-  
+
   return(edge == root)
 }
 
 # fetch immediate descendants
 descendants<-function(edge,tree){
-  
+
   if(edge %in% tree$edge[,1])
     decs<-tree$edge[,2][which(tree$edge[,1]==edge)]
   else
     decs = NULL
-  
+
   return(decs)
 }
 
@@ -105,9 +105,9 @@ find.species.in.taxonomy = function(taxonomy, branch, time = NULL) {
   possible = which(taxonomy$edge == branch)
   if(length(possible) == 1) return(taxonomy$sp[possible])
   if(is.null(time)) stop("Multiple species found on branch, please specify a time")
-  
+
   for(x in possible) {
-    if(taxonomy$start[x] > time && taxonomy$end[x] < time) return(taxonomy$species[x])
+    if(taxonomy$start[x] > time && taxonomy$end[x] < time) return(taxonomy$sp[x])
   }
   stop("No species found, check that branch and time are compatible")
 }
@@ -150,24 +150,24 @@ find.edges.inbetween<-function(i,j,tree){
 # @export
 # required by find.edges.inbetween
 fetch.descendants = function(edge, tree, return.edge.labels = F) {
-  
+
   aux = function(node) {
     result = if(return.edge.labels) node else c()
     if(!return.edge.labels && is.tip(node,tree))  result = tree$tip.label[node]
-    
+
     descendants = tree$edge[which(tree$edge[,1]==node),2]
     for(d in descendants) {
       result = c(result, aux(d))
     }
     result
   }
-  
+
   result = c()
   descendants = tree$edge[which(tree$edge[,1]==edge),2]
   for(d in descendants) {
     result = c(result, aux(d))
   }
-  
+
   result
 }
 

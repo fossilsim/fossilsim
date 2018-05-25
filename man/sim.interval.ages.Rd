@@ -4,7 +4,7 @@
 \alias{sim.interval.ages}
 \title{Reassign fossil ages to user-specified stratigraphic intervals}
 \usage{
-sim.interval.ages(fossils, tree = NULL, species = NULL,
+sim.interval.ages(fossils, tree = NULL, taxonomy = NULL,
   interval.ages = NULL, basin.age = NULL, strata = NULL,
   use.species.ages = FALSE, root.edge = TRUE, sim.extant = FALSE)
 }
@@ -13,7 +13,7 @@ sim.interval.ages(fossils, tree = NULL, species = NULL,
 
 \item{tree}{Phylo object.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 

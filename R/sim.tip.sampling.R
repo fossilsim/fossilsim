@@ -2,7 +2,7 @@
 #'
 #' @param fossils Fossils object.
 #' @param tree Phylo object.
-#' @param species Taxonomy object.
+#' @param taxonomy Taxonomy object.
 #' @param rho Extant species sampling probability.
 #' @param tol Rounding error tolerance for tip ages.
 #'
@@ -23,49 +23,49 @@
 #' plot(f, t)
 #'
 #' @export
-sim.extant.samples = function(fossils, tree = NULL, species = NULL, rho = 1, tol = NULL){
+sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, tol = NULL){
 
   if(!"fossils" %in% class(fossils))
     stop("fossils must be an object of class \"fossils\"")
 
-  if(is.null(tree) && is.null(species))
+  if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
 
   if(!is.null(tree) && !"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
 
-  if(!is.null(species) && !"taxonomy" %in% class(species))
-    stop("species must be an object of class \"taxonomy\"")
+  if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
+    stop("taxonomy must be an object of class \"taxonomy\"")
 
-  if(!is.null(tree) && !is.null(species))
-    warning("tree and species both defined, using species taxonomy")
+  if(!is.null(tree) && !is.null(taxonomy))
+    warning("tree and taxonomy both defined, using taxonomy")
 
   if(!is.null(attr(fossils, "from.taxonomy"))){
     from.taxonomy = attr(fossils, "from.taxonomy")
-    if(!is.null(species) & !from.taxonomy)
+    if(!is.null(taxonomy) & !from.taxonomy)
       stop("species taxonomy defined but fossils not based on taxonomy")
   }
 
   if(!(rho >= 0 && rho <= 1))
     stop("rho must be a probability between 0 and 1")
 
-  if(is.null(species)){
-    species = sim.taxonomy(tree, beta = 1)
+  if(is.null(taxonomy)){
+    taxonomy = sim.taxonomy(tree, beta = 1)
     from.taxonomy = FALSE
   } else from.taxonomy = TRUE
 
   tol = min(min(tree$edge.length)/100, 1e-8)
 
-  for (i in unique(species$sp)){
+  for (i in unique(taxonomy$sp)){
 
-    end = species$end[which(species$sp == i)][1]
+    end = taxonomy$end[which(taxonomy$sp == i)][1]
 
     if(!(end > (0 - tol) & end < (0 + tol))) next
 
     if(runif(1) < rho){
       # identify the edge ending zero
-      edge = species$edge[which(species$sp == i & species$edge.end == end)]
-      origin = species$origin[which(species$sp == i)][1]
+      edge = taxonomy$edge[which(taxonomy$sp == i & taxonomy$edge.end == end)]
+      origin = taxonomy$origin[which(taxonomy$sp == i)][1]
 
       fossils<-rbind(fossils, data.frame(sp = i, edge = edge, origin = origin, hmin = 0, hmax = 0))
     }
@@ -81,7 +81,7 @@ sim.extant.samples = function(fossils, tree = NULL, species = NULL, rho = 1, tol
 #'
 #' @param fossils Fossils object.
 #' @param tree Phylo object.
-#' @param species Taxonomy object.
+#' @param taxonomy Taxonomy object.
 #' @param rho Tip sampling probability.
 #'
 #' @return An object of class fossils containing extant or extinct tip samples equal to the age of the tips.
@@ -99,7 +99,7 @@ sim.extant.samples = function(fossils, tree = NULL, species = NULL, rho = 1, tol
 #'
 #' @export
 # The tree is required to identify which edges are terminal.
-sim.tip.samples<-function(fossils, tree, species = NULL, rho = 1){
+sim.tip.samples<-function(fossils, tree, taxonomy = NULL, rho = 1){
 
   if(!"fossils" %in% class(fossils))
     stop("fossils must be an object of class \"fossils\"")
@@ -107,37 +107,37 @@ sim.tip.samples<-function(fossils, tree, species = NULL, rho = 1){
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
 
-  if(!is.null(species) && !"taxonomy" %in% class(species))
-    stop("species must be an object of class \"taxonomy\"")
+  if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
+    stop("taxonomy must be an object of class \"taxonomy\"")
 
-  if(!is.null(tree) && !is.null(species))
-    warning("tree and species both defined, using species taxonomy")
+  if(!is.null(tree) && !is.null(taxonomy))
+    warning("tree and taxonomy both defined, using taxonomy")
 
   if(!is.null(attr(fossils, "from.taxonomy"))){
     from.taxonomy = attr(fossils, "from.taxonomy")
-    if(!is.null(species) & !from.taxonomy)
+    if(!is.null(taxonomy) & !from.taxonomy)
       stop("species taxonomy defined but fossils not based on taxonomy")
   }
 
   if(!(rho >= 0 && rho <= 1))
     stop("rho must be a probability between 0 and 1")
 
-  if(is.null(species)){
-    species = sim.taxonomy(tree, beta = 1)
+  if(is.null(taxonomy)){
+    taxonomy = sim.taxonomy(tree, beta = 1)
     from.taxonomy = FALSE
   } else from.taxonomy = TRUE
 
-  for (i in unique(species$sp)){
+  for (i in unique(taxonomy$sp)){
 
     # identify the terminal most edge
-    end = species$end[which(species$sp == i)][1]
-    edge = species$edge[which(species$sp == i & species$edge.end == end)][1]
+    end = taxonomy$end[which(taxonomy$sp == i)][1]
+    edge = taxonomy$edge[which(taxonomy$sp == i & taxonomy$edge.end == end)][1]
 
     if(is.tip(edge,tree)){
 
       if(runif(1) < rho){
         # identify the edge ending zero
-        origin = species$origin[which(species$sp == i)][1]
+        origin = taxonomy$origin[which(taxonomy$sp == i)][1]
 
         fossils<-rbind(fossils, data.frame(sp = i, edge = edge, origin = origin, hmin = end, hmax = end))
       }

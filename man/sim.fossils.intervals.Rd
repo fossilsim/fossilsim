@@ -4,14 +4,14 @@
 \alias{sim.fossils.intervals}
 \title{Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals}
 \usage{
-sim.fossils.intervals(tree = NULL, species = NULL, interval.ages = NULL,
+sim.fossils.intervals(tree = NULL, taxonomy = NULL, interval.ages = NULL,
   basin.age = NULL, strata = NULL, probabilities = NULL, rates = NULL,
   root.edge = TRUE, use.exact.times = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -36,7 +36,7 @@ In the second scenario all intervals will be of equal length.
 Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 or \code{probabilities}, which represent the probabilities of sampling per interval.
 When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
-Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
 }
@@ -61,7 +61,7 @@ plot(f, t)
 
 # simulate fossils using taxonomy
 s = sim.taxonomy(t, 0.1, 0.1, 1)
-f = sim.fossils.intervals(species = s, interval.ages = times, rates = rates)
+f = sim.fossils.intervals(taxonomy = s, interval.ages = times, rates = rates)
 plot(f, t)
 
 }

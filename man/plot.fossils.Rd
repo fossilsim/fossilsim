@@ -8,7 +8,7 @@
   show.ranges = FALSE, show.strata = FALSE, strata = 1, max = NULL,
   interval.ages = NULL, binned = FALSE, show.axis = TRUE,
   show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
-  preferred.environ = NULL, show.taxonomy = FALSE, species = NULL,
+  preferred.environ = NULL, show.taxonomy = FALSE, taxonomy = NULL,
   root.edge = TRUE, hide.edge = FALSE, edge.width = 1,
   show.tip.label = FALSE, align.tip.label = FALSE, fcex = 1.2,
   fcol = "darkorange", ecol = NULL, ...)
@@ -46,7 +46,7 @@
 
 \item{show.taxonomy}{If TRUE highlight species taxonomy.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 

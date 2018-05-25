@@ -25,7 +25,7 @@
 #' @param show.preferred.environ If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE).
 #' @param preferred.environ Preferred environmental value (e.g. water depth).
 #' @param show.taxonomy If TRUE highlight species taxonomy.
-#' @param species Taxonomy object.
+#' @param taxonomy Taxonomy object.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
@@ -68,7 +68,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
                        show.proxy = FALSE, proxy.data = NULL,
                        show.preferred.environ = FALSE, preferred.environ = NULL,
                        # taxonomy
-                       show.taxonomy = FALSE, species = NULL,
+                       show.taxonomy = FALSE, taxonomy = NULL,
                        # tree appearance
                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                        # fossil appearance
@@ -140,8 +140,8 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
       stop("Function can't handle NA proxy values right now, please use 0 for the time being")
   }
 
-  if(show.taxonomy && is.null(species))
-    stop("Specify taxonomy using 'species'")
+  if(show.taxonomy && is.null(taxonomy))
+    stop("Specify taxonomy using 'taxonomy'")
   #TODO check all fossils edges are present in th sp obj
 
   if(any(fossils$hmin != fossils$hmax)) binned = TRUE # TODO?
@@ -455,17 +455,17 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
             # multiple edges: FA edge
             else if(j == edge.mx) {
               range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
-                         max(xx) - species$edge.end[which(species$edge == j)][1])
+                         max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
             }
             # multiple edges: LA edge
             else if(j == edge.mn){
               range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
-                         max(xx) - species$edge.start[which(species$edge == j)][1])
+                         max(xx) - taxonomy$edge.start[which(taxonomy$edge == j)][1])
             }
             # multiple edges: in-between edges
             else{
-              range =  c(max(xx) - species$edge.start[which(species$edge == j)][1],
-                         max(xx) - species$edge.end[which(species$edge == j)][1])
+              range =  c(max(xx) - taxonomy$edge.start[which(taxonomy$edge == j)][1],
+                         max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
             }
             # plot ranges
             sp = rep(yy[j], length(range))

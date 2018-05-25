@@ -4,14 +4,14 @@
 \alias{sim.fossils.poisson}
 \title{Simulate fossils under a Poisson sampling model}
 \usage{
-sim.fossils.poisson(rate, tree = NULL, species = NULL, root.edge = TRUE)
+sim.fossils.poisson(rate, tree = NULL, taxonomy = NULL, root.edge = TRUE)
 }
 \arguments{
 \item{rate}{Poisson sampling rate.}
 
 \item{tree}{Phylo object.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 }
@@ -19,7 +19,7 @@ sim.fossils.poisson(rate, tree = NULL, species = NULL, root.edge = TRUE)
 An object of class fossils.
 }
 \description{
-Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
 }
@@ -34,7 +34,7 @@ plot(f, t)
 
 # simulate fossils using taxonomy
 s = sim.taxonomy(t, 0.5, 1, 0.5)
-f = sim.fossils.poisson(rate, species = s)
+f = sim.fossils.poisson(rate, taxonomy = s)
 plot(f, t)
 
 }
