@@ -13,6 +13,7 @@
 #' @param strata Number of stratigraphic intervals.
 #' @param use.species.ages If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.
 #' @param root.edge If TRUE include root edge.
+#' @param sim.extant Whether extant samples should get simulated ages as well, default FALSE.
 #'
 #' @return An object of class fossils.
 #'
@@ -37,7 +38,7 @@
 #' @export
 sim.interval.ages = function(fossils, tree = NULL, species = NULL,
                         interval.ages = NULL, basin.age = NULL, strata = NULL,
-                        use.species.ages = FALSE, root.edge = TRUE){
+                        use.species.ages = FALSE, root.edge = TRUE, sim.extant = FALSE){
 
   if(is.null(fossils))
     stop("Specify fossils object")
@@ -89,6 +90,7 @@ sim.interval.ages = function(fossils, tree = NULL, species = NULL,
 
   # for each fossil
   for(i in 1:length(fossils$hmin)){
+    if(!sim.extant && fossils$hmin[i] < 1e-8) next
 
     int = assign.interval(interval.ages, fossils$hmin[i])
 

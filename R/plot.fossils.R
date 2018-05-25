@@ -33,7 +33,7 @@
 #' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).
 #' @param fcex Numeric value giving the factor used to scale the points representing the fossils. Only used if \code{show.fossils = TRUE}.
 #' @param fcol Color of fossil occurrences or ranges.
-#' @param ecol Color of extant samples. This only works if binned = FALSE.
+#' @param ecol Color of extant samples.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
 #'
 #' @examples
@@ -397,12 +397,14 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     }
 
     if (ecol != fcol)
-      fossils$col[which(fossils$h < 1e-8), ] = ecol #todo - change the way zero is handled
+      fossils$col[which(fossils$h < 1e-8)] = ecol #todo - change the way zero is handled
 
     if(show.fossils || show.ranges) {
       if(binned) {
-        y = sapply(fossils$h, function(x) max(which(horizons.max == x)) )
-        fossils$r = max(xx) - horizons.max[y] + (rev(s1)[y]/2)
+        fossils$r = sapply(fossils$h, function(x) {
+          if(x < 1e-8) return(max(xx) - x)
+          y = max(which(horizons.max == x))
+          max(xx) - horizons.max[y] + (rev(s1)[y]/2) })
       } else {
         fossils$r = max(xx) - fossils$h
       }
@@ -410,12 +412,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
     # fossils
     if(show.fossils){
-      if(binned) {
-        points(fossils$r, yy[fossils$edge] , col = fcol, pch = 19, cex = fcex)
-      }
-      else {
-        points(fossils$r, yy[fossils$edge], col = fossils$col, pch = 19, cex = fcex)
-      }
+      points(fossils$r, yy[fossils$edge], col = fossils$col, pch = 19, cex = fcex)
     }
 
     # ranges

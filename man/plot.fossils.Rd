@@ -62,7 +62,7 @@
 
 \item{fcol}{Color of fossil occurrences or ranges.}
 
-\item{ecol}{Color of extant samples. This only works if binned = FALSE.}
+\item{ecol}{Color of extant samples.}
 
 \item{...}{Additional parameters to be passed to \code{plot.default}.}
 }

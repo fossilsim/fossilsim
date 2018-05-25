@@ -6,7 +6,7 @@
 \usage{
 sim.interval.ages(fossils, tree = NULL, species = NULL,
   interval.ages = NULL, basin.age = NULL, strata = NULL,
-  use.species.ages = FALSE, root.edge = TRUE)
+  use.species.ages = FALSE, root.edge = TRUE, sim.extant = FALSE)
 }
 \arguments{
 \item{fossils}{Fossil object.}
@@ -24,6 +24,8 @@ sim.interval.ages(fossils, tree = NULL, species = NULL,
 \item{use.species.ages}{If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.}
 
 \item{root.edge}{If TRUE include root edge.}
+
+\item{sim.extant}{Whether extant samples should get simulated ages as well, default FALSE.}
 }
 \value{
 An object of class fossils.
