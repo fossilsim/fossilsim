@@ -503,12 +503,14 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #'
 #' # simualte rates under the independent rates model
 #' dist = function() { rlnorm(1, log(rate), 1) }
-#' f = sim.fossils.lineages(rate = rate, taxonomy = s, model = "independent", dist = dist)
-#' plot(f$fossils, t)
+#' rates = sim.species.rates(rate = rate, taxonomy = s, model = "independent", dist = dist)
+#' f = sim.fossils.poisson(rates, species = s)
+#' plot(f, t)
 #'
 #' # simualte rates under the jump model
-#' f = sim.fossils.lineages(rate = rate, taxonomy = s, model = "jump", dist = dist, jump.pr = 0.1)
-#' plot(f$fossils, t)
+#' rates = sim.species.rates(rate = rate, taxonomy = s, model = "jump", dist = dist, jump.pr = 0.1)
+#' f = sim.fossils.poisson(rates, species = s)
+#' plot(f, t)
 #'
 #' @references
 #' Heath et al. 2014. The fossilized birth-death process for coherent calibration of divergence-time estimates. PNAS 111:E2957-E2966.\cr
