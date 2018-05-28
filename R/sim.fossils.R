@@ -62,10 +62,10 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
   } else
     from.taxonomy = TRUE
 
-  if(length(rate) > 1 && length(rate) != length(unique(species$sp)))
-    stop("vector of rates provided that doesn't correspond to the number of species")
+  if(length(rate) > 1 && length(rate) != length(unique(taxonomy$sp)))
+    stop("The vector of rates provided doesn't correspond to the number of species")
   else if(length(rate) == 1)
-    rate = rep(rate, length(unique(species$sp)))
+    rate = rep(rate, length(unique(taxonomy$sp)))
 
   # If TRUE use exact sampling times.
   # If FALSE hmin and hmax will equal the start and end times of the corresponding edge.
@@ -458,11 +458,8 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
   # 1/c - defines the relative start time of each cycle - phase shift
   # y = a * sin (b * pi * (x-1/c))
   y = depth*sin(cycles*pi*(x-1/4))
-
-  #return(data.frame(x=c(1:strata),y=y))
+  
   return(y)
-
-  # EOF
 }
 
 #' Simulate fossils recovery rates with variation across lineages
@@ -514,7 +511,7 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #'
 #' @references
 #' Heath et al. 2014. The fossilized birth-death process for coherent calibration of divergence-time estimates. PNAS 111:E2957-E2966.\cr
-#' Kishino et al. 2001. Performance of a divergence time Estimation method under a probabilistic model of rate evolution MBE 18:352–361.
+#' Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352–361.
 #'
 #' @export
 sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
@@ -528,10 +525,10 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
     stop("tree must be an object of class \"phylo\"")
 
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
-    stop("species must be an object of class \"taxonomy\"")
+    stop("taxonomy must be an object of class \"taxonomy\"")
 
   if(!is.null(tree) && !is.null(taxonomy))
-    warning("tree and species both defined, using species taxonomy")
+    warning("tree and taxonomy both defined, using taxonomy")
 
   if(is.null(taxonomy) && is.null(tree$edge.length))
     stop("tree must have edge lengths")
@@ -546,7 +543,7 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
     stop("jump.pr must be a probability between 0 and 1")
 
   if((model == "independent" || model == "jump") & ( length(dist()) != 1 || !(is.numeric(dist()))))
-    stop("specify a valid distribution function that returns a single +ve value")
+    stop("specify a valid distribution function that returns a single positive value")
 
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
@@ -576,7 +573,7 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
       r = dist()
     }
 
-    if(r < 0) stop("specify a valid distribution function that returns a single +ve value")
+    if(r < 0) stop("A negative rate was given by dist: specify a valid distribution function that returns a single positive value")
 
     t[which(t$sp == sp),]$rate = r
 

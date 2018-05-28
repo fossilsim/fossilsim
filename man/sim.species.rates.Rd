@@ -68,5 +68,5 @@ plot(f, t)
 }
 \references{
 Heath et al. 2014. The fossilized birth-death process for coherent calibration of divergence-time estimates. PNAS 111:E2957-E2966.\cr
-Kishino et al. 2001. Performance of a divergence time Estimation method under a probabilistic model of rate evolution MBE 18:352–361.
+Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352–361.
 }
