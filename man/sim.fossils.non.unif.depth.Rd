@@ -49,7 +49,7 @@ Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or
 maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
 Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
 If both are specified, the function uses taxonomy.
-If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
+If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 }
 \examples{
 # simulate tree

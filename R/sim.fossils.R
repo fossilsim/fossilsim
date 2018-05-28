@@ -2,9 +2,10 @@
 #'
 #' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
 #' If both are specified, the function uses taxonomy.
-#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
+#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
+#' A vector of rates can be specified to allow for rate variation across lineages.
 #'
-#' @param rate Poisson sampling rate.
+#' @param rate A single Poisson sampling rate or a vector of rates. If a vector is provided, each entry will apply to each unique species in the order they appear in the corresponding taxonomy object.
 #' @param tree Phylo object.
 #' @param species Taxonomy object.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
@@ -22,6 +23,11 @@
 #'
 #' # simulate fossils using taxonomy
 #' s = sim.taxonomy(t, 0.5, 1, 0.5)
+#' f = sim.fossils.poisson(rate, species = s)
+#' plot(f, t)
+#'
+#' # simulate fossils with rate variation across lineages
+#' rate = runif(length(s$sp), min = 0, max = 5)
 #' f = sim.fossils.poisson(rate, species = s)
 #' plot(f, t)
 #'
@@ -56,6 +62,11 @@ sim.fossils.poisson = function(rate, tree = NULL, species = NULL, root.edge = TR
   } else
     from.taxonomy = TRUE
 
+  if(length(rate) > 1 && length(rate) != length(species$sp))
+    stop("vector of rates provided that doesn't correspond to the number of species")
+  else if(length(rate) == 1)
+    rate = rep(rate, length(species$sp))
+
   # If TRUE use exact sampling times.
   # If FALSE hmin and hmax will equal the start and end times of the corresponding edge.
   use.exact.times = TRUE
@@ -64,8 +75,9 @@ sim.fossils.poisson = function(rate, tree = NULL, species = NULL, root.edge = TR
 
   lineages = unique(species$sp)
 
-  for (sp in lineages){ # internal nodes + tips
+  for (i in 1:length(lineages)){
 
+    sp = lineages[i]
     start = species$start[which(species$sp == sp)][1]
     end = species$end[which(species$sp == sp)][1]
     origin = species$origin[which(species$sp == sp)][1]
@@ -74,7 +86,7 @@ sim.fossils.poisson = function(rate, tree = NULL, species = NULL, root.edge = TR
     blength = start - end
 
     # sample fossil numbers from the Poisson distribution
-    rand = rpois(1, blength*rate)
+    rand = rpois(1, blength*rate[i])
 
     if(rand > 0) {
       h = runif(rand, min = end, max = start)
@@ -90,6 +102,163 @@ sim.fossils.poisson = function(rate, tree = NULL, species = NULL, root.edge = TR
   return(fdf)
 }
 
+#' Simulate fossils with variable Poisson sampling rates across lineages
+#'
+#' Available models include autocorrelated rates, independent rates and a "jump" model in which rate changes are coincident with speciation events.
+#' Under the \code{autocorrelated} rates model, fossil recovery rates evolve along lineages according to a Brownian motion process, where the strength of the relationship between ancestor and descendant rates is determined by the parameter \eqn{\nu} (\code{v}).
+#' If \eqn{\nu} is small rates will be more similar between ancestor and descendants, and if \eqn{\nu} is zero all rates will be equal.
+#' For a given species \eqn{i} with ancestor \eqn{j}, a new rate \eqn{\kappa_i} is drawn from a lognornal distribution with
+#' \deqn{\kappa_i = LN( \kappa_j - (\sigma^2/2), \sigma)}
+#' where \eqn{\sigma = \nu * t_i} and \eqn{t_i} is the lineage duration of the species.
+#' This fossil recovery model has been described in Heath et al. (2014) and is equivalent to the autocorrelated relaxed clock model described in Kishino et al. (2001).
+#' Under the \code{independent} rates model a new rate is drawn for each species from any valid user-specified distribution (\code{dist}).
+#' Under the \code{jump} model rates change at each speciation event with a given probability (\code{jump.pr}) and new rates are drawn from any valid user-specified distribution (\code{dist}).
+#'
+#' @param rate Initial rate at the origin or root of the phylo or taxonomy object. Default = 1.
+#' @param tree Phylo object.
+#' @param taxonomy Taxonomy object.
+#' @param root.edge If TRUE include the root edge. Default = TRUE.
+#' @param model Model used to simulate fossils with rate variation across lineages. Options include "autocorrelated" (default), "independent" or "jump".
+#' @param v Brownian motion parameter \eqn{v} used in the autocorrelated rates model. Default = 0.01.
+#' @param dist Distribution of rates used to draw new rates under the "independent" and "jump" models. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}.
+#' @param jump.pr Probability that fossil recovery rate changes at speciation events. Default = 0.01.
+#' @param return.rates If TRUE function returns a vector of fossil recovery rates along with the fossils object.
+#' @return A named list containing an object of class fossils and a vector of rates.
+#' Rates are output for each species in the order they appear in the corresponding taxonomy object.
+#' If \code{return.rates = FALSE} the function will return the fossils object only.
+#' @examples
+#' # simulate tree
+#' t = ape::rtree(6)
+#'
+#' # simulate taxonomy
+#' s = sim.taxonomy(t, 0.5, 1, 0.5)
+#'
+#' # simualte rates under the autocorrelated rates model
+#' rate = 1
+#' f = sim.fossils.lineages(rate = rate, taxonomy = s, v = 1)
+#' plot(f$fossils, t)
+#'
+#' # simualte rates under the independent rates model
+#' dist = function() { rlnorm(1, log(rate), 1) }
+#' f = sim.fossils.lineages(rate = rate, taxonomy = s, model = "independent", dist = dist)
+#' plot(f$fossils, t)
+#'
+#' # simualte rates under the jump model
+#' f = sim.fossils.lineages(rate = rate, taxonomy = s, model = "jump", dist = dist, jump.pr = 0.1)
+#' plot(f$fossils, t)
+#'
+#' @references
+#' Heath et al. 2014. The fossilized birth-death process for coherent calibration of divergence-time estimates. PNAS 111:E2957-E2966.\cr
+#' Kishino et al. 2001. Performance of a divergence time Estimation method under a probabilistic model of rate evolution MBE 18:352–361.
+#'
+#' @export
+# NB if model = "autocorrelated", rate = x and v = 0 OR model = "indepedent" or "jump", rate = x and dist = function(x) { rate } and jump.pr = any number
+# this function should produce the same expected number of fossils as sim.fossils.poisson, given the same value of x.
+# sim.fossils.lineages(rate = 1, taxonomy = s, v = 0)
+# sim.fossils.lineages(rate = 1, taxonomy = s, model = "independent", dist = function(){rate})
+# sim.fossils.lineages(rate = 1, taxonomy = s, model = "jump", dist = function(){rate}, jump.pr = 0.5)
+sim.fossils.lineages = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
+                                model = "autocorrelated", v = 0.01,
+                                dist = function(){runif(1,0,2)}, jump.pr = 0.01, return.rates = TRUE){
+
+  if(is.null(tree) && is.null(taxonomy))
+    stop("Specify phylo or taxonomy object")
+
+  if(!is.null(tree) && !"phylo" %in% class(tree))
+    stop("tree must be an object of class \"phylo\"")
+
+  if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
+    stop("species must be an object of class \"taxonomy\"")
+
+  if(!is.null(tree) && !is.null(taxonomy))
+    warning("tree and species both defined, using species taxonomy")
+
+  if(is.null(taxonomy) && is.null(tree$edge.length))
+    stop("tree must have edge lengths")
+
+  if(is.null(taxonomy) && !ape::is.rooted(tree))
+    stop("tree must be rooted")
+
+  if(model != "autocorrelated" && model != "independent" && model != "jump")
+    stop("specify a valid model option = 'autocorrelated', 'independent' or 'jump'")
+
+  if(!(jump.pr >= 0 & jump.pr <= 1))
+    stop("jump.pr must be a probability between 0 and 1")
+
+  if((model == "independent" || model == "jump") & ( length(dist()) != 1 || !(is.numeric(dist()))))
+    stop("specify a valid distribution function that returns a single +ve value")
+
+  if(is.null(taxonomy)){
+    taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
+    from.taxonomy = FALSE
+  } else
+    from.taxonomy = TRUE
+
+  aux = function(sp, f, r) {
+
+    # simulate fossils
+    start = taxonomy$start[which(taxonomy$sp == sp)][1]
+    end = taxonomy$end[which(taxonomy$sp == sp)][1]
+    origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
+    edges = taxonomy[which(taxonomy$sp == sp), ]
+
+    blength = start - end
+
+    # generate a new rate for sp
+    if(model == "autocorrelated"){
+      # this follows the molecular clock model of Kishino et al 2001
+      # and the preservation model described in Heath et al 2014 (supplementary material)
+      r = rlnorm(1, mean = log(r) - ((blength*v)/2), sdlog = sqrt(blength*v))
+    } else if (model == "jump") {
+      if(runif(1) < jump.pr)
+        r = dist()
+    } else { # independent rates
+      r = dist()
+    }
+
+    if(r < 0) stop("specify a valid distribution function that returns a single +ve value")
+
+    taxonomy[which(taxonomy$sp == sp),]$rate <<- r
+
+    # sample fossil numbers from a Poisson distribution
+    rand = rpois(1, blength*r)
+
+    if(rand > 0) {
+      h = runif(rand, min = end, max = start)
+      edge = sapply(h, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+      f <- rbind(f, data.frame(sp = sp, edge = edge, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
+    }
+
+    # fetch descendants
+    descendants = unique(taxonomy$sp[which(taxonomy$parent == sp)])
+
+    if(length(descendants) == 0) {
+      return(f)
+    }
+
+    for(i in descendants){
+      f = aux(i, f, r)
+    }
+    f
+  }
+
+  taxonomy$rate = NA
+
+  fdf = fossils()
+
+  root = unique(taxonomy$sp[which(taxonomy$parent == 0)])
+
+  fdf = aux(root, fdf, rate)
+
+  fdf = as.fossils(fdf, from.taxonomy)
+
+  # extract unique rates
+  rates = unique(cbind(taxonomy["sp"],taxonomy["rate"]))$rate
+
+  if(return.rates) return(list(fossils = fdf, rates = rates)) #\todo make this a vector rates
+  else return(fdf)
+}
+
 #' Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals
 #'
 #' Intervals can be specified by specifying the interval boundaries using \code{interval.ages} or specifying both \code{basin.age} and \code{strata}.
@@ -99,7 +268,7 @@ sim.fossils.poisson = function(rate, tree = NULL, species = NULL, root.edge = TR
 #' When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
 #' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
 #' If both are specified, the function uses taxonomy.
-#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
+#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 #'
 #' @param tree Phylo object.
 #' @param species Taxonomy object.
@@ -198,7 +367,7 @@ sim.fossils.intervals = function(tree = NULL, species = NULL,
 
   lineages = unique(species$sp)
 
-  for (sp in lineages) { # internal nodes + tips
+  for (sp in lineages) {
 
     start = species$start[which(species$sp == sp)][1]
     end = species$end[which(species$sp == sp)][1]
@@ -265,7 +434,7 @@ sim.fossils.intervals = function(tree = NULL, species = NULL,
 #' maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
 #' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
 #' If both are specified, the function uses taxonomy.
-#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
+#' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 #'
 #' @param tree Phylo object.
 #' @param species Taxonomy object.
@@ -367,7 +536,7 @@ sim.fossils.non.unif.depth = function(tree = NULL, species = NULL,
 
   lineages = unique(species$sp)
 
-  for (sp in lineages) { # internal nodes + tips
+  for (sp in lineages) {
 
     start = species$start[which(species$sp == sp)][1]
     end = species$end[which(species$sp == sp)][1]

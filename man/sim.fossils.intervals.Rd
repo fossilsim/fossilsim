@@ -38,7 +38,7 @@ or \code{probabilities}, which represent the probabilities of sampling per inter
 When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
 Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
 If both are specified, the function uses taxonomy.
-If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. budding, \code{beta = 1}).
+If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 }
 \examples{
 # simulate tree
