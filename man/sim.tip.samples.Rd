@@ -4,14 +4,14 @@
 \alias{sim.tip.samples}
 \title{Include extant and extinct tip samples in the fossil object, with optional rho sampling.}
 \usage{
-sim.tip.samples(fossils, tree, species = NULL, rho = 1)
+sim.tip.samples(fossils, tree, taxonomy = NULL, rho = 1)
 }
 \arguments{
 \item{fossils}{Fossils object.}
 
 \item{tree}{Phylo object.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 
 \item{rho}{Tip sampling probability.}
 }

@@ -22,8 +22,8 @@ Create a taxonomy object relating species identity to a phylo object.
 The taxonomy object includes the following 7 fields for each edge in the corresponding phylo object:
 \itemize{
 \item{\code{sp} true species identity label.
-If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest) associated with each species.
-This may not be case if the data set also contains anagenic species, when multiple species may be associated with a single edge}
+If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest node) associated with each species.
+This is not the case if the data set also contains anagenic species, when multiple species may be associated with a single edge}
 \item{\code{edge} edge label of the branch in the corresponding phylo object.
 Note some species may be associated with multiple edges}
 \item{\code{parent} = ancestor of species \code{sp}. Parent labels follow the same convention as species.
@@ -36,7 +36,7 @@ The label assigned to the parent of the origin or root will be zero}
 
 Optional fields:
 \itemize{
-\item{\code{cryptic = TRUE} if speciation event was cryptic otherwise the function assumes \code{cryptic = FALSE}}
+\item{\code{cryptic} TRUE if the speciation event was cryptic. If missing the function assumes \code{cryptic = FALSE}}
 \item{\code{cryptic.id} = cryptic species identity. If cryptic = TRUE \code{cryptic.id} will differ from the true species identity \code{sp}}
 \item{\code{origin} = edge beginning the species}
 \item{\code{edge.start} = start time of corresponding \code{edge}}

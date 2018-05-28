@@ -143,7 +143,7 @@ sim.cdfbd.taxa <- function(n, numbsim, lambda, mu, psi, rate, pi, complete=FALSE
 #' mu = 0.5
 #' psi = 0.6
 #' numbsim = 2
-#' sim.fbd.age(age, numbsim, lambda, mu, psi)
+#' #TODO sim.fbd.age(age, numbsim, lambda, mu, psi)
 #' #TODO function sometimes returns at error
 #' @keywords fossilized birth death
 # #' @export
@@ -218,7 +218,7 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, complete=FALSE)
 #' @examples
 #' n = 10
 #' numbsim = 1
-#' sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0.3))
+#' #TODO sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0.3))
 #' @keywords fossilized birth death
 # #' @export
 # #TODO there was a mistake in this example, psi contained too few values OR times contained too many values

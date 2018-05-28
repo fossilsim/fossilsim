@@ -34,7 +34,7 @@ sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating ra
 \examples{
 n = 10
 numbsim = 1
-sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0.3))
+#TODO sim.fbd.rateshift.taxa(n,numbsim,c(2,1),c(0,0.3),c(1,0.1),c(0.3))
 }
 \keyword{birth}
 \keyword{death}

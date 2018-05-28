@@ -4,7 +4,7 @@
 \alias{sim.fossils.non.unif.depth}
 \title{Simulate fossils under a non-uniform model of preservation (Holland, 1995)}
 \usage{
-sim.fossils.non.unif.depth(tree = NULL, species = NULL,
+sim.fossils.non.unif.depth(tree = NULL, taxonomy = NULL,
   interval.ages = NULL, basin.age = NULL, strata = NULL,
   depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5,
   use.rates = FALSE, root.edge = TRUE, use.exact.times = TRUE)
@@ -12,7 +12,7 @@ sim.fossils.non.unif.depth(tree = NULL, species = NULL,
 \arguments{
 \item{tree}{Phylo object.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -47,7 +47,7 @@ where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{D
 \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
 maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
-Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 }
@@ -70,7 +70,7 @@ plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRU
 # simulate fossils using taxonomy & interval.ages
 s = sim.taxonomy(t, 0.1, 0.1, 1)
 times = seq(0, max.age, length.out = strata + 1)
-f = sim.fossils.non.unif.depth(species = s, interval.ages = times,
+f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
      depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
 plot(f,t)
 

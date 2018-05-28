@@ -1,7 +1,8 @@
-#' rangeplot: Make a stratigraphic range plot from a tree object of class phylo
+#' Make a stratigraphic range plot from a tree object of class SAtree
 #'
-#' @param x Tree to plot.
+#' @param x SAtree to plot.
 #' @param complete Plot unsampled species?
+#'
 #' @examples
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
 #' plot(SAtree(tree), complete=TRUE)

@@ -4,16 +4,16 @@
 \alias{sim.interval.ages}
 \title{Reassign fossil ages to user-specified stratigraphic intervals}
 \usage{
-sim.interval.ages(fossils, tree = NULL, species = NULL,
+sim.interval.ages(fossils, tree = NULL, taxonomy = NULL,
   interval.ages = NULL, basin.age = NULL, strata = NULL,
-  use.species.ages = FALSE, root.edge = TRUE)
+  use.species.ages = FALSE, root.edge = TRUE, sim.extant = FALSE)
 }
 \arguments{
 \item{fossils}{Fossil object.}
 
 \item{tree}{Phylo object.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -24,6 +24,8 @@ sim.interval.ages(fossils, tree = NULL, species = NULL,
 \item{use.species.ages}{If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.}
 
 \item{root.edge}{If TRUE include root edge.}
+
+\item{sim.extant}{Whether extant samples should get simulated ages as well, default FALSE.}
 }
 \value{
 An object of class fossils.

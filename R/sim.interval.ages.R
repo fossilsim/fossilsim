@@ -7,12 +7,13 @@
 #'
 #' @param fossils Fossil object.
 #' @param tree Phylo object.
-#' @param species Taxonomy object.
+#' @param taxonomy Taxonomy object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
 #' @param use.species.ages If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.
 #' @param root.edge If TRUE include root edge.
+#' @param sim.extant Whether extant samples should get simulated ages as well, default FALSE.
 #'
 #' @return An object of class fossils.
 #'
@@ -35,9 +36,9 @@
 #' f = sim.interval.ages(f, t, interval.ages = times)
 #'
 #' @export
-sim.interval.ages = function(fossils, tree = NULL, species = NULL,
+sim.interval.ages = function(fossils, tree = NULL, taxonomy = NULL,
                         interval.ages = NULL, basin.age = NULL, strata = NULL,
-                        use.species.ages = FALSE, root.edge = TRUE){
+                        use.species.ages = FALSE, root.edge = TRUE, sim.extant = FALSE){
 
   if(is.null(fossils))
     stop("Specify fossils object")
@@ -47,27 +48,27 @@ sim.interval.ages = function(fossils, tree = NULL, species = NULL,
 
   if(use.species.ages){
 
-    if(is.null(tree) && is.null(species))
+    if(is.null(tree) && is.null(taxonomy))
       stop("Specify phylo or taxonomy object to use species ages")
 
     if(!is.null(tree) && !"phylo" %in% class(tree))
       stop("tree must be an object of class \"phylo\"")
 
-    if(!is.null(species) && !"taxonomy" %in% class(species))
-      stop("species must be an object of class \"taxonomy\"")
+    if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
+      stop("taxonomy must be an object of class \"taxonomy\"")
 
-    if(!is.null(tree) && !is.null(species))
-      warning("tree and species both defined, using species taxonomy")
+    if(!is.null(tree) && !is.null(taxonomy))
+      warning("tree and taxonomy both defined, using taxonomy")
 
-    #if(!is.null(tree) && is.null(species))
+    #if(!is.null(tree) && is.null(taxonomy))
     #  warning("using tree, assumming all speciation is symmetric")
 
-    if(is.null(species)){
-      species = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
+    if(is.null(taxonomy)){
+      taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
       from.taxonomy = FALSE
     } else from.taxonomy = TRUE
 
-    if(any(!(fossils$sp %in% species$sp)))
+    if(any(!(fossils$sp %in% taxonomy$sp)))
       stop("incompatible fossil species and taxonomy")
   }
 
@@ -89,14 +90,15 @@ sim.interval.ages = function(fossils, tree = NULL, species = NULL,
 
   # for each fossil
   for(i in 1:length(fossils$hmin)){
+    if(!sim.extant && fossils$hmin[i] < 1e-8) next
 
     int = assign.interval(interval.ages, fossils$hmin[i])
 
     if(use.species.ages){ # { assign hmin and hmax that do not violate species start and end times }
 
       sp = fossils$sp[i]
-      start = species$start[which(species$sp == sp)][1]
-      end = species$end[which(species$sp == sp)][1]
+      start = taxonomy$start[which(taxonomy$sp == sp)][1]
+      end = taxonomy$end[which(taxonomy$sp == sp)][1]
       start.int = assign.interval(interval.ages, start)
       end.int = assign.interval(interval.ages, end)
 
