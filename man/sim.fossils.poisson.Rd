@@ -40,7 +40,7 @@ plot(f, t)
 
 # simulate fossils with rate variation across lineages
 rate = runif(length(s$sp), min = 0, max = 5)
-f = sim.fossils.poisson(rate, species = s)
+f = sim.fossils.poisson(rate, taxonomy = s)
 plot(f, t)
 
 }

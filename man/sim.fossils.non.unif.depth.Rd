@@ -22,11 +22,11 @@ sim.fossils.non.unif.depth(tree = NULL, taxonomy = NULL,
 
 \item{depth.profile}{Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.}
 
-\item{PA}{Peak abundance parameter.}
+\item{PA}{Peak abundance parameter value or a vector of values.}
 
-\item{PD}{Preferred depth parameter.}
+\item{PD}{Preferred depth parameter value or a vector of values.}
 
-\item{DT}{Depth tolerance parameter.}
+\item{DT}{Depth tolerance parameter value or a vector of values.}
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 }
@@ -60,15 +60,15 @@ wd = sim.water.depth(strata)
 
 # simulate fossils using tree & basin.age and strata
 f = sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
- depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
-plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
+depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
+#plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 
 # simulate fossils using taxonomy & interval.ages
 s = sim.taxonomy(t, 0.1, 0.1, 1)
 times = seq(0, max.age, length.out = strata + 1)
 f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
      depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
-plot(f,t)
+#plot(f, t, strata = strata, binned = TRUE)
 
 }
 \references{

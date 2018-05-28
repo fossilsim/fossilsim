@@ -28,7 +28,7 @@
 #'
 #' # simulate fossils with rate variation across lineages
 #' rate = runif(length(s$sp), min = 0, max = 5)
-#' f = sim.fossils.poisson(rate, species = s)
+#' f = sim.fossils.poisson(rate, taxonomy = s)
 #' plot(f, t)
 #'
 #' @keywords uniform preservation
@@ -62,10 +62,10 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
   } else
     from.taxonomy = TRUE
 
-  if(length(rate) > 1 && length(rate) != length(unique(species$sp)))
+  if(length(rate) > 1 && length(rate) != length(unique(taxonomy$sp)))
     stop("vector of rates provided that doesn't correspond to the number of species")
   else if(length(rate) == 1)
-    rate = rep(rate, length(unique(species$sp)))
+    rate = rep(rate, length(unique(taxonomy$sp)))
 
   # If TRUE use exact sampling times.
   # If FALSE hmin and hmax will equal the start and end times of the corresponding edge.
@@ -285,9 +285,9 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' @param basin.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
 #' @param depth.profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.
-#' @param PA Peak abundance parameter.
-#' @param PD Preferred depth parameter.
-#' @param DT Depth tolerance parameter.
+#' @param PA Peak abundance parameter value or a vector of values.
+#' @param PD Preferred depth parameter value or a vector of values.
+#' @param DT Depth tolerance parameter value or a vector of values.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #'
 #' @return An object of class fossils, where \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval.
@@ -308,15 +308,15 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #'
 #' # simulate fossils using tree & basin.age and strata
 #' f = sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
-#' depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
-#' plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
+#' depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
+#' #plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using taxonomy & interval.ages
 #' s = sim.taxonomy(t, 0.1, 0.1, 1)
 #' times = seq(0, max.age, length.out = strata + 1)
 #' f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
 #'      depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
-#' plot(f,t)
+#' #plot(f, t, strata = strata, binned = TRUE)
 #'
 #' @keywords non-uniform fossil preseravtion
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}
@@ -355,21 +355,37 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
   if(length(depth.profile) != (length(interval.ages)-1))
     stop("Mismatch between the number of intervals and depth profile values")
 
-  # calculate per interval probabilities
-  probabilities = sapply(depth.profile, function(x) {PA * exp( (-(x-PD)**2) / (2 * (DT ** 2)) )})
-
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
 
+  if(length(PA) > 1 && length(PA) != length(unique(taxonomy$sp)))
+    stop("vector of PA values provided that doesn't correspond to the number of species")
+  else if(length(PA) == 1)
+    PA = rep(PA, length(unique(taxonomy$sp)))
+
+  if(length(PD) > 1 && length(PD) != length(unique(taxonomy$sp)))
+    stop("vector of PD values provided that doesn't correspond to the number of species")
+  else if(length(PD) == 1)
+    PD = rep(PD, length(unique(taxonomy$sp)))
+
+  if(length(DT) > 1 && length(PD) != length(unique(taxonomy$sp)))
+    stop("vector of DT values provided that doesn't correspond to the number of species")
+  else if(length(DT) == 1)
+    DT = rep(DT, length(unique(taxonomy$sp)))
+
+  # calculate per interval probabilities
+  probabilities = sapply(depth.profile, function(x) {PA * exp( (-(x-PD)**2) / (2 * (DT ** 2)) )})
+
   fdf = fossils()
 
   lineages = unique(taxonomy$sp)
 
-  for (sp in lineages) {
+  for (i in 1:length(lineages)) {
 
+    sp = lineages[i]
     start = taxonomy$start[which(taxonomy$sp == sp)][1]
     end = taxonomy$end[which(taxonomy$sp == sp)][1]
     origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
@@ -378,23 +394,23 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
     blength = start - end
 
     #possible intervals covered by taxonomy
-    for (i in 1:(length(interval.ages) - 1)) {
-      if(interval.ages[i+1] < end) next
-      if(interval.ages[i] > start) break
+    for (j in 1:(length(interval.ages) - 1)) {
+      if(interval.ages[j+1] < end) next
+      if(interval.ages[j] > start) break
 
-      min.time = max(end, interval.ages[i])
-      max.time = min(start, interval.ages[i+1])
+      min.time = max(end, interval.ages[j])
+      max.time = min(start, interval.ages[j+1])
 
       # scale the probability
-      pr = probabilities[i] * (max.time - min.time)/(interval.ages[i+1] - interval.ages[i])
+      pr = probabilities[i, j] * (max.time - min.time)/(interval.ages[j+1] - interval.ages[j])
       # assign fossils to edges
       ages = runif(1, min.time, max.time)
       edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
       # if random.number < pr { record fossil as collected during interval }
       if (runif(1) <= pr) {
         # use interval ages
-        min.time = interval.ages[i]
-        max.time = interval.ages[i+1]
+        min.time = interval.ages[j]
+        max.time = interval.ages[j+1]
         fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
       }
     }
@@ -469,18 +485,18 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #' # simualte rates under the autocorrelated rates model
 #' rate = 1
 #' rates = sim.species.rates(rate = rate, taxonomy = s, v = 1)
-#' f = sim.fossils.poisson(rates, species = s)
+#' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
 #' # simualte rates under the independent rates model
 #' dist = function() { rlnorm(1, log(rate), 1) }
 #' rates = sim.species.rates(rate = rate, taxonomy = s, model = "independent", dist = dist)
-#' f = sim.fossils.poisson(rates, species = s)
+#' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
 #' # simualte rates under the jump model
 #' rates = sim.species.rates(rate = rate, taxonomy = s, model = "jump", dist = dist, jump.pr = 0.1)
-#' f = sim.fossils.poisson(rates, species = s)
+#' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
 #' @references

@@ -51,18 +51,18 @@ s = sim.taxonomy(t, 0.5, 1, 0.5)
 # simualte rates under the autocorrelated rates model
 rate = 1
 rates = sim.species.rates(rate = rate, taxonomy = s, v = 1)
-f = sim.fossils.poisson(rates, species = s)
+f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 
 # simualte rates under the independent rates model
 dist = function() { rlnorm(1, log(rate), 1) }
 rates = sim.species.rates(rate = rate, taxonomy = s, model = "independent", dist = dist)
-f = sim.fossils.poisson(rates, species = s)
+f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 
 # simualte rates under the jump model
 rates = sim.species.rates(rate = rate, taxonomy = s, model = "jump", dist = dist, jump.pr = 0.1)
-f = sim.fossils.poisson(rates, species = s)
+f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 
 }
