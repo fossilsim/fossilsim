@@ -28,7 +28,7 @@ sim.species.rates(rate = 1, tree = NULL, taxonomy = NULL,
 }
 \value{
 A vector of rates.
-Rates are output for each species in the order they appear in the corresponding taxonomy object.
+Rates are outputted for each species in the order in which they appear in the taxonomy object (if taxonomy was provided) or for each edge in the order in which they appear in the tree object, with the root edge as first if present.
 }
 \description{
 Available models include autocorrelated rates, independent rates and a "jump" model in which rate changes are coincident with speciation events.
@@ -48,13 +48,13 @@ t = ape::rtree(6)
 # simulate taxonomy
 s = sim.taxonomy(t, 0.5, 1, 0.5)
 
-# simualte rates under the autocorrelated rates model
+# simulate rates under the autocorrelated rates model
 rate = 1
 rates = sim.species.rates(rate = rate, taxonomy = s, v = 1)
 f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 
-# simualte rates under the independent rates model
+# simulate rates under the independent rates model
 dist = function() { rlnorm(1, log(rate), 1) }
 rates = sim.species.rates(rate = rate, taxonomy = s, model = "independent", dist = dist)
 f = sim.fossils.poisson(rates, taxonomy = s)
@@ -68,5 +68,5 @@ plot(f, t)
 }
 \references{
 Heath et al. 2014. The fossilized birth-death process for coherent calibration of divergence-time estimates. PNAS 111:E2957-E2966.\cr
-Kishino et al. 2001. Performance of a divergence time Estimation method under a probabilistic model of rate evolution MBE 18:352–361.
+Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352-361.
 }

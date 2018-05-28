@@ -3,9 +3,10 @@
 #' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
-#' A vector of rates can be specified to allow for rate variation across lineages.
+#' A vector of rates can be specified to allow for rate variation across lineages. If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
+#' or to each unique edge in the order in which they appear in the tree object, with the root edge as first, if present.
 #'
-#' @param rate A single Poisson sampling rate or a vector of rates. If a vector is provided, each entry will apply to each unique species in the order they appear in the corresponding taxonomy object.
+#' @param rate A single Poisson sampling rate or a vector of rates.
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
@@ -27,7 +28,7 @@
 #' plot(f, t)
 #'
 #' # simulate fossils with rate variation across lineages
-#' rate = runif(length(s$sp), min = 0, max = 5)
+#' rate = runif(length(unique(s$sp)), min = 0, max = 5)
 #' f = sim.fossils.poisson(rate, taxonomy = s)
 #' plot(f, t)
 #'
@@ -35,14 +36,14 @@
 #' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}
 #' @export
 #'
-#' @importFrom stats rpois runif
+#' @importFrom stats rpois runif rlnorm
 sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = TRUE) {
 
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
 
   if(!is.null(tree) && !"phylo" %in% class(tree))
-      stop("tree must be an object of class \"phylo\"")
+    stop("tree must be an object of class \"phylo\"")
 
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
     stop("taxonomy must be an object of class \"taxonomy\"")
@@ -56,14 +57,19 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
 
-  if(is.null(taxonomy)){
+  if(is.null(taxonomy)) {
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
+    if(length(rate) > 1) {
+      if(is.null(tree$root.edge)) rate = c(0, rate) # no root.edge = no rate provided for it
+      rate = rate[order(c(root(tree), tree$edge[,2]))] # sort rates by node 1, node 2, etc
+      rate = rate[as.numeric(taxonomy$sp)] # sort rates by taxonomy
+    }
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
 
   if(length(rate) > 1 && length(rate) != length(unique(taxonomy$sp)))
-    stop("vector of rates provided that doesn't correspond to the number of species")
+    stop("The vector of rates provided doesn't correspond to the number of species")
   else if(length(rate) == 1)
     rate = rep(rate, length(unique(taxonomy$sp)))
 
@@ -153,9 +159,9 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.non.unif.depth}}
 #' @export
 sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
-                                interval.ages = NULL, basin.age = NULL, strata = NULL,
-                                probabilities = NULL, rates = NULL,
-                                root.edge = TRUE, use.exact.times = TRUE){
+                                 interval.ages = NULL, basin.age = NULL, strata = NULL,
+                                 probabilities = NULL, rates = NULL,
+                                 root.edge = TRUE, use.exact.times = TRUE){
 
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
@@ -446,10 +452,7 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
   # y = a * sin (b * pi * (x-1/c))
   y = depth*sin(cycles*pi*(x-1/4))
 
-  #return(data.frame(x=c(1:strata),y=y))
   return(y)
-
-  # EOF
 }
 
 #' Simulate fossils recovery rates with variation across lineages
@@ -473,7 +476,7 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #' @param dist Distribution of rates used to draw new rates under the "independent" and "jump" models. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single positive value.
 #' @param jump.pr Probability that fossil recovery rate changes at speciation events. Default = 0.01.
 #' @return A vector of rates.
-#' Rates are output for each species in the order they appear in the corresponding taxonomy object.
+#' Rates are outputted for each species in the order in which they appear in the taxonomy object (if taxonomy was provided) or for each edge in the order in which they appear in the tree object, with the root edge as first if present.
 #'
 #' @examples
 #' # simulate tree
@@ -482,13 +485,13 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #' # simulate taxonomy
 #' s = sim.taxonomy(t, 0.5, 1, 0.5)
 #'
-#' # simualte rates under the autocorrelated rates model
+#' # simulate rates under the autocorrelated rates model
 #' rate = 1
 #' rates = sim.species.rates(rate = rate, taxonomy = s, v = 1)
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
-#' # simualte rates under the independent rates model
+#' # simulate rates under the independent rates model
 #' dist = function() { rlnorm(1, log(rate), 1) }
 #' rates = sim.species.rates(rate = rate, taxonomy = s, model = "independent", dist = dist)
 #' f = sim.fossils.poisson(rates, taxonomy = s)
@@ -501,7 +504,7 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #'
 #' @references
 #' Heath et al. 2014. The fossilized birth-death process for coherent calibration of divergence-time estimates. PNAS 111:E2957-E2966.\cr
-#' Kishino et al. 2001. Performance of a divergence time Estimation method under a probabilistic model of rate evolution MBE 18:352–361.
+#' Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352-361.
 #'
 #' @export
 sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
@@ -515,10 +518,10 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
     stop("tree must be an object of class \"phylo\"")
 
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
-    stop("species must be an object of class \"taxonomy\"")
+    stop("taxonomy must be an object of class \"taxonomy\"")
 
   if(!is.null(tree) && !is.null(taxonomy))
-    warning("tree and species both defined, using species taxonomy")
+    warning("tree and taxonomy both defined, using taxonomy")
 
   if(is.null(taxonomy) && is.null(tree$edge.length))
     stop("tree must have edge lengths")
@@ -533,7 +536,7 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
     stop("jump.pr must be a probability between 0 and 1")
 
   if((model == "independent" || model == "jump") & ( length(dist()) != 1 || !(is.numeric(dist()))))
-    stop("specify a valid distribution function that returns a single +ve value")
+    stop("specify a valid distribution function that returns a single positive value")
 
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
@@ -563,7 +566,7 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
       r = dist()
     }
 
-    if(r < 0) stop("specify a valid distribution function that returns a single +ve value")
+    if(r < 0) stop("A negative rate was given by dist: specify a valid distribution function that returns a single positive value")
 
     t[which(t$sp == sp),]$rate = r
 
@@ -588,6 +591,12 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
 
   # extract unique rates
   rates = unique(cbind(taxonomy["sp"],taxonomy["rate"]))$rate
+
+  if(!from.taxonomy) {
+    rates = rates[order(as.numeric(taxonomy$sp))] # sort rates by node 1, node 2, etc
+    if(!is.null(tree$root.edge)) rates = rates[c(root(tree), tree$edge[,2])] # sort rates according to tree
+    else rates = rates[tree$edge[,2]]
+  }
 
   return(rates)
 }
@@ -657,7 +666,7 @@ count.fossils.binned = function(fossils, interval.ages){
 assign.interval = function(intervals, t){
 
   if(is.null(intervals) || is.null(t))
-     stop("specify intervals and time t")
+    stop("specify intervals and time t")
 
   if(any(intervals < intervals[1]))
     stop("specify intervals from youngest to oldest")
