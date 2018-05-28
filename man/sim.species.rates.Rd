@@ -6,8 +6,7 @@
 \usage{
 sim.species.rates(rate = 1, tree = NULL, taxonomy = NULL,
   root.edge = TRUE, model = "autocorrelated", v = 0.01,
-  dist = function() {     runif(1, 0, 2) }, jump.pr = 0.01,
-  return.rates = TRUE)
+  dist = function() {     runif(1, 0, 2) }, jump.pr = 0.01)
 }
 \arguments{
 \item{rate}{Initial rate at the origin or root of the phylo or taxonomy object. Default = 1.}
@@ -28,7 +27,7 @@ sim.species.rates(rate = 1, tree = NULL, taxonomy = NULL,
 }
 \value{
 A vector of rates.
-Rates are outputted for each species in the order in which they appear in the taxonomy object (if taxonomy was provided) or for each edge in the order in which they appear in the tree object, with the root edge as first if present.
+Rates are output for each species in the order in which they appear in the taxonomy object (if taxonomy was provided) or for each edge in the order in which they appear in the tree object, with the root edge as first if present.
 }
 \description{
 Available models include autocorrelated rates, independent rates and a "jump" model in which rate changes are coincident with speciation events.

@@ -363,6 +363,21 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
 
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
+    if(length(PA) > 1) {
+      if(is.null(tree$root.edge)) PA = c(0, PA) # no root.edge = no value provided for it
+      PA = PA[order(c(root(tree), tree$edge[,2]))] # sort value by node 1, node 2, etc
+      PA = PA[as.numeric(taxonomy$sp)] # sort value by taxonomy
+    }
+    if(length(PD) > 1) {
+      if(is.null(tree$root.edge)) PD = c(0, PD) # no root.edge = no value provided for it
+      PD = PD[order(c(root(tree), tree$edge[,2]))] # sort values by node 1, node 2, etc
+      PD = PD[as.numeric(taxonomy$sp)] # sort values by taxonomy
+    }
+    if(length(DT) > 1) {
+      if(is.null(tree$root.edge)) PD = c(0, DT) # no root.edge = no value provided for it
+      DT = DT[order(c(root(tree), tree$edge[,2]))] # sort values by node 1, node 2, etc
+      DT = DT[as.numeric(taxonomy$sp)] # sort values by taxonomy
+    }
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
@@ -476,7 +491,7 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #' @param dist Distribution of rates used to draw new rates under the "independent" and "jump" models. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single positive value.
 #' @param jump.pr Probability that fossil recovery rate changes at speciation events. Default = 0.01.
 #' @return A vector of rates.
-#' Rates are outputted for each species in the order in which they appear in the taxonomy object (if taxonomy was provided) or for each edge in the order in which they appear in the tree object, with the root edge as first if present.
+#' Rates are output for each species in the order in which they appear in the taxonomy object (if taxonomy was provided) or for each edge in the order in which they appear in the tree object, with the root edge as first if present.
 #'
 #' @examples
 #' # simulate tree
@@ -509,7 +524,7 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #' @export
 sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
                              model = "autocorrelated", v = 0.01,
-                             dist = function(){runif(1,0,2)}, jump.pr = 0.01, return.rates = TRUE){
+                             dist = function(){runif(1,0,2)}, jump.pr = 0.01){
 
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
@@ -558,7 +573,7 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
     if(model == "autocorrelated"){
       # this follows the molecular clock model of Kishino et al 2001
       # and the preservation model described in Heath et al 2014 (supplementary material)
-      r = rlnorm(1, mean = log(r) - ((blength*v)/2), sdlog = sqrt(blength*v))
+      r = rlnorm(1, meanlog = log(r) - ((blength*v)/2), sdlog = sqrt(blength*v))
     } else if (model == "jump") {
       if(runif(1) < jump.pr)
         r = dist()
