@@ -3,9 +3,10 @@
 #' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
-#' A vector of rates can be specified to allow for rate variation across lineages.
+#' A vector of rates can be specified to allow for rate variation across lineages. If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided), 
+#' or to each unique edge in the order in which they appear in the tree object, with the root edge as first, if present.
 #'
-#' @param rate A single Poisson sampling rate or a vector of rates. If a vector is provided, each entry will apply to each unique species in the order they appear in the corresponding taxonomy object.
+#' @param rate A single Poisson sampling rate or a vector of rates. 
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
@@ -27,67 +28,72 @@
 #' plot(f, t)
 #'
 #' # simulate fossils with rate variation across lineages
-#' rate = runif(length(s$sp), min = 0, max = 5)
-#' f = sim.fossils.poisson(rate, species = s)
+#' rate = runif(length(unique(s$sp)), min = 0, max = 5)
+#' f = sim.fossils.poisson(rate, taxonomy = s)
 #' plot(f, t)
 #'
 #' @keywords uniform preservation
 #' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}
 #' @export
 #'
-#' @importFrom stats rpois runif
+#' @importFrom stats rpois runif rlnorm
 sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = TRUE) {
-
+  
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
-
+  
   if(!is.null(tree) && !"phylo" %in% class(tree))
-      stop("tree must be an object of class \"phylo\"")
-
+    stop("tree must be an object of class \"phylo\"")
+  
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
     stop("taxonomy must be an object of class \"taxonomy\"")
-
+  
   if(!is.null(tree) && !is.null(taxonomy))
     warning("tree and taxonomy both defined, using taxonomy")
-
+  
   if(is.null(taxonomy) && is.null(tree$edge.length))
     stop("tree must have edge lengths")
-
+  
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
-
-  if(is.null(taxonomy)){
+  
+  if(is.null(taxonomy)) {
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
+    if(length(rate) > 1) {
+      if(is.null(tree$root.edge)) rate = c(0, rate) # no root.edge = no rate provided for it
+      rate = rate[order(c(root(tree), tree$edge[,2]))] # sort rates by node 1, node 2, etc
+      rate = rate[as.numeric(taxonomy$sp)] # sort rates by taxonomy
+    }
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
-
+  
   if(length(rate) > 1 && length(rate) != length(unique(taxonomy$sp)))
     stop("The vector of rates provided doesn't correspond to the number of species")
   else if(length(rate) == 1)
     rate = rep(rate, length(unique(taxonomy$sp)))
-
+  
   # If TRUE use exact sampling times.
   # If FALSE hmin and hmax will equal the start and end times of the corresponding edge.
   use.exact.times = TRUE
-
+  
   fdf = fossils()
-
+  
   lineages = unique(taxonomy$sp)
-
+  
   for (i in 1:length(lineages)){
-
+    
     sp = lineages[i]
     start = taxonomy$start[which(taxonomy$sp == sp)][1]
     end = taxonomy$end[which(taxonomy$sp == sp)][1]
     origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
     edges = taxonomy[which(taxonomy$sp == sp), ]
-
+    
     blength = start - end
-
+    
     # sample fossil numbers from the Poisson distribution
     rand = rpois(1, blength*rate[i])
-
+    
     if(rand > 0) {
       h = runif(rand, min = end, max = start)
       edge = sapply(h, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
@@ -153,43 +159,43 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.non.unif.depth}}
 #' @export
 sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
-                                interval.ages = NULL, basin.age = NULL, strata = NULL,
-                                probabilities = NULL, rates = NULL,
-                                root.edge = TRUE, use.exact.times = TRUE){
-
+                                 interval.ages = NULL, basin.age = NULL, strata = NULL,
+                                 probabilities = NULL, rates = NULL,
+                                 root.edge = TRUE, use.exact.times = TRUE){
+  
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
-
+  
   if(!is.null(tree) && !"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
-
+  
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
     stop("taxonomy must be an object of class \"taxonomy\"")
-
+  
   if(!is.null(tree) && !is.null(taxonomy))
     warning("tree and taxonomy both defined, using taxonomy")
-
+  
   if(is.null(taxonomy) && is.null(tree$edge.length))
     stop("tree must have edge lengths")
-
+  
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
-
+  
   if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
     stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
   if(!is.null(basin.age) && !is.null(strata)) {
     if(!is.null(interval.ages)) warning("Two interval definitions found, using interval.ages")
     else interval.ages <- seq(0, basin.age, length = strata + 1)
   }
-
+  
   if(is.null(probabilities) && is.null(rates)) stop("Either rates or probabilities need to be specified")
-
+  
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
-
+  
   use.rates = FALSE
   if(!is.null(probabilities) && !is.null(rates)) {
     rates = NULL
@@ -202,31 +208,31 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
     if(length(probabilities) != (length(interval.ages) - 1 )) stop("Length mismatch between interval ages and sampling probabilities")
     if(any(probabilities < 0) || any(probabilities > 1)) stop("Sampling probabilities must be between 0 and 1")
   }
-
+  
   if(is.null(taxonomy))
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
-
+  
   fdf = fossils()
-
+  
   lineages = unique(taxonomy$sp)
-
+  
   for (sp in lineages) {
-
+    
     start = taxonomy$start[which(taxonomy$sp == sp)][1]
     end = taxonomy$end[which(taxonomy$sp == sp)][1]
     origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
     edges = taxonomy[which(taxonomy$sp == sp), ]
-
+    
     blength = start - end
-
+    
     #possible intervals covered by species
     for (i in 1:(length(interval.ages) - 1)) {
       if(interval.ages[i+1] < end) next
       if(interval.ages[i] > start) break
-
+      
       min.time = max(end, interval.ages[i])
       max.time = min(start, interval.ages[i+1])
-
+      
       if(use.rates) {
         # generate k fossils from a poisson distribution
         k = rpois(1, rates[i]*(max.time - min.time))
@@ -324,42 +330,42 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}
 #' @export
 sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
-                                interval.ages = NULL, basin.age = NULL, strata = NULL,
-                                depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5, use.rates = FALSE,
-                                root.edge = TRUE, use.exact.times = TRUE){
-
+                                      interval.ages = NULL, basin.age = NULL, strata = NULL,
+                                      depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5, use.rates = FALSE,
+                                      root.edge = TRUE, use.exact.times = TRUE){
+  
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
-
+  
   if(!is.null(tree) && !"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
-
+  
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
     stop("taxonomy must be an object of class \"taxonomy\"")
-
+  
   if(!is.null(tree) && !is.null(taxonomy))
     warning("tree and taxonomy both defined, using taxonomy")
-
+  
   if(is.null(taxonomy) && is.null(tree$edge.length))
     stop("tree must have edge lengths")
-
+  
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
-
+  
   if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
     stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
   if(!is.null(basin.age) && !is.null(strata)) {
     if(!is.null(interval.ages)) warning("Two interval definitions found, using interval.ages")
     else interval.ages <- seq(0, basin.age, length = strata + 1)
   }
-
+  
   if(is.null(depth.profile)) stop("No water depth profile specified")
   if(length(depth.profile) != (length(interval.ages)-1))
     stop("Mismatch between the number of intervals and depth profile values")
-
+  
   # calculate per interval probabilities
   probabilities = sapply(depth.profile, function(x) {PA * exp( (-(x-PD)**2) / (2 * (DT ** 2)) )})
-
+  
   #TODO: still not sure if this is appropriate
   if(use.rates){
     s = sapply(1:length(interval.ages[-1]), function(x) { interval.ages[x+1] - interval.ages[x] })
@@ -368,34 +374,34 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
     }
     rates = -log(1-probabilities)/s
   }
-
+  
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
-
+  
   fdf = fossils()
-
+  
   lineages = unique(taxonomy$sp)
-
+  
   for (sp in lineages) {
-
+    
     start = taxonomy$start[which(taxonomy$sp == sp)][1]
     end = taxonomy$end[which(taxonomy$sp == sp)][1]
     origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
     edges = taxonomy[which(taxonomy$sp == sp), ]
-
+    
     blength = start - end
-
+    
     #possible intervals covered by taxonomy
     for (i in 1:(length(interval.ages) - 1)) {
       if(interval.ages[i+1] < end) next
       if(interval.ages[i] > start) break
-
+      
       min.time = max(end, interval.ages[i])
       max.time = min(start, interval.ages[i+1])
-
+      
       if(use.rates) {
         # generate k fossils from a poisson distribution
         k = rpois(1, rates[i]*(max.time - min.time))
@@ -448,10 +454,10 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
 #' @keywords non-uniform fossil preservation
 #' @export
 sim.water.depth = function(strata, depth = 2, cycles = 2){
-
+  
   # define the x-axis values
   x = seq(0,2,length.out=strata)
-
+  
   # define y-axis values
   # a - total depth excursion - amplitude
   # b - number of cycles
@@ -483,7 +489,7 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #' @param dist Distribution of rates used to draw new rates under the "independent" and "jump" models. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single positive value.
 #' @param jump.pr Probability that fossil recovery rate changes at speciation events. Default = 0.01.
 #' @return A vector of rates.
-#' Rates are output for each species in the order they appear in the corresponding taxonomy object.
+#' Rates are outputted for each species in the order in which they appear in the taxonomy object (if taxonomy was provided) or for each edge in the order in which they appear in the tree object, with the root edge as first if present.
 #'
 #' @examples
 #' # simulate tree
@@ -492,75 +498,75 @@ sim.water.depth = function(strata, depth = 2, cycles = 2){
 #' # simulate taxonomy
 #' s = sim.taxonomy(t, 0.5, 1, 0.5)
 #'
-#' # simualte rates under the autocorrelated rates model
+#' # simulate rates under the autocorrelated rates model
 #' rate = 1
 #' rates = sim.species.rates(rate = rate, taxonomy = s, v = 1)
-#' f = sim.fossils.poisson(rates, species = s)
+#' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
-#' # simualte rates under the independent rates model
+#' # simulate rates under the independent rates model
 #' dist = function() { rlnorm(1, log(rate), 1) }
 #' rates = sim.species.rates(rate = rate, taxonomy = s, model = "independent", dist = dist)
-#' f = sim.fossils.poisson(rates, species = s)
+#' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
 #' # simualte rates under the jump model
 #' rates = sim.species.rates(rate = rate, taxonomy = s, model = "jump", dist = dist, jump.pr = 0.1)
-#' f = sim.fossils.poisson(rates, species = s)
+#' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
 #' @references
 #' Heath et al. 2014. The fossilized birth-death process for coherent calibration of divergence-time estimates. PNAS 111:E2957-E2966.\cr
-#' Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352–361.
+#' Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352-361.
 #'
 #' @export
 sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
                              model = "autocorrelated", v = 0.01,
                              dist = function(){runif(1,0,2)}, jump.pr = 0.01, return.rates = TRUE){
-
+  
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
-
+  
   if(!is.null(tree) && !"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
-
+  
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
     stop("taxonomy must be an object of class \"taxonomy\"")
-
+  
   if(!is.null(tree) && !is.null(taxonomy))
     warning("tree and taxonomy both defined, using taxonomy")
-
+  
   if(is.null(taxonomy) && is.null(tree$edge.length))
     stop("tree must have edge lengths")
-
+  
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
-
+  
   if(model != "autocorrelated" && model != "independent" && model != "jump")
     stop("specify a valid model option = 'autocorrelated', 'independent' or 'jump'")
-
+  
   if(!(jump.pr >= 0 & jump.pr <= 1))
     stop("jump.pr must be a probability between 0 and 1")
-
+  
   if((model == "independent" || model == "jump") & ( length(dist()) != 1 || !(is.numeric(dist()))))
     stop("specify a valid distribution function that returns a single positive value")
-
+  
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
   } else
     from.taxonomy = TRUE
-
+  
   aux = function(sp, t, r) {
-
+    
     # simulate fossils
     start = t$start[which(t$sp == sp)][1]
     end = t$end[which(t$sp == sp)][1]
     origin = t$origin[which(t$sp == sp)][1]
     edges = t[which(t$sp == sp), ]
-
+    
     blength = start - end
-
+    
     # generate a new rate for sp
     if(model == "autocorrelated"){
       # this follows the molecular clock model of Kishino et al 2001
@@ -572,33 +578,39 @@ sim.species.rates = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge =
     } else { # independent rates
       r = dist()
     }
-
+    
     if(r < 0) stop("A negative rate was given by dist: specify a valid distribution function that returns a single positive value")
-
+    
     t[which(t$sp == sp),]$rate = r
-
+    
     # fetch descendants
     descendants = unique(t$sp[which(t$parent == sp)])
-
+    
     if(length(descendants) == 0) {
       return(t)
     }
-
+    
     for(i in descendants){
       t = aux(i, t, r)
     }
     return(t)
   }
-
+  
   taxonomy$rate = NA
-
+  
   root = unique(taxonomy$sp[which(taxonomy$parent == 0)])
-
+  
   taxonomy = aux(root, taxonomy, rate)
-
+  
   # extract unique rates
   rates = unique(cbind(taxonomy["sp"],taxonomy["rate"]))$rate
-
+  
+  if(!from.taxonomy) {
+    rates = rates[order(as.numeric(taxonomy$sp))] # sort rates by node 1, node 2, etc
+    if(!is.null(tree$root.edge)) rates = rates[c(root(tree), tree$edge[,2])] # sort rates according to tree
+    else rates = rates[tree$edge[,2]]
+  }
+  
   return(rates)
 }
 
@@ -622,7 +634,7 @@ basin.age = function(tree,root.edge=TRUE){
     ba = max(node.ages) + tree$root.edge
   else
     ba = max(node.ages)
-
+  
   ba = round(ba,1) + 0.1
   return(ba)
 }
@@ -648,12 +660,12 @@ count.fossils = function(fossils){
 #' @export
 count.fossils.binned = function(fossils, interval.ages){
   intervals<-interval.ages
-
+  
   k = rep(0, length(intervals))
-
+  
   if(length(fossils$sp) == 0)
     return(k)
-
+  
   for(i in 1:length(fossils$h)){
     if(fossils$h[i] != 0){
       j = assign.interval(intervals, fossils$h[i])
@@ -665,13 +677,13 @@ count.fossils.binned = function(fossils, interval.ages){
 
 # assign any given age to one of a set of intervals
 assign.interval = function(intervals, t){
-
+  
   if(is.null(intervals) || is.null(t))
-     stop("specify intervals and time t")
-
+    stop("specify intervals and time t")
+  
   if(any(intervals < intervals[1]))
     stop("specify intervals from youngest to oldest")
-
+  
   i = -1
   for(j in 1:length(intervals)){
     if(t >= intervals[j])
@@ -705,23 +717,23 @@ assign.interval = function(intervals, t){
 #'
 #' @export
 reconcile.fossils.taxonomy = function(fossils, taxonomy){
-
+  
   if(!is.null(fossils) && !"fossils" %in% class(fossils))
     stop("fossils must be an object of class \"fossils\"")
-
+  
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
     stop("taxonomy must be an object of class \"taxonomy\"")
-
+  
   # if fossils contain edges not in taxonomy
   if(!all(fossils$edge %in% taxonomy$edge))
     stop("incompatible fossils and taxonomy: not all fossil edges found in taxonomy")
-
+  
   if(!identical(fossils$hmin, fossils$hmax))
     stop("exact fossil sampling times must be specified to use this function (i.e. hmin = hmax)")
-
+  
   if(attr(fossils,"from.taxonomy"))
     warning("fossils already assigned based on taxonomy")
-
+  
   # for each fossil identify the edge
   for(i in 1:length(fossils$edge)){
     edge = fossils$edge[i]
@@ -763,48 +775,48 @@ reconcile.fossils.taxonomy = function(fossils, taxonomy){
 #
 #' @importFrom stats rexp
 sim.fossils.exponential = function(tree,rate,root.edge=TRUE){
-
+  
   node.ages<-n.ages(tree)
-
+  
   fossils<-data.frame(h=numeric(),sp=numeric())
-
+  
   root = length(tree$tip.label) + 1
-
+  
   if(root.edge && exists("root.edge",tree) ){
-
+    
     lineages = c(tree$edge[,2], root)
-
+    
   } else lineages = tree$edge[,2]
-
+  
   for (i in lineages){ # internal nodes + tips
-
+    
     if(i == root){
-
+      
       # root age
       a=which(names(node.ages)==root)
       lineage.end=node.ages[[a]]
-
+      
       # origin time
       b=tree$root.edge
       lineage.start=lineage.end+b
-
+      
     } else {
-
+      
       # work out the max age of the lineage (e.g. when that lineage became extant)
       # & get ancestor
       row=which(tree$edge[,2]==i)
       ancestor=tree$edge[,1][row]
-
+      
       # get the age of the ancestor
       a=which(names(node.ages)==ancestor)
       lineage.start=node.ages[[a]]
-
+      
       # work out the min age of the lineage (e.g. when that lineage became extinct)
       # & get the branch length
       b=tree$edge.length[row]
       lineage.end=lineage.start-b # branch length
     }
-
+    
     t = 0
     while(TRUE){
       t = t + rexp(1, rate);
@@ -814,7 +826,7 @@ sim.fossils.exponential = function(tree,rate,root.edge=TRUE){
       else break
     }
   }
-
+  
   fossils <- as.fossils(fossils, FALSE)
   return(fossils) # in this data frame h=fossil age and sp=lineage
   # EOF

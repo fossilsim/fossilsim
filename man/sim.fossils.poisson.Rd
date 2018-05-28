@@ -7,7 +7,7 @@
 sim.fossils.poisson(rate, tree = NULL, taxonomy = NULL, root.edge = TRUE)
 }
 \arguments{
-\item{rate}{A single Poisson sampling rate or a vector of rates. If a vector is provided, each entry will apply to each unique species in the order they appear in the corresponding taxonomy object.}
+\item{rate}{A single Poisson sampling rate or a vector of rates.}
 
 \item{tree}{Phylo object.}
 
@@ -22,7 +22,8 @@ An object of class fossils.
 Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
-A vector of rates can be specified to allow for rate variation across lineages.
+A vector of rates can be specified to allow for rate variation across lineages. If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided), 
+or to each unique edge in the order in which they appear in the tree object, with the root edge as first, if present.
 }
 \examples{
 # simulate tree
@@ -39,8 +40,8 @@ f = sim.fossils.poisson(rate, taxonomy = s)
 plot(f, t)
 
 # simulate fossils with rate variation across lineages
-rate = runif(length(s$sp), min = 0, max = 5)
-f = sim.fossils.poisson(rate, species = s)
+rate = runif(length(unique(s$sp)), min = 0, max = 5)
+f = sim.fossils.poisson(rate, taxonomy = s)
 plot(f, t)
 
 }
