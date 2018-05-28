@@ -288,11 +288,9 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' @param PA Peak abundance parameter.
 #' @param PD Preferred depth parameter.
 #' @param DT Depth tolerance parameter.
-#' @param use.rates If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
-#' @param use.exact.times If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.
 #'
-#' @return An object of class fossils.
+#' @return An object of class fossils, where \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval.
 #'
 #' @references
 #' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.
@@ -310,23 +308,23 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #'
 #' # simulate fossils using tree & basin.age and strata
 #' f = sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
-#'  depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
-#' plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
+#' depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
+#' plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using taxonomy & interval.ages
 #' s = sim.taxonomy(t, 0.1, 0.1, 1)
 #' times = seq(0, max.age, length.out = strata + 1)
 #' f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
-#'      depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
+#'      depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
 #' plot(f,t)
 #'
 #' @keywords non-uniform fossil preseravtion
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}
 #' @export
 sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
-                                interval.ages = NULL, basin.age = NULL, strata = NULL,
-                                depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5, use.rates = FALSE,
-                                root.edge = TRUE, use.exact.times = TRUE){
+                                      interval.ages = NULL, basin.age = NULL, strata = NULL,
+                                      depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5,
+                                      root.edge = TRUE){
 
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
@@ -360,15 +358,6 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
   # calculate per interval probabilities
   probabilities = sapply(depth.profile, function(x) {PA * exp( (-(x-PD)**2) / (2 * (DT ** 2)) )})
 
-  #TODO: still not sure if this is appropriate
-  if(use.rates){
-    s = sapply(1:length(interval.ages[-1]), function(x) { interval.ages[x+1] - interval.ages[x] })
-    if(any(probabilities >= 1)){
-      probabilities[which(probabilities >= 1)] = 0.99999
-    }
-    rates = -log(1-probabilities)/s
-  }
-
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
@@ -396,35 +385,17 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
       min.time = max(end, interval.ages[i])
       max.time = min(start, interval.ages[i+1])
 
-      if(use.rates) {
-        # generate k fossils from a poisson distribution
-        k = rpois(1, rates[i]*(max.time - min.time))
-        ages = runif(k, min.time, max.time)
-        edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
-        if(k > 0) {
-          if(use.exact.times) {
-            fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
-          } else { # { use interval ages }
-            min.time = rep(interval.ages[i], k)
-            max.time = rep(interval.ages[i+1], k) # this is kind of redundant
-            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
-          }
-        }
-      } else {
-        # scale the probability
-        pr = probabilities[i] * (max.time - min.time)/(interval.ages[i+1] - interval.ages[i])
-        ages = runif(1, min.time, max.time)
-        edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
-        # if random.number < pr { record fossil as collected during interval }
-        if (runif(1) <= pr) {
-          if(use.exact.times) {
-            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
-          } else { # { use interval ages }
-            min.time = interval.ages[i]
-            max.time = interval.ages[i+1]
-            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
-          }
-        }
+      # scale the probability
+      pr = probabilities[i] * (max.time - min.time)/(interval.ages[i+1] - interval.ages[i])
+      # assign fossils to edges
+      ages = runif(1, min.time, max.time)
+      edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+      # if random.number < pr { record fossil as collected during interval }
+      if (runif(1) <= pr) {
+        # use interval ages
+        min.time = interval.ages[i]
+        max.time = interval.ages[i+1]
+        fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
       }
     }
   }

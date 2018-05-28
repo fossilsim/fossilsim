@@ -7,7 +7,7 @@
 sim.fossils.non.unif.depth(tree = NULL, taxonomy = NULL,
   interval.ages = NULL, basin.age = NULL, strata = NULL,
   depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5,
-  use.rates = FALSE, root.edge = TRUE, use.exact.times = TRUE)
+  root.edge = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
@@ -28,14 +28,10 @@ sim.fossils.non.unif.depth(tree = NULL, taxonomy = NULL,
 
 \item{DT}{Depth tolerance parameter.}
 
-\item{use.rates}{If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.}
-
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
-
-\item{use.exact.times}{If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.}
 }
 \value{
-An object of class fossils.
+An object of class fossils, where \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval.
 }
 \description{
 This function uses a three parameter Gaussian model to simulate non-uniform fossil preservation along a specified phylogeny.
@@ -71,7 +67,7 @@ plot(f,t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRU
 s = sim.taxonomy(t, 0.1, 0.1, 1)
 times = seq(0, max.age, length.out = strata + 1)
 f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
-     depth.profile = wd, PA = 1, PD = 0.5, DT = 1, use.rates = TRUE)
+     depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
 plot(f,t)
 
 }
