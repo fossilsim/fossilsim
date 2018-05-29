@@ -196,3 +196,20 @@ sim.uncertain.ages = function(fossils, intervals, error_fraction = 0, error_rang
 
   fossils
 }
+
+# assign any given age to one of a set of intervals
+assign.interval = function(intervals, t) {
+  
+  if(is.null(intervals) || is.null(t))
+    stop("specify intervals and time t")
+  
+  if(any(intervals < intervals[1]))
+    stop("specify intervals from youngest to oldest")
+  
+  i = -1
+  for(j in 1:length(intervals)){
+    if(t >= intervals[j])
+      i = j
+  }
+  return(i)
+}

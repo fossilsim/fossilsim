@@ -1,3 +1,64 @@
+#' Define a basin age based on tree height
+#'
+#' @description
+#' Function returns an age slightly older than the root.age or origin time using the formula
+#' \eqn{round(max,1) + 0.1}, where max is the root.age or origin time.
+#'
+#' @param tree Phylo object.
+#' @param root.edge If TRUE include the root edge (default = TRUE).
+#' @return basin age
+#' @examples
+#' t = ape::rtree(6)
+#' basin.age(t, root.edge = FALSE)
+#'
+#' @export
+basin.age = function(tree,root.edge=TRUE){
+  node.ages<-n.ages(tree)
+  if(root.edge && exists("root.edge",tree) )
+    ba = max(node.ages) + tree$root.edge
+  else
+    ba = max(node.ages)
+  
+  ba = round(ba,1) + 0.1
+  return(ba)
+}
+
+#' Count the total number of fossils
+#'
+#' @param fossils Fossils object.
+#' @return Number of extinct samples.
+#'
+#' @export
+count.fossils = function(fossils){
+  k = length(fossils$sp[which(fossils$h > 0)])
+  return(k)
+}
+
+#' Count the total number of fossils per interval
+#'
+#' @param fossils Fossils object.
+#' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
+#'
+#' @return Vector of extinct samples corresponding to each interval. Note the last value corresponds to the number of samples > the maximum age of the oldest interval.
+#'
+#' @export
+count.fossils.binned = function(fossils, interval.ages){
+  intervals<-interval.ages
+  
+  k = rep(0, length(intervals))
+  
+  if(length(fossils$sp) == 0)
+    return(k)
+  
+  for(i in 1:length(fossils$h)){
+    if(fossils$h[i] != 0){
+      j = assign.interval(intervals, fossils$h[i])
+      k[j] = k[j] + 1
+    }
+  }
+  return(k)
+}
+
 # Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
 n.ages<-function(tree){
 
@@ -45,11 +106,9 @@ is.extant<-function(taxa,tree,tol=NULL){
   if(is.null(tol))
     tol = min((min(tree$edge.length)/100),1e-8)
 
-  ages = n.ages(tree)
+  age = n.ages(tree)[taxa]
 
-  end = ages[taxa]
-
-  return(abs(end) < tol)
+  return(abs(age) < tol)
 }
 
 
@@ -64,7 +123,7 @@ root<-function(tree){
 # Test is root
 is.root<-function(edge,tree){
 
-  root=length(tree$tip.label)+1
+  root = length(tree$tip.label)+1
 
   return(edge == root)
 }
