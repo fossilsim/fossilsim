@@ -19,11 +19,13 @@ sim.fossils.poisson(rate, tree = NULL, taxonomy = NULL, root.edge = TRUE)
 An object of class fossils.
 }
 \description{
-Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
+Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
-A vector of rates can be specified to allow for rate variation across lineages. If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
-or to each unique edge in the order in which they appear in the tree object, with the root edge as first, if present.
+A vector of rates can be specified to allow for rate variation across lineages.
+If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
+or to each unique edge in the order in which they appear in the tree object.
+If the tree object has a root edge (\code{root.edge}), the first entry in the rates vector should correspond to this edge.
 }
 \examples{
 # simulate tree
@@ -40,13 +42,13 @@ f = sim.fossils.poisson(rate, taxonomy = s)
 plot(f, t)
 
 # simulate fossils with rate variation across lineages
-rate = runif(length(unique(s$sp)), min = 0, max = 5)
-f = sim.fossils.poisson(rate, taxonomy = s)
+rates = sim.trait.values(5, taxonomy = s, model = "jump", dist = function() {runif(1)}, jump.pr = 0.1)
+f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 
 }
 \seealso{
-\code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}
+\code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}, \code{\link{sim.trait.values}}
 }
-\keyword{preservation}
-\keyword{uniform}
+\keyword{Poisson}
+\keyword{sampling}

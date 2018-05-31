@@ -60,9 +60,6 @@ sim.interval.ages = function(fossils, tree = NULL, taxonomy = NULL,
     if(!is.null(tree) && !is.null(taxonomy))
       warning("tree and taxonomy both defined, using taxonomy")
 
-    #if(!is.null(tree) && is.null(taxonomy))
-    #  warning("using tree, assumming all speciation is symmetric")
-
     if(is.null(taxonomy)){
       taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
       from.taxonomy = FALSE
@@ -199,13 +196,13 @@ sim.uncertain.ages = function(fossils, intervals, error_fraction = 0, error_rang
 
 # assign any given age to one of a set of intervals
 assign.interval = function(intervals, t) {
-  
+
   if(is.null(intervals) || is.null(t))
     stop("specify intervals and time t")
-  
+
   if(any(intervals < intervals[1]))
     stop("specify intervals from youngest to oldest")
-  
+
   i = -1
   for(j in 1:length(intervals)){
     if(t >= intervals[j])

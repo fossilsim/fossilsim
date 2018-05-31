@@ -1,10 +1,13 @@
 #' Simulate fossils under a Poisson sampling model
 #'
-#' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
+#' @description
+#' Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
-#' A vector of rates can be specified to allow for rate variation across lineages. If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
-#' or to each unique edge in the order in which they appear in the tree object, with the root edge as first, if present.
+#' A vector of rates can be specified to allow for rate variation across lineages.
+#' If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
+#' or to each unique edge in the order in which they appear in the tree object.
+#' If the tree object has a root edge (\code{root.edge}), the first entry in the rates vector should correspond to this edge.
 #'
 #' @param rate A single Poisson sampling rate or a vector of rates.
 #' @param tree Phylo object.
@@ -28,12 +31,12 @@
 #' plot(f, t)
 #'
 #' # simulate fossils with rate variation across lineages
-#' rate = runif(length(unique(s$sp)), min = 0, max = 5)
-#' f = sim.fossils.poisson(rate, taxonomy = s)
+#' rates = sim.trait.values(5, taxonomy = s, model = "jump", dist = function() {runif(1)}, jump.pr = 0.1)
+#' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
-#' @keywords uniform preservation
-#' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}
+#' @keywords Poisson sampling
+#' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}, \code{\link{sim.trait.values}}
 #' @export
 #'
 #' @importFrom stats rpois runif rlnorm
@@ -72,6 +75,8 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
     stop("The vector of rates provided doesn't correspond to the number of species")
   else if(length(rate) == 1)
     rate = rep(rate, length(unique(taxonomy$sp)))
+
+  if(any(rate < 0)) stop("Rates must be positive numbers")
 
   # If TRUE use exact sampling times.
   # If FALSE hmin and hmax will equal the start and end times of the corresponding edge.
@@ -115,7 +120,7 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 #' or \code{probabilities}, which represent the probabilities of sampling per interval.
 #' When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
-#' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
+#' Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 #'
@@ -281,7 +286,11 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 #' Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
 #' maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
-#' Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
+#' A vector of values can be specified for the model parameters \emph{PA}, \emph{PD} and \emph{DT} to allow for variation across lineages.
+#' If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
+#' or to each unique edge in the order in which they appear in the tree object.
+#' If the tree object has a root edge (\code{root.edge}), the first entry in the vector will apply to this edge. \cr \cr
+#' Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 #'
@@ -324,8 +333,12 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #'      depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
 #' #plot(f, t, strata = strata, binned = TRUE)
 #'
+#' # simulate fossils with variable preservation across lineages
+#' PD = sim.trait.values(1, taxonomy = s, model = "jump", dist = function() {runif(1)}, jump.pr = 0.1)
+#'
+#'
 #' @keywords non-uniform fossil preseravtion
-#' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}
+#' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}, \code{\link{sim.trait.values}}
 #' @export
 sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
                                       interval.ages = NULL, basin.age = NULL, strata = NULL,
@@ -374,7 +387,7 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
       PD = PD[as.numeric(taxonomy$sp)] # sort values by taxonomy
     }
     if(length(DT) > 1) {
-      if(is.null(tree$root.edge)) PD = c(0, DT) # no root.edge = no value provided for it
+      if(is.null(tree$root.edge)) DT = c(0, DT) # no root.edge = no value provided for it
       DT = DT[order(c(root(tree), tree$edge[,2]))] # sort values by node 1, node 2, etc
       DT = DT[as.numeric(taxonomy$sp)] # sort values by taxonomy
     }
@@ -392,12 +405,12 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
   else if(length(PD) == 1)
     PD = rep(PD, length(unique(taxonomy$sp)))
 
-  if(length(DT) > 1 && length(PD) != length(unique(taxonomy$sp)))
+  if(length(DT) > 1 && length(DT) != length(unique(taxonomy$sp)))
     stop("vector of DT values provided that doesn't correspond to the number of species")
   else if(length(DT) == 1)
     DT = rep(DT, length(unique(taxonomy$sp)))
 
-  # calculate per interval probabilities
+  # calculate per interval per species probabilities
   probabilities = sapply(depth.profile, function(x) {PA * exp( (-(x-PD)**2) / (2 * (DT ** 2)) )})
 
   fdf = fossils()

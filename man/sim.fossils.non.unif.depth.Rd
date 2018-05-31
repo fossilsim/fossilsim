@@ -43,7 +43,11 @@ where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{D
 \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
 maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
-Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
+A vector of values can be specified for the model parameters \emph{PA}, \emph{PD} and \emph{DT} to allow for variation across lineages.
+If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
+or to each unique edge in the order in which they appear in the tree object.
+If the tree object has a root edge (\code{root.edge}), the first entry in the vector will apply to this edge. \cr \cr
+Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 }
@@ -70,12 +74,16 @@ f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
      depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
 #plot(f, t, strata = strata, binned = TRUE)
 
+# simulate fossils with variable preservation across lineages
+PD = sim.trait.values(1, taxonomy = s, model = "jump", dist = function() {runif(1)}, jump.pr = 0.1)
+
+
 }
 \references{
 Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.
 }
 \seealso{
-\code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}
+\code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}, \code{\link{sim.trait.values}}
 }
 \keyword{fossil}
 \keyword{non-uniform}

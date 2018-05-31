@@ -36,7 +36,7 @@ In the second scenario all intervals will be of equal length.
 Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 or \code{probabilities}, which represent the probabilities of sampling per interval.
 When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
-Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{taxonomy}).
+Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 }
