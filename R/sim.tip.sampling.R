@@ -54,7 +54,7 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
     from.taxonomy = FALSE
   } else from.taxonomy = TRUE
 
-  tol = min(min(tree$edge.length)/100, 1e-8)
+  tol = if(is.null(tree)) 1e-8 else min(min(tree$edge.length)/100, 1e-8)
 
   for (i in unique(taxonomy$sp)){
 
@@ -64,8 +64,10 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
 
     if(runif(1) < rho){
       # identify the edge ending zero
-      edge = taxonomy$edge[which(taxonomy$sp == i & taxonomy$edge.end == end)]
+      edge = taxonomy$edge[which(taxonomy$sp == i)]
+      edge = max(edge) # assumes tree edges were sorted root to tip (which is true by default with ape-ordered trees)
       origin = taxonomy$origin[which(taxonomy$sp == i)][1]
+      if(is.null(origin)) origin = NA
 
       fossils<-rbind(fossils, data.frame(sp = i, edge = edge, origin = origin, hmin = 0, hmax = 0))
     }

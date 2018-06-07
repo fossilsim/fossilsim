@@ -245,6 +245,9 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
 
   tree$root.edge = root_time - tree$root.time
   tree$origin.time = root_time
+  
+  #removing extant samples (if present) from fossils
+  fossildf = fossildf[-which(fossildf$hmax < 1e-8),]
 
   return(list(tree = tree, fossils = fossildf, taxonomy = taxonomy))
 }
@@ -267,7 +270,8 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
 #' @export
 fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
   if(is.null(taxonomy) && is.null(tree)) stop("Either tree or taxonomy needs to be provided")
-
+  fossils = sim.extant.samples(fossils, tree = tree, taxonomy = taxonomy)
+  
   rec_names = c("taxon.id","ancestor.id","orig.time","ext.time", "still.alive","looks.like")
 
   if(length(fossils$sp) > 0 & !any(grepl("t", fossils$sp))){
