@@ -115,7 +115,7 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 
 #' Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals
 #'
-#' Intervals can be specified by specifying the interval boundaries using \code{interval.ages} or specifying both \code{basin.age} and \code{strata}.
+#' Intervals can be specified by specifying the interval boundaries using \code{interval.ages} or specifying both \code{max.age} and \code{strata}.
 #' In the second scenario all intervals will be of equal length.
 #' Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 #' or \code{probabilities}, which represent the probabilities of sampling per interval.
@@ -127,7 +127,7 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
-#' @param basin.age Maximum age of the oldest stratigraphic interval.
+#' @param max.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
 #' @param rates Poisson sampling rate for each interval. The number of rates should match the number of intervals.
 #' @param probabilities Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals.
@@ -142,10 +142,10 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' # assign a max age based on tree height
 #' max.age = basin.age(t)
 #'
-#' # simulate fossils using basin.age and strata & probabilities
+#' # simulate fossils using max.age and strata & probabilities
 #' strata = 4
 #' probability = rep(0.7, 4)
-#' f = sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
+#' f = sim.fossils.intervals(t, max.age = max.age, strata = strata, probabilities = probability)
 #' plot(f, t, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using interval.ages & rates
@@ -164,7 +164,7 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.non.unif.depth}}
 #' @export
 sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
-                                 interval.ages = NULL, basin.age = NULL, strata = NULL,
+                                 interval.ages = NULL, max.age = NULL, strata = NULL,
                                  probabilities = NULL, rates = NULL,
                                  root.edge = TRUE, use.exact.times = TRUE){
 
@@ -186,11 +186,11 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
 
-  if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
-    stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
-  if(!is.null(basin.age) && !is.null(strata)) {
+  if(is.null(interval.ages) && (is.null(max) || is.null(strata)))
+    stop("Intervals need to be defined by specifying either interval.ages or max.age and strata")
+  if(!is.null(max.age) && !is.null(strata)) {
     if(!is.null(interval.ages)) warning("Two interval definitions found, using interval.ages")
-    else interval.ages <- seq(0, basin.age, length = strata + 1)
+    else interval.ages <- seq(0, max.age, length = strata + 1)
   }
 
   if(is.null(probabilities) && is.null(rates)) stop("Either rates or probabilities need to be specified")
@@ -285,7 +285,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' \emph{PA} is the probability of sampling an occurrence at this depth.
 #' \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 #' Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
-#' maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
+#' maximum interval age (\code{max.age}) and the number of intervals (\code{strata}), where interval length \eqn{= max.age/strata}. \cr \cr
 #' A vector of values can be specified for the model parameters \emph{PA}, \emph{PD} and \emph{DT} to allow for variation across lineages.
 #' If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
 #' or to each unique edge in the order in which they appear in the tree object.
@@ -297,7 +297,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
-#' @param basin.age Maximum age of the oldest stratigraphic interval.
+#' @param max.age Maximum age of the oldest stratigraphic interval or age at the base of the basin.
 #' @param strata Number of stratigraphic intervals.
 #' @param depth.profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.
 #' @param PA Peak abundance parameter value or a vector of values.
@@ -321,8 +321,8 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' strata = 7
 #' wd = sim.water.depth(strata)
 #'
-#' # simulate fossils using tree & basin.age and strata
-#' f = sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
+#' # simulate fossils using tree & max.age and strata
+#' f = sim.fossils.non.unif.depth(t, max.age = max.age, strata = strata,
 #' depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
 #' #plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 #'
@@ -341,7 +341,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}, \code{\link{sim.trait.values}}
 #' @export
 sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
-                                      interval.ages = NULL, basin.age = NULL, strata = NULL,
+                                      interval.ages = NULL, max.age = NULL, strata = NULL,
                                       depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5,
                                       root.edge = TRUE){
 
@@ -363,11 +363,11 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
 
-  if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
-    stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
-  if(!is.null(basin.age) && !is.null(strata)) {
+  if(is.null(interval.ages) && (is.null(max.age) || is.null(strata)))
+    stop("Intervals need to be defined by specifying either interval.ages or max.age and strata")
+  if(!is.null(max.age) && !is.null(strata)) {
     if(!is.null(interval.ages)) warning("Two interval definitions found, using interval.ages")
-    else interval.ages <- seq(0, basin.age, length = strata + 1)
+    else interval.ages <- seq(0, max.age, length = strata + 1)
   }
 
   if(is.null(depth.profile)) stop("No water depth profile specified")

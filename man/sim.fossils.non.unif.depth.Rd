@@ -5,7 +5,7 @@
 \title{Simulate fossils under a non-uniform model of preservation (Holland, 1995)}
 \usage{
 sim.fossils.non.unif.depth(tree = NULL, taxonomy = NULL,
-  interval.ages = NULL, basin.age = NULL, strata = NULL,
+  interval.ages = NULL, max.age = NULL, strata = NULL,
   depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5,
   root.edge = TRUE)
 }
@@ -16,7 +16,7 @@ sim.fossils.non.unif.depth(tree = NULL, taxonomy = NULL,
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
-\item{basin.age}{Maximum age of the oldest stratigraphic interval.}
+\item{max.age}{Maximum age of the oldest stratigraphic interval or age at the base of the basin.}
 
 \item{strata}{Number of stratigraphic intervals.}
 
@@ -42,7 +42,7 @@ where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{D
 \emph{PA} is the probability of sampling an occurrence at this depth.
 \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
 Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
-maximum interval age (\code{basin.age}) and the number of intervals (\code{strata}), where interval length \eqn{= basin.age/strata}. \cr \cr
+maximum interval age (\code{max.age}) and the number of intervals (\code{strata}), where interval length \eqn{= max.age/strata}. \cr \cr
 A vector of values can be specified for the model parameters \emph{PA}, \emph{PD} and \emph{DT} to allow for variation across lineages.
 If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
 or to each unique edge in the order in which they appear in the tree object.
@@ -62,8 +62,8 @@ max.age = basin.age(t)
 strata = 7
 wd = sim.water.depth(strata)
 
-# simulate fossils using tree & basin.age and strata
-f = sim.fossils.non.unif.depth(t, basin.age = max.age, strata = strata,
+# simulate fossils using tree & max.age and strata
+f = sim.fossils.non.unif.depth(t, max.age = max.age, strata = strata,
 depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
 #plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 

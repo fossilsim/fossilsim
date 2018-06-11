@@ -5,7 +5,7 @@
 \title{Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals}
 \usage{
 sim.fossils.intervals(tree = NULL, taxonomy = NULL, interval.ages = NULL,
-  basin.age = NULL, strata = NULL, probabilities = NULL, rates = NULL,
+  max.age = NULL, strata = NULL, probabilities = NULL, rates = NULL,
   root.edge = TRUE, use.exact.times = TRUE)
 }
 \arguments{
@@ -15,7 +15,7 @@ sim.fossils.intervals(tree = NULL, taxonomy = NULL, interval.ages = NULL,
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
-\item{basin.age}{Maximum age of the oldest stratigraphic interval.}
+\item{max.age}{Maximum age of the oldest stratigraphic interval.}
 
 \item{strata}{Number of stratigraphic intervals.}
 
@@ -31,7 +31,7 @@ sim.fossils.intervals(tree = NULL, taxonomy = NULL, interval.ages = NULL,
 An object of class fossils.
 }
 \description{
-Intervals can be specified by specifying the interval boundaries using \code{interval.ages} or specifying both \code{basin.age} and \code{strata}.
+Intervals can be specified by specifying the interval boundaries using \code{interval.ages} or specifying both \code{max.age} and \code{strata}.
 In the second scenario all intervals will be of equal length.
 Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 or \code{probabilities}, which represent the probabilities of sampling per interval.
@@ -47,10 +47,10 @@ t = ape::rtree(6)
 # assign a max age based on tree height
 max.age = basin.age(t)
 
-# simulate fossils using basin.age and strata & probabilities
+# simulate fossils using max.age and strata & probabilities
 strata = 4
 probability = rep(0.7, 4)
-f = sim.fossils.intervals(t, basin.age = max.age, strata = strata, probabilities = probability)
+f = sim.fossils.intervals(t, max.age = max.age, strata = strata, probabilities = probability)
 plot(f, t, strata = strata, show.strata = TRUE)
 
 # simulate fossils using interval.ages & rates

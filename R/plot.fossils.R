@@ -350,7 +350,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     # taxonomy colours
     if(show.taxonomy){
       sps = unique(fossils$sp)
-
       col = grDevices::rainbow(length(sps))
       j = 0
       for(i in sps){
@@ -403,12 +402,10 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
           for(j in edges){
 
-            print(i); print(col); # get rid of white? snow; if n<whatever without
-
             # singletons
             if(mn == mx) {
               range = fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)]
-              range = c(range - buffer, range + buffer)
+              #range = c(range - buffer, range + buffer)
             }
 
             # single edge
@@ -431,9 +428,21 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
                          max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
             }
             # plot ranges
-            sp = rep(yy[j], length(range))
+            #sp = rep(yy[j], length(range))
+            sp = yy[j]; w = 0.1
 
-            lines(y = sp, x = range, lwd = 6, col = col)
+            #lines(y = sp, x = range, lwd = 6, col = col)
+
+            # plot ranges & fossils
+            if(length(range) > 1){
+              rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(col, alpha = 0.2))
+              if(show.fossils)
+                points(range, rep(sp, length(range)), cex = cex, pch = pch, col = col)
+              else
+                points(c(min(range), max(range)), c(sp, sp), cex = cex, pch = pch, col = col)
+            } else # plot singletons
+              points(range, sp, cex = cex, pch = pch, col = col)
+
           }
         }
       } else{

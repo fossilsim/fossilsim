@@ -9,7 +9,7 @@
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
-#' @param basin.age Maximum age of the oldest stratigraphic interval.
+#' @param max.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
 #' @param use.species.ages If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.
 #' @param root.edge If TRUE include root edge.
@@ -37,7 +37,7 @@
 #'
 #' @export
 sim.interval.ages = function(fossils, tree = NULL, taxonomy = NULL,
-                        interval.ages = NULL, basin.age = NULL, strata = NULL,
+                        interval.ages = NULL, max.age = NULL, strata = NULL,
                         use.species.ages = FALSE, root.edge = TRUE, sim.extant = FALSE){
 
   if(is.null(fossils))
@@ -73,11 +73,11 @@ sim.interval.ages = function(fossils, tree = NULL, taxonomy = NULL,
   if(!identical(fossils$hmin, fossils$hmax))
     stop("exact fossil sampling times must be specified to use this function (i.e. hmin = hmax)")
 
-  if(is.null(interval.ages) && (is.null(basin.age) || is.null(strata)))
-    stop("Intervals need to be defined by specifying either interval.ages or basin.age and strata")
-  if(!is.null(basin.age) && !is.null(strata)) {
+  if(is.null(interval.ages) && (is.null(max.age) || is.null(strata)))
+    stop("Intervals need to be defined by specifying either interval.ages or max.age and strata")
+  if(!is.null(max.age) && !is.null(strata)) {
     if(!is.null(interval.ages)) warning("Two interval definitions found, using interval.ages")
-    else interval.ages <- seq(0, basin.age, length = strata + 1)
+    else interval.ages <- seq(0, max.age, length = strata + 1)
   }
 
   if(any(fossils$hmin > max(interval.ages)))
