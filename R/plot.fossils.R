@@ -31,9 +31,11 @@
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
 #' @param show.tip.label Whether to show the tip labels on the phylogeny (defaults to FALSE).
 #' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).
-#' @param fcex Numeric value giving the factor used to scale the points representing the fossils. Only used if \code{show.fossils = TRUE}.
-#' @param fcol Color of fossil occurrences or ranges.
-#' @param ecol Color of extant samples.
+#' @param fossil.col Color of fossil occurrences.
+#' @param range.col Color of stratigraphic ranges.
+#' @param extant.col Color of extant samples.
+#' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
+#' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
 #'
 #' @examples
@@ -72,31 +74,30 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
                        # tree appearance
                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                        # fossil appearance
-                       fcex = 1.2, fcol = "darkorange", ecol = NULL, ...) {
+                       fossil.col = 1, range.col = rgb(0,0,1), extant.col = NULL, cex = 1.2, pch = 18, ...) { #\todo could we pass pch an cex to this fxn?
 
-  fossils<-x
-  ba<-max
+  fossils = x
+  if(is.null(max))
+    ba = basin.age(tree, root.edge = root.edge)
+  else ba = max
 
   if(!show.tree) align.tip.label = TRUE
 
   # other possible options
-  show.node.label = FALSE # this doesn't do anything
   edge.color = "black"
   edge.lty = 1
   font = 3
-  cex = par("cex")
+  #cex = par("cex")
   tip.color = "black"
   label.offset = 0
   underscore = FALSE
   plot = TRUE
   node.depth = 1
   no.margin = FALSE
-  x.lim = NULL
-  y.lim = NULL
   adj = NULL
   srt = 0
 
-  if(is.null(ecol)) ecol = fcol
+  if(is.null(extant.col)) extant.col = fossil.col
 
   if(!(is.fossils(fossils)))
     stop("fossils must be an object of class \"fossils\"")
@@ -107,6 +108,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     warning("found less than 2 tips in the tree")
     return(NULL)
   }
+
   if (any(tabulate(tree$edge[, 1]) == 1))
     stop("there are single (non-splitting) nodes in your tree; you may need to use collapse.singles()")
 
@@ -119,6 +121,17 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   if(is.null(tree$root.edge))
     root.edge = FALSE
 
+  Nnode <- tree$Nnode
+  if (any(tree$edge < 1) || any(tree$edge > Ntip + Nnode))
+    stop("tree badly conformed; cannot plot. Check the edge matrix.")
+  ROOT <- Ntip + 1
+
+  # check interval ages & proxy data
+  if(any(fossils$hmin != fossils$hmax)) binned = TRUE
+
+  if(binned && any(fossils$hmin != fossils$hmax) && !all(fossils$hmax %in% seq(ba/strata, ba, length = strata)))
+    stop("Mismatch between fossil ages and interval ages")
+
   if(show.strata || show.proxy){
     if( (is.null(interval.ages)) && (is.null(strata)) )
       stop("To plot interval info specify interval.ages OR number of strata, else use show.strata = FALSE")
@@ -127,7 +140,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   if(show.proxy && is.null(proxy.data))
     stop("Specify sampling profile")
 
-  # is there a more efficient way of doing this?
   if(show.proxy){
     if(!is.null(interval.ages)){
       if( (length(interval.ages) - 1) != length(proxy.data) )
@@ -137,85 +149,68 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
         stop("Make sure number of sampling proxy data points matches the number of intervals")
     }
     if(any(is.na(proxy.data)))
-      stop("Function can't handle NA proxy values right now, please use 0 for the time being")
+      stop("Function can't handle NA proxy values right now, please use 0")
   }
 
+  # check taxonomy data
   if(show.taxonomy && is.null(taxonomy))
     stop("Specify taxonomy using 'taxonomy'")
   #TODO check all fossils edges are present in th sp obj
 
-  if(any(fossils$hmin != fossils$hmax)) binned = TRUE # TODO?
+  # collect data for plotting the tree
+  type = "phylogram"
+  direction = "rightwards"
+  horizontal = TRUE # = "rightwards"
 
-  #Nedge <- dim(tree$edge)[1] DELETE
-  Nnode <- tree$Nnode
-  if (any(tree$edge < 1) || any(tree$edge > Ntip + Nnode))
-    stop("tree badly conformed; cannot plot. Check the edge matrix.")
-  ROOT <- Ntip + 1
+  align.tip.label.lty = 3 # \todo put this somewhere else
 
-  type <- "phylogram"
-  direction <- "rightwards"
+  xe = tree$edge # used in the last part of the fxn
+  yy = numeric(Ntip + Nnode)
+  TIPS = tree$edge[tree$edge[, 2] <= Ntip, 2]
+  yy[TIPS] = 1:Ntip
 
-  if (is.numeric(align.tip.label)) {
-    align.tip.label.lty <- align.tip.label
-    align.tip.label <- TRUE
-  } else {
-    if (align.tip.label)
-      align.tip.label.lty <- 3
-  }
+  yy = ape::node.height(tree)
+  xx = ape::node.depth.edgelength(tree)
 
-  phyloORclado <- TRUE # = "phylogram"
-  horizontal <- TRUE # = "rightwards"
+  if(root.edge)
+    xx = xx + tree$root.edge
 
-  xe <- tree$edge # used in the last part of the fxn
-  yy <- numeric(Ntip + Nnode)
-  TIPS <- tree$edge[tree$edge[, 2] <= Ntip, 2]
-  yy[TIPS] <- 1:Ntip
-  #z <- stats::reorder(tree, order = "postorder") DELETE
+  x.lim = NULL
+  y.lim = NULL
 
-  yy <- ape::node.height(tree)
-  xx  <- ape::node.depth.edgelength(tree)
-
-  if (root.edge) {
-    xx <- xx + tree$root.edge
-  }
-
-  #if (no.margin)
-  # par(mai = rep(0, 4))
-
-  #if (show.tip.label)
-  #  nchar.tip.label <- nchar(tree$tip.label) DELETE
-
-  #max.yy <- max(yy) DELETE
+  # x.lim is defined by max(ba, tree age)
+  if(ba > max(xx))
+    xx = xx + (ba - max(xx))
 
   if (is.null(x.lim)) {
-    x.lim <- c(0, NA)
-    #pin1 <- par("pin")[1] DELETE
-    strWi <- graphics::strwidth(tree$tip.label, "inches", cex = cex)
-    xx.tips <- xx[1:Ntip] * 1.04
-    alp <- try(stats::uniroot(function(a) max(a * xx.tips + strWi) - pin1, c(0, 1e+06))$root, silent = TRUE)
+    x.lim = c(0, NA)
+    pin1 = par("pin")[1]
+    strWi = graphics::strwidth(tree$tip.label, "inches", cex = par("cex"))
+    xx.tips = xx[1:Ntip] * 1.04
+    alp = try(stats::uniroot(function(a) max(a * xx.tips + strWi) - pin1, c(0, 1e+06))$root, silent = TRUE)
     if (is.character(alp)) {
-      tmp <- max(xx.tips)
+      tmp = max(xx.tips)
       if (show.tip.label)
-        tmp <- tmp * 1.5
-    }
-    else {
-      tmp <- if (show.tip.label)
+        tmp = tmp * 1.5
+    } else {
+      tmp = if (show.tip.label)
         max(xx.tips + strWi/alp)
       else max(xx.tips)
     }
     if (show.tip.label)
-      tmp <- tmp + label.offset
-    x.lim[2] <- tmp
+      tmp = tmp + label.offset
+    x.lim[2] = tmp
   }
   else if (length(x.lim) == 1) {
-    x.lim <- c(0, x.lim)
+    x.lim = c(0, x.lim)
   }
+
   if (is.null(y.lim)) {
-    y.lim <- c(1, Ntip)
+    y.lim = c(1, Ntip)
   }
   else if (length(y.lim) == 1) {
-    y.lim <- c(0, y.lim)
-    y.lim[1] <- 1
+    y.lim = c(0, y.lim)
+    y.lim[1] = 1
   }
 
   # the order in which you use plot and par here is very important
@@ -240,12 +235,10 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
     if(show.strata || show.axis || binned || show.proxy){
       if( (is.null(interval.ages)) ){
-        if(is.null(ba))
-          ba = basin.age(tree, root.edge = root.edge)
         s1 = ba / strata # horizon length (= max age of youngest horizon)
         horizons.max = seq(s1, ba, length = strata)
         horizons.min = horizons.max - s1
-        s1 = rev(horizons.max - horizons.min) # rev is unneccessary here
+        s1 = rev(horizons.max - horizons.min) # rev is unneccessary here; todo - is it?
       } else {
         horizons.min = utils::head(interval.ages, -1)
         horizons.max = interval.ages[-1]
@@ -303,19 +296,18 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
     # format the root edge
     if (root.edge && show.tree && !hide.edge) {
-      rootcol <- if (length(edge.color) == 1)
+      rootcol = if(length(edge.color) == 1)
         edge.color
       else "black"
-      rootw <- if (length(edge.width) == 1)
+      rootw = if(length(edge.width) == 1)
         edge.width
       else 1
-      rootlty <- if (length(edge.lty) == 1)
+      rootlty = if(length(edge.lty) == 1)
         edge.lty
       else 1
 
       # plot the root edge
-      segments(0, yy[ROOT], tree$root.edge, yy[ROOT], col = rootcol, lwd = rootw, lty = rootlty)
-
+      segments(xx[ROOT] - tree$root.edge, yy[ROOT], xx[ROOT], yy[ROOT], col = rootcol, lwd = rootw, lty = rootlty)
     }
 
     # format tip labels
@@ -331,62 +323,33 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
         underscore <- TRUE
       if (!underscore)
         tree$tip.label <- gsub("_", " ", tree$tip.label)
-      if (phyloORclado) {
-        if (align.tip.label) {
-          xx.tmp <- max(xx[1:Ntip])
-          yy.tmp <- yy[1:Ntip]
-          segments(xx[1:Ntip], yy[1:Ntip], xx.tmp, yy.tmp, lty = align.tip.label.lty)
-        }
-        else {
-          xx.tmp <- xx[1:Ntip]
-          yy.tmp <- yy[1:Ntip]
-        }
-        text(xx.tmp + lox, yy.tmp + loy, tree$tip.label,adj = adj, font = font, srt = srt, cex = cex, col = tip.color)
+
+      if (align.tip.label) {
+        xx.tmp <- max(xx[1:Ntip])
+        yy.tmp <- yy[1:Ntip]
+        segments(xx[1:Ntip], yy[1:Ntip], xx.tmp, yy.tmp, lty = align.tip.label.lty)
       }
+      else {
+        xx.tmp <- xx[1:Ntip]
+        yy.tmp <- yy[1:Ntip]
+      }
+      text(xx.tmp + lox, yy.tmp + loy, tree$tip.label,adj = adj, font = font, srt = srt, cex = cex, col = tip.color)
     }
 
-    # add node labels
-    if (show.node.label){
-      text(xx[ROOT:length(xx)] + label.offset, yy[ROOT:length(yy)],
-           tree$node.label, adj = adj, font = font, srt = srt,
-           cex = cex)
-    }
-
-    # TODO check all this/ nb I think if binned = T show.axis MUST BE TRUE
-    # TODO what about extant taxa?
     # not binned
     if(!binned) fossils$h = fossils$hmin
     # binned & already assigned to intervals
     else if (binned & any(fossils$hmin != fossils$hmax))
-      fossils$h = fossils$hmax # (fossils$hmin + fossils$hmax)/2 #todo check for compatibility between interval.ages & fossil intervals or you could take the median and reassign the ages?
+      fossils$h = fossils$hmax
     # binned but not assigned to intervals
     else if(binned & all(fossils$hmin == fossils$hmax))
       fossils$h = sim.interval.ages(fossils, tree, interval.ages = c(0, horizons.max))$hmax
 
-    fossils$col = fcol
+    fossils$col = fossil.col
 
     # taxonomy colours
     if(show.taxonomy){
       sps = unique(fossils$sp)
-      # # todo work out what to do when sp # > 501
-      # all = colors(distinct = TRUE)
-      # #all = all[!grepl("gr(a|e)y", all)]; #  all 501; minus gray, grey = 389; minus grey and white = 377; minus light = 335
-      # #all = all[!grepl("gr(a|e)y|white|light", all)]
-      #
-      # if(sp > 389)
-      #   all = colors(distinct = TRUE)
-      # else if(sp > 377)
-      #   all = all[!grepl("gr(a|e)y", all)]
-      # else if(sp > 355)
-      #   all = all[!grepl("gr(a|e)y|white", all)]
-      # else
-      #   all = all[!grepl("gr(a|e)y|white|light", all)]
-      # #else if(sp > XXX)
-      # #  all = all[!grepl("gr(a|e)y", all)]
-      # # wheat3; lavenderblush; light; aliceblue; thistle1; linen; papayawhip; cornsilk2; peachpuff;coral4; blanchedalmond
-      # #else if
-      #
-      # col = sample(all, sp)
 
       col = grDevices::rainbow(length(sps))
       j = 0
@@ -396,8 +359,10 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
       }
     }
 
-    if (ecol != fcol)
-      fossils$col[which(fossils$h < 1e-8)] = ecol #todo - change the way zero is handled
+    if (extant.col != fossil.col){
+      tol = min((min(tree$edge.length)/100),1e-8)
+      fossils$col[which(fossils$h < tol)] = extant.col
+    }
 
     if(show.fossils || show.ranges) {
       if(binned) {
@@ -411,14 +376,12 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     }
 
     # fossils
-    if(show.fossils){
-      points(fossils$r, yy[fossils$edge], col = fossils$col, pch = 19, cex = fcex)
+    if(show.fossils & !show.ranges){
+      points(fossils$r, yy[fossils$edge], cex = cex, pch = pch, col = fossils$col)
     }
 
     # ranges
     if(show.ranges){
-
-      buffer = 0.01 * max(xx) # buffer for singletons
 
       # for show.taxonomy = TRUE
       # fetch oldest and youngest edge associated with a species
@@ -478,12 +441,19 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
           range = fossils$r[which(fossils$edge == i)]
 
-          if(length(range) == 1)
-            range = c(range - buffer, range + buffer)
+          sp = yy[i]
 
-          sp = rep(yy[i], length(range))
+          w = 0.1
 
-          lines(y = sp, x = range, lwd = 6, col = fcol)
+          # plot ranges & fossils
+          if(length(range) > 1){
+            rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(range.col, alpha = 0.2))
+            if(show.fossils)
+              points(range, rep(sp, length(range)), cex = cex, pch = pch, col = fossil.col)
+            else
+              points(c(min(range), max(range)), c(sp, sp), cex = cex, pch = pch, col = fossil.col)
+          } else # plot singletons
+            points(range, sp, cex = cex, pch = pch, col = fossil.col)
         }
       }
     }
@@ -500,7 +470,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   par(old.par)
   L <- list(type = type, use.edge.length = TRUE,
             node.pos = NULL, node.depth = node.depth, show.tip.label = show.tip.label,
-            show.node.label = show.node.label, font = font, cex = cex,
+            show.node.label = FALSE, font = font, cex = cex,
             adj = adj, srt = srt, no.margin = no.margin, label.offset = label.offset,
             x.lim = x.lim, y.lim = y.lim, direction = direction,
             tip.color = tip.color, Ntip = Ntip, Nnode = Nnode, root.time = tree$root.time,
@@ -515,7 +485,7 @@ add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.
   # change the y-axis scale for depth
   u = par("usr") # current scale
   depth.profile = rev(depth.profile)
-  depth = depth.profile # there is some redundancy here
+  depth = depth.profile # some redundancy here
   tol = max(depth) * 0.1
   par(usr = c(u[1], u[2], min(depth) - tol, max(depth) + tol))
   time = c()

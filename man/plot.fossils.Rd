@@ -10,8 +10,8 @@
   show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
   preferred.environ = NULL, show.taxonomy = FALSE, taxonomy = NULL,
   root.edge = TRUE, hide.edge = FALSE, edge.width = 1,
-  show.tip.label = FALSE, align.tip.label = FALSE, fcex = 1.2,
-  fcol = "darkorange", ecol = NULL, ...)
+  show.tip.label = FALSE, align.tip.label = FALSE, fossil.col = 1,
+  range.col = rgb(0, 0, 1), extant.col = NULL, cex = 1.2, pch = 18, ...)
 }
 \arguments{
 \item{x}{Fossils object.}
@@ -58,11 +58,15 @@
 
 \item{align.tip.label}{A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).}
 
-\item{fcex}{Numeric value giving the factor used to scale the points representing the fossils. Only used if \code{show.fossils = TRUE}.}
+\item{fossil.col}{Color of fossil occurrences.}
 
-\item{fcol}{Color of fossil occurrences or ranges.}
+\item{range.col}{Color of stratigraphic ranges.}
 
-\item{ecol}{Color of extant samples.}
+\item{extant.col}{Color of extant samples.}
+
+\item{cex}{Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.}
+
+\item{pch}{Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.}
 
 \item{...}{Additional parameters to be passed to \code{plot.default}.}
 }
