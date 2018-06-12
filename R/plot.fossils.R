@@ -74,33 +74,38 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
                        # tree appearance
                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                        # fossil appearance
-                       fossil.col = 1, range.col = rgb(0,0,1), extant.col = NULL, cex = 1.2, pch = 18, ...) { #\todo could we pass pch an cex to this fxn?
+                       fossil.col = 1, range.col = rgb(0,0,1), extant.col = NULL, cex = 1.2, pch = 18, ...) {
 
   fossils = x
-  if(is.null(max))
-    ba = basin.age(tree, root.edge = root.edge)
-  else ba = max
 
   if(!show.tree) align.tip.label = TRUE
 
-  # other possible options
+  # hard coded options for tree appearance
   edge.color = "black"
   edge.lty = 1
-  font = 3
-  #cex = par("cex")
+  font = 3 # italic
   tip.color = "black"
-  label.offset = 0
+  label.offset = 0.02
   underscore = FALSE
   plot = TRUE
   node.depth = 1
   no.margin = FALSE
-  adj = NULL
   srt = 0
 
   if(is.null(extant.col)) extant.col = fossil.col
 
   if(!(is.fossils(fossils)))
     stop("fossils must be an object of class \"fossils\"")
+
+  if(!"phylo" %in% class(tree))
+    stop("tree must be an object of class \"phylo\"")
+
+  if(!all(fossils$edge %in% tree$edge))
+    stop("Mismatch between fossils and tree objects")
+
+  if(is.null(max))
+    ba = basin.age(tree, root.edge = root.edge)
+  else ba = max
 
   # check the tree
   Ntip <- length(tree$tip.label)
@@ -154,8 +159,11 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
   # check taxonomy data
   if(show.taxonomy && is.null(taxonomy))
-    stop("Specify taxonomy using 'taxonomy'")
-  #TODO check all fossils edges are present in th sp obj
+    stop("Specify taxonomy using \"taxonomy\"")
+  if(show.taxonomy && !all(fossils$edge %in% taxonomy$edge))
+    stop("Mismatch between fossils and taxonomy objects")
+  if(show.taxonomy && !all(tree$edge %in% taxonomy$edge))
+    stop("Mismatch between tree and taxonomy objects")
 
   # collect data for plotting the tree
   type = "phylogram"
@@ -238,7 +246,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
         s1 = ba / strata # horizon length (= max age of youngest horizon)
         horizons.max = seq(s1, ba, length = strata)
         horizons.min = horizons.max - s1
-        s1 = rev(horizons.max - horizons.min) # rev is unneccessary here; todo - is it?
+        s1 = horizons.max - horizons.min
       } else {
         horizons.min = utils::head(interval.ages, -1)
         horizons.max = interval.ages[-1]
@@ -350,7 +358,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     # taxonomy colours
     if(show.taxonomy){
       sps = unique(fossils$sp)
-      col = grDevices::rainbow(length(sps))
+      col = sample(grDevices::rainbow(length(sps)))
       j = 0
       for(i in sps){
         j = j + 1
@@ -428,14 +436,13 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
                          max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
             }
             # plot ranges
-            #sp = rep(yy[j], length(range))
-            sp = yy[j]; w = 0.1
+            sp = yy[j]
 
-            #lines(y = sp, x = range, lwd = 6, col = col)
+            w = 0.1
 
             # plot ranges & fossils
             if(length(range) > 1){
-              rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(col, alpha = 0.2))
+              rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(col, alpha = 0.3))
               if(show.fossils)
                 points(range, rep(sp, length(range)), cex = cex, pch = pch, col = col)
               else
