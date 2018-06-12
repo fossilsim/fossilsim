@@ -41,8 +41,8 @@ s = sim.taxonomy(t, 0.5, 1, 0.5)
 f = sim.fossils.poisson(rate, taxonomy = s)
 plot(f, t)
 
-# simulate fossils with rate variation across lineages
-rates = sim.trait.values(5, taxonomy = s, model = "jump", dist = function() {runif(1)}, jump.pr = 0.1)
+# simulate fossils with autocorrelated rate variation across lineages
+rates = sim.trait.values(rate = rate, taxonomy = s, v = 1)
 f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 

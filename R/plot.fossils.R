@@ -62,7 +62,7 @@
 #'
 #' @export
 #' @importFrom graphics par points lines text axis mtext segments rect plot
-#' @importFrom grDevices colors rgb
+#' @importFrom grDevices colors rgb adjustcolor
 plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                        # age info/options
                        show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
@@ -90,6 +90,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   plot = TRUE
   node.depth = 1
   no.margin = FALSE
+  adj = NULL
   srt = 0
 
   if(is.null(extant.col)) extant.col = fossil.col

@@ -6,7 +6,7 @@
 \usage{
 sim.trait.values(rate = 1, tree = NULL, taxonomy = NULL,
   root.edge = TRUE, model = "autocorrelated", v = 0.01,
-  dist = function() {     runif(1, 0, 2) }, jump.pr = 0.01)
+  dist = function() {     runif(1, 0, 2) }, change.pr = 0.01)
 }
 \arguments{
 \item{rate}{Initial value at the origin or root of the phylo or taxonomy object. Default = 1.}
@@ -17,13 +17,13 @@ sim.trait.values(rate = 1, tree = NULL, taxonomy = NULL,
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
-\item{model}{Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "independent" or "jump".}
+\item{model}{Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "independent" or "innovative".}
 
 \item{v}{Brownian motion parameter \eqn{v} used in the autocorrelated model. Default = 0.01.}
 
-\item{dist}{Distribution of trait values used to draw new values under the "independent" and "jump" models. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.}
+\item{dist}{Distribution of trait values used to draw new values under the "independent" and "innovative" models. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.}
 
-\item{jump.pr}{Probability that trait values change at speciation events. Default = 0.01.}
+\item{change.pr}{Probability that trait values change at speciation events. Default = 0.01.}
 }
 \value{
 A vector of parameter values.
@@ -32,7 +32,7 @@ If the tree object has a root edge (\code{root.edge}), the first entry in the ve
 }
 \description{
 Fossil recovery rates or other parameter values can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
-Available models include "autocorrelated", "independent" and a "jump" model in which changes in parameter values are coincident with speciation events.
+Available models include "autocorrelated", "independent" and a "innovative" model in which changes in parameter values are coincident with speciation events.
 Under the \code{autocorrelated} model, trait values evolve along lineages according to a Brownian motion process, where the strength of the relationship between ancestor and descendant values is determined by the parameter \eqn{\nu} (\code{v}).
 If \eqn{\nu} is small values will be more similar between ancestor and descendants, and if \eqn{\nu} is zero all values will be equal.
 For a given species \eqn{i} with ancestor \eqn{j}, a new trait value \eqn{\kappa_i} is drawn from a lognormal distribution with
@@ -40,7 +40,7 @@ For a given species \eqn{i} with ancestor \eqn{j}, a new trait value \eqn{\kappa
 where \eqn{\sigma = \nu * t_i} and \eqn{t_i} is the lineage duration of the species.
 This fossil recovery model is described in Heath et al. (2014) and is equivalent to the autocorrelated relaxed clock model described in Kishino et al. (2001).
 Under the \code{independent} model a new trait value is drawn for each species from any valid user-specified distribution (\code{dist}).
-Under the \code{jump} model values change at each speciation event with a given probability (\code{jump.pr}) and new values are drawn from any valid user-specified distribution (\code{dist}).
+Under the \code{innovative} model values change at each speciation event with a given probability (\code{innovative.pr}) and new values are drawn from any valid user-specified distribution (\code{dist}).
 }
 \examples{
 # simulate tree
@@ -61,8 +61,8 @@ rates = sim.trait.values(rate = rate, taxonomy = s, model = "independent", dist 
 f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 
-# simualte rates under the jump model
-rates = sim.trait.values(rate = rate, taxonomy = s, model = "jump", dist = dist, jump.pr = 0.1)
+# simualte rates under the innovative model
+rates = sim.trait.values(rate = rate, taxonomy = s, model = "innovative", dist = dist, change.pr = 0.1)
 f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 

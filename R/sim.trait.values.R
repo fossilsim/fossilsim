@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Fossil recovery rates or other parameter values can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
-#' Available models include "autocorrelated", "independent" and a "jump" model in which changes in parameter values are coincident with speciation events.
+#' Available models include "autocorrelated", "independent" and a "innovative" model in which changes in parameter values are coincident with speciation events.
 #' Under the \code{autocorrelated} model, trait values evolve along lineages according to a Brownian motion process, where the strength of the relationship between ancestor and descendant values is determined by the parameter \eqn{\nu} (\code{v}).
 #' If \eqn{\nu} is small values will be more similar between ancestor and descendants, and if \eqn{\nu} is zero all values will be equal.
 #' For a given species \eqn{i} with ancestor \eqn{j}, a new trait value \eqn{\kappa_i} is drawn from a lognormal distribution with
@@ -10,16 +10,16 @@
 #' where \eqn{\sigma = \nu * t_i} and \eqn{t_i} is the lineage duration of the species.
 #' This fossil recovery model is described in Heath et al. (2014) and is equivalent to the autocorrelated relaxed clock model described in Kishino et al. (2001).
 #' Under the \code{independent} model a new trait value is drawn for each species from any valid user-specified distribution (\code{dist}).
-#' Under the \code{jump} model values change at each speciation event with a given probability (\code{jump.pr}) and new values are drawn from any valid user-specified distribution (\code{dist}).
+#' Under the \code{innovative} model values change at each speciation event with a given probability (\code{innovative.pr}) and new values are drawn from any valid user-specified distribution (\code{dist}).
 #'
 #' @param rate Initial value at the origin or root of the phylo or taxonomy object. Default = 1.
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
-#' @param model Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "independent" or "jump".
+#' @param model Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "independent" or "innovative".
 #' @param v Brownian motion parameter \eqn{v} used in the autocorrelated model. Default = 0.01.
-#' @param dist Distribution of trait values used to draw new values under the "independent" and "jump" models. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.
-#' @param jump.pr Probability that trait values change at speciation events. Default = 0.01.
+#' @param dist Distribution of trait values used to draw new values under the "independent" and "innovative" models. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.
+#' @param change.pr Probability that trait values change at speciation events. Default = 0.01.
 #' @return A vector of parameter values.
 #' Values are output for each species in the order in which they appear in the taxonomy object (if taxonomy was provided) or for each edge in the order in which they appear in the tree object.
 #' If the tree object has a root edge (\code{root.edge}), the first entry in the vector will correspond to this edge.
@@ -43,8 +43,8 @@
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
-#' # simualte rates under the jump model
-#' rates = sim.trait.values(rate = rate, taxonomy = s, model = "jump", dist = dist, jump.pr = 0.1)
+#' # simualte rates under the innovative model
+#' rates = sim.trait.values(rate = rate, taxonomy = s, model = "innovative", dist = dist, change.pr = 0.1)
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
@@ -55,7 +55,7 @@
 #' @export
 sim.trait.values = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
                              model = "autocorrelated", v = 0.01,
-                             dist = function(){runif(1,0,2)}, jump.pr = 0.01){
+                             dist = function(){runif(1,0,2)}, change.pr = 0.01){
 
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
@@ -75,14 +75,14 @@ sim.trait.values = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = 
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
 
-  if(model != "autocorrelated" && model != "independent" && model != "jump")
-    stop("specify a valid model option = 'autocorrelated', 'independent' or 'jump'")
+  if(model != "autocorrelated" && model != "independent" && model != "innovative")
+    stop("specify a valid model option = 'autocorrelated', 'independent' or 'innovative'")
 
-  if(!(jump.pr >= 0 & jump.pr <= 1))
-    stop("jump.pr must be a probability between 0 and 1")
+  if(!(change.pr >= 0 & change.pr <= 1))
+    stop("change.pr must be a probability between 0 and 1")
 
-  if((model == "independent" || model == "jump") & ( length(dist()) != 1 || !(is.numeric(dist()))))
-    stop("specify a valid distribution function that returns a single positive value")
+  if((model == "independent" || model == "innovative") & ( length(dist()) != 1 || !(is.numeric(dist()))))
+    stop("specify a valid distribution function that returns a single value")
 
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
@@ -105,14 +105,12 @@ sim.trait.values = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = 
       # this follows the molecular clock model of Kishino et al 2001
       # and the preservation model described in Heath et al 2014 (supplementary material)
       r = rlnorm(1, meanlog = log(r) - ((blength*v)/2), sdlog = sqrt(blength*v))
-    } else if (model == "jump") {
-      if(runif(1) < jump.pr)
+    } else if (model == "innovative") {
+      if(runif(1) < change.pr)
         r = dist()
     } else { # independent rates
       r = dist()
     }
-
-    #if(r < 0) stop("A negative rate was given by dist: specify a valid distribution function that returns a single positive value")
 
     t[which(t$sp == sp),]$rate = r
 
