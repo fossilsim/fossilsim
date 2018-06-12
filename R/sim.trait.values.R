@@ -44,7 +44,8 @@
 #' plot(f, t)
 #'
 #' # simualte rates under the innovative model
-#' rates = sim.trait.values(rate = rate, taxonomy = s, model = "innovative", dist = dist, change.pr = 0.1)
+#' rates = sim.trait.values(rate = rate, taxonomy = s, model = "innovative",
+#'                         dist = dist, change.pr = 0.1)
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'

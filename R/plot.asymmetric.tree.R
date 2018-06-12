@@ -1,7 +1,8 @@
 #' Make a stratigraphic range plot from a tree object of class SAtree
 #'
 #' @param x SAtree to plot.
-#' @param complete Plot unsampled species?
+#' @param complete Plot unsampled species.
+#' @param ... Additional parameters to be passed to \code{plot.default}.
 #'
 #' @examples
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]

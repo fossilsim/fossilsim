@@ -443,7 +443,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
             # plot ranges & fossils
             if(length(range) > 1){
-              rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(col, alpha = 0.3))
+              rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(col, alpha.f = 0.3))
               if(show.fossils)
                 points(range, rep(sp, length(range)), cex = cex, pch = pch, col = col)
               else
@@ -464,7 +464,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
           # plot ranges & fossils
           if(length(range) > 1){
-            rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(range.col, alpha = 0.2))
+            rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(range.col, alpha.f = 0.2))
             if(show.fossils)
               points(range, rep(sp, length(range)), cex = cex, pch = pch, col = fossil.col)
             else

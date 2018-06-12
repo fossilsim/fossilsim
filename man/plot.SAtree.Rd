@@ -9,7 +9,9 @@
 \arguments{
 \item{x}{SAtree to plot.}
 
-\item{complete}{Plot unsampled species?}
+\item{complete}{Plot unsampled species.}
+
+\item{...}{Additional parameters to be passed to \code{plot.default}.}
 }
 \description{
 Make a stratigraphic range plot from a tree object of class SAtree

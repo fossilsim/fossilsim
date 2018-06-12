@@ -75,7 +75,9 @@ f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
 #plot(f, t, strata = strata, binned = TRUE)
 
 # simulate fossils with variable preservation across lineages
-PD = sim.trait.values(1, taxonomy = s, model = "jump", dist = function() {runif(1)}, jump.pr = 0.1)
+dist = function() {runif(1)}
+PD = sim.trait.values(1, taxonomy = s, model = "innovative", dist = dist,
+                     change.pr = 0.1)
 
 
 }
