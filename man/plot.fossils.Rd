@@ -22,7 +22,7 @@
 
 \item{show.tree}{If TRUE plot the tree  (default = TRUE).}
 
-\item{show.ranges}{If TRUE plot stratigraphic ranges (default = FALSE).}
+\item{show.ranges}{If TRUE plot stratigraphic ranges (default = FALSE). If show.taxonomy = FALSE all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).}
 
 \item{show.strata}{If TRUE plot strata  (default = FALSE).}
 
@@ -62,7 +62,7 @@
 
 \item{range.col}{Color of stratigraphic ranges.}
 
-\item{extant.col}{Color of extant samples.}
+\item{extant.col}{Color of extant samples. If show.taxonomy = TRUE extant.col will be ignored.}
 
 \item{cex}{Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.}
 
@@ -90,6 +90,14 @@ f = sim.fossils.poisson(rate = 3, tree = t)
 plot(f, t)
 # add a set of equal length strata
 plot(f, t, show.strata = TRUE, strata = 4)
+# show stratigraphic ranges
+plot(f, t, show.strata = TRUE, strata = 4, show.ranges = TRUE)
+
+## simulate fossils and highlight taxonomy
+s = sim.taxonomy(t, 0.5, 1)
+f = sim.fossils.poisson(rate = 3, taxonomy = s)
+plot(f, t, taxonomy = s, show.taxonomy = TRUE, show.ranges = TRUE)
+
 
 ## simulate fossils under a non-uniform model of preservation
 # assign a max interval based on tree height

@@ -18,7 +18,7 @@ basin.age = function(tree,root.edge=TRUE){
     ba = max(node.ages) + tree$root.edge
   else
     ba = max(node.ages)
-  
+
   ba = round(ba,1) + 0.1
   return(ba)
 }
@@ -44,12 +44,12 @@ count.fossils = function(fossils){
 #' @export
 count.fossils.binned = function(fossils, interval.ages){
   intervals<-interval.ages
-  
+
   k = rep(0, length(intervals))
-  
+
   if(length(fossils$sp) == 0)
     return(k)
-  
+
   for(i in 1:length(fossils$h)){
     if(fossils$h[i] != 0){
       j = assign.interval(intervals, fossils$h[i])
@@ -157,6 +157,28 @@ map_nodes<-function(x, t.old, t.new)
     }
   }
   ret
+}
+
+# find species start time in taxonomy obj
+species.start = function(species, taxonomy){
+  max(taxonomy$start[which(taxonomy$sp == species)])
+}
+
+# find species end time in taxonomy obj
+species.end = function(species, taxonomy){
+  min(taxonomy$end[which(taxonomy$sp == species)])
+}
+
+# find edge beginning species
+edge.start = function(species, taxonomy){
+  taxonomy$edge[which(taxonomy$sp == species
+                      & taxonomy$start == species.start(species, taxonomy))]
+}
+
+# find edge ending species
+edge.end = function(species, taxonomy){
+  taxonomy$edge[which(taxonomy$sp == species
+                      & taxonomy$end == species.end(species, taxonomy))]
 }
 
 # find which species is on branch at time according to taxonomy

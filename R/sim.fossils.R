@@ -89,9 +89,12 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
   for (i in 1:length(lineages)){
 
     sp = lineages[i]
-    start = taxonomy$start[which(taxonomy$sp == sp)][1]
-    end = taxonomy$end[which(taxonomy$sp == sp)][1]
-    origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
+    #start = taxonomy$start[which(taxonomy$sp == sp)][1]
+    #end = taxonomy$end[which(taxonomy$sp == sp)][1]
+    #origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
+    start = max(taxonomy$start[which(taxonomy$sp == sp)])
+    end = min(taxonomy$end[which(taxonomy$sp == sp)])
+
     edges = taxonomy[which(taxonomy$sp == sp), ]
 
     blength = start - end
@@ -101,11 +104,14 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 
     if(rand > 0) {
       h = runif(rand, min = end, max = start)
-      edge = sapply(h, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+      #edge = sapply(h, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+      edge = sapply(h, function(x) edges$edge[which(edges$start > x & edges$end < x)])
       if(use.exact.times) {
-        fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
+        #fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = h, hmax = h, stringsAsFactors = F))
+        fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, hmin = h, hmax = h, stringsAsFactors = F))
       } else {
-        fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
+        fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
+        #fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = rep(end, rand), hmax = rep(start, rand), stringsAsFactors = F))
       }
     }
   }
@@ -223,9 +229,12 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 
   for (sp in lineages) {
 
-    start = taxonomy$start[which(taxonomy$sp == sp)][1]
-    end = taxonomy$end[which(taxonomy$sp == sp)][1]
-    origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
+    #start = taxonomy$start[which(taxonomy$sp == sp)][1]
+    #end = taxonomy$end[which(taxonomy$sp == sp)][1]
+    #origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
+
+    start = max(taxonomy$start[which(taxonomy$sp == sp)])
+    end = min(taxonomy$end[which(taxonomy$sp == sp)])
     edges = taxonomy[which(taxonomy$sp == sp), ]
 
     blength = start - end
@@ -242,29 +251,35 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
         # generate k fossils from a poisson distribution
         k = rpois(1, rates[i]*(max.time - min.time))
         ages = runif(k, min.time, max.time)
-        edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+        #edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+        edge = sapply(ages, function(x) edges$edge[which(edges$start > x & edges$end < x)])
         if(k > 0) {
           if(use.exact.times) {
-            fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
+            #fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
+            fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, hmin = ages, hmax = ages, stringsAsFactors = F))
           } else {
             min.time = rep(interval.ages[i], k)
             max.time = rep(interval.ages[i+1], k) # this is kind of redundant
-            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+            #fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = min.time, hmax = max.time, stringsAsFactors = F))
           }
         }
       } else {
         # scale the probability
         pr = probabilities[i] * (max.time - min.time)/(interval.ages[i+1] - interval.ages[i])
         ages = runif(1, min.time, max.time)
-        edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+        #edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+        edge = sapply(ages, function(x) edges$edge[which(edges$start > x & edges$end < x)])
         # if random.number < pr { record fossil as collected during interval }
         if (runif(1) <= pr) {
           if(use.exact.times) {
-            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
+            #fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = ages, hmax = ages, stringsAsFactors = F))
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = ages, hmax = ages, stringsAsFactors = F))
           } else { # { use interval ages }
             min.time = interval.ages[i]
             max.time = interval.ages[i+1]
-            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+            #fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = min.time, hmax = max.time, stringsAsFactors = F))
           }
         }
       }
@@ -337,7 +352,9 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' dist = function() {runif(1)}
 #' PD = sim.trait.values(1, taxonomy = s, model = "innovative", dist = dist,
 #'                      change.pr = 0.1)
-#'
+#' f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
+#'      depth.profile = wd, PA = 1, PD = PD, DT = 1)
+#' plot(f, t, strata = strata, binned = TRUE)
 #'
 #' @keywords non-uniform fossil preseravtion
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}, \code{\link{sim.trait.values}}
@@ -421,10 +438,13 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
 
   for (i in 1:length(lineages)) {
 
+    #start = taxonomy$start[which(taxonomy$sp == sp)][1]
+    #end = taxonomy$end[which(taxonomy$sp == sp)][1]
+    #origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
+
     sp = lineages[i]
-    start = taxonomy$start[which(taxonomy$sp == sp)][1]
-    end = taxonomy$end[which(taxonomy$sp == sp)][1]
-    origin = taxonomy$origin[which(taxonomy$sp == sp)][1]
+    start = max(taxonomy$start[which(taxonomy$sp == sp)])
+    end = min(taxonomy$end[which(taxonomy$sp == sp)])
     edges = taxonomy[which(taxonomy$sp == sp), ]
 
     blength = start - end
@@ -441,13 +461,15 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
       pr = probabilities[i, j] * (max.time - min.time)/(interval.ages[j+1] - interval.ages[j])
       # assign fossils to edges
       ages = runif(1, min.time, max.time)
-      edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+      #edge = sapply(ages, function(x) edges$edge[which(edges$edge.start > x & edges$edge.end < x)])
+      edge = sapply(ages, function(x) edges$edge[which(edges$start > x & edges$end < x)])
       # if random.number < pr { record fossil as collected during interval }
       if (runif(1) <= pr) {
         # use interval ages
         min.time = interval.ages[j]
         max.time = interval.ages[j+1]
-        fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+        #fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, origin = origin, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+        fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = min.time, hmax = max.time, stringsAsFactors = F))
       }
     }
   }
@@ -455,6 +477,7 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
   return(fdf)
 }
 
+# Debugging code:
 # Simulate fossils under an exponential sampling model
 #
 # @param tree Phylo object.

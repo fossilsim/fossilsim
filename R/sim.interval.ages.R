@@ -35,6 +35,9 @@
 #' # reassign ages
 #' f = sim.interval.ages(f, t, interval.ages = times)
 #'
+#' # plot output
+#' plot(f, t, interval.ages = times)
+#'
 #' @export
 sim.interval.ages = function(fossils, tree = NULL, taxonomy = NULL,
                         interval.ages = NULL, max.age = NULL, strata = NULL,
@@ -94,8 +97,10 @@ sim.interval.ages = function(fossils, tree = NULL, taxonomy = NULL,
     if(use.species.ages){ # { assign hmin and hmax that do not violate species start and end times }
 
       sp = fossils$sp[i]
-      start = taxonomy$start[which(taxonomy$sp == sp)][1]
-      end = taxonomy$end[which(taxonomy$sp == sp)][1]
+      #start = taxonomy$start[which(taxonomy$sp == sp)][1]
+      #end = taxonomy$end[which(taxonomy$sp == sp)][1]
+      start = max(taxonomy$start[which(taxonomy$sp == sp)])
+      end = min(taxonomy$end[which(taxonomy$sp == sp)])
       start.int = assign.interval(interval.ages, start)
       end.int = assign.interval(interval.ages, end)
 

@@ -13,7 +13,7 @@
 #' @param tree Phylo object.
 #' @param show.fossils If TRUE plot fossils (default = TRUE).
 #' @param show.tree If TRUE plot the tree  (default = TRUE).
-#' @param show.ranges If TRUE plot stratigraphic ranges (default = FALSE).
+#' @param show.ranges If TRUE plot stratigraphic ranges (default = FALSE). If show.taxonomy = FALSE all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).
 #' @param show.strata If TRUE plot strata  (default = FALSE).
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param strata Number of stratigraphic intervals.
@@ -33,7 +33,7 @@
 #' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).
 #' @param fossil.col Color of fossil occurrences.
 #' @param range.col Color of stratigraphic ranges.
-#' @param extant.col Color of extant samples.
+#' @param extant.col Color of extant samples. If show.taxonomy = TRUE extant.col will be ignored.
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
@@ -49,6 +49,14 @@
 #' plot(f, t)
 #' # add a set of equal length strata
 #' plot(f, t, show.strata = TRUE, strata = 4)
+#' # show stratigraphic ranges
+#' plot(f, t, show.strata = TRUE, strata = 4, show.ranges = TRUE)
+#'
+#' ## simulate fossils and highlight taxonomy
+#' s = sim.taxonomy(t, 0.5, 1)
+#' f = sim.fossils.poisson(rate = 3, taxonomy = s)
+#' plot(f, t, taxonomy = s, show.taxonomy = TRUE, show.ranges = TRUE)
+#'
 #'
 #' ## simulate fossils under a non-uniform model of preservation
 #' # assign a max interval based on tree height
@@ -427,18 +435,24 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
             # multiple edges: FA edge
             else if(j == edge.mx) {
+              #range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
+              #           max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
               range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
-                         max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
+                                    max(xx) - taxonomy$end[which(taxonomy$edge == j)])
             }
             # multiple edges: LA edge
             else if(j == edge.mn){
+              #range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
+              #           max(xx) - taxonomy$edge.start[which(taxonomy$edge == j)][1])
               range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
-                         max(xx) - taxonomy$edge.start[which(taxonomy$edge == j)][1])
+                         max(xx) - taxonomy$start[which(taxonomy$edge == j)])
             }
             # multiple edges: in-between edges
             else{
-              range =  c(max(xx) - taxonomy$edge.start[which(taxonomy$edge == j)][1],
-                         max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
+              #range =  c(max(xx) - taxonomy$edge.start[which(taxonomy$edge == j)][1],
+              #           max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
+              range =  c(max(xx) - taxonomy$start[which(taxonomy$edge == j)],
+                         max(xx) - taxonomy$end[which(taxonomy$edge == j)])
             }
             # plot ranges
             sp = yy[j]

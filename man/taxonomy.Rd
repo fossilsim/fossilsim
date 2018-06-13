@@ -28,10 +28,17 @@ This is not the case if the data set also contains anagenic species, when multip
 Note some species may be associated with multiple edges}
 \item{\code{parent} = ancestor of species \code{sp}. Parent labels follow the same convention as species.
 The label assigned to the parent of the origin or root will be zero}
-\item{\code{start} = origin time of species or start time of the corresponding \code{edge}}
-\item{\code{end} = end time of species or end time of the corresponding \code{edge}}
+\item{\code{start} = start time of the corresponding \code{edge}} and/or origin time of the species.
+If the corresponding edge is also the oldest edge associated with the species this value will equal the species origination time.
+If speciation mode is asymmetric or symmetric the speciation time will match the start time of the corresponding edge.
+If speciation mode is anagenetic the speciation time will be younger than the start time of the corresponding edge
+\item{\code{end} = end time of the corresponding \code{edge}} and/or end time of the species.
+If the corresponding edge is also the youngest edge associated with the species this value will equal the species end time.
+Unless the species end time coincides with an anagenetic speciation event, the species end time will match the end time of the corresponding edge.
+If the species end time coincides with an anagenetic speciation event, the speciation time will be older than the end time of the corresponding edge
+\item{\code{end} = end time of the corresponding \code{edge}} and/or end time of the species.
 \item{\code{mode} = speciation mode. "o" = origin or "r" = root (the edge/species that began the process).
-"b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenic speciation}
+"b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenetic speciation}
 }
 
 Optional fields:

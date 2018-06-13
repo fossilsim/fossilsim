@@ -54,4 +54,7 @@ times = seq(0, max.age, length.out = 5)
 # reassign ages
 f = sim.interval.ages(f, t, interval.ages = times)
 
+# plot output
+plot(f, t, interval.ages = times)
+
 }

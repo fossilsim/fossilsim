@@ -78,7 +78,9 @@ plot(f, t, strata = strata, binned = TRUE)
 dist = function() {runif(1)}
 PD = sim.trait.values(1, taxonomy = s, model = "innovative", dist = dist,
                      change.pr = 0.1)
-
+f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
+     depth.profile = wd, PA = 1, PD = PD, DT = 1)
+plot(f, t, strata = strata, binned = TRUE)
 
 }
 \references{

@@ -93,10 +93,12 @@ sim.trait.values = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = 
 
   aux = function(sp, t, r) {
 
-    # simulate fossils
-    start = t$start[which(t$sp == sp)][1]
-    end = t$end[which(t$sp == sp)][1]
-    origin = t$origin[which(t$sp == sp)][1]
+    #start = t$start[which(t$sp == sp)][1]
+    #end = t$end[which(t$sp == sp)][1]
+    #origin = t$origin[which(t$sp == sp)][1]
+    start = max(t$start[which(t$sp == sp)])
+    end = min(t$end[which(t$sp == sp)])
+    #origin = t$origin[which(t$sp == sp)][1]
     edges = t[which(t$sp == sp), ]
 
     blength = start - end
