@@ -97,8 +97,6 @@ sim.interval.ages = function(fossils, tree = NULL, taxonomy = NULL,
     if(use.species.ages){ # { assign hmin and hmax that do not violate species start and end times }
 
       sp = fossils$sp[i]
-      #start = taxonomy$start[which(taxonomy$sp == sp)][1]
-      #end = taxonomy$end[which(taxonomy$sp == sp)][1]
       start = max(taxonomy$start[which(taxonomy$sp == sp)])
       end = min(taxonomy$end[which(taxonomy$sp == sp)])
       start.int = assign.interval(interval.ages, start)

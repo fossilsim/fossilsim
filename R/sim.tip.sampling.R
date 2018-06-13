@@ -59,22 +59,14 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
 
   for (i in unique(taxonomy$sp)){
 
-    #end = taxonomy$end[which(taxonomy$sp == i)][1]
     end = min(taxonomy$end[which(taxonomy$sp == i)])
 
     if(!(end > (0 - tol) & end < (0 + tol))) next
 
     if(runif(1) < rho){
       # identify the edge ending zero
-
-      #edge = taxonomy$edge[which(taxonomy$sp == i)]
-      #edge = max(edge) # assumes tree edges were sorted root to tip (which is true by default with ape-ordered trees)
-      #origin = taxonomy$origin[which(taxonomy$sp == i)][1]
-      #if(is.null(origin)) origin = NA
-
       edge = taxonomy$edge[which(abs(taxonomy$end) < tol & taxonomy$sp == i)]
 
-      #fossils<-rbind(fossils, data.frame(sp = i, edge = edge, origin = origin, hmin = 0, hmax = 0))
       fossils<-rbind(fossils, data.frame(sp = i, edge = edge, hmin = 0, hmax = 0))
     }
 
@@ -137,9 +129,6 @@ sim.tip.samples<-function(fossils, tree, taxonomy = NULL, rho = 1){
 
   for (i in unique(taxonomy$sp)){
 
-    #end = taxonomy$end[which(taxonomy$sp == i)][1]
-    #edge = taxonomy$edge[which(taxonomy$sp == i & taxonomy$edge.end == end)][1]
-
     # identify the terminal most edge
     end = min(taxonomy$end[which(taxonomy$sp == i)])
     edge = taxonomy$edge[which(taxonomy$sp == i & taxonomy$end == end)]
@@ -147,9 +136,6 @@ sim.tip.samples<-function(fossils, tree, taxonomy = NULL, rho = 1){
     if(is.tip(edge,tree)){
 
       if(runif(1) < rho){
-
-        #origin = taxonomy$origin[which(taxonomy$sp == i)][1]
-        #fossils<-rbind(fossils, data.frame(sp = i, edge = edge, origin = origin, hmin = end, hmax = end))
         fossils<-rbind(fossils, data.frame(sp = i, edge = edge, hmin = end, hmax = end))
       }
     }

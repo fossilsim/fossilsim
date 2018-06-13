@@ -7,7 +7,6 @@
 #'  \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny
 #'  and the species labels in the corresponding taxonomy object
 #'  \item \code{edge} the label of the sampled node or tip in the phylogeny, i.e the node at the end of the edge along which the fossil was sampled
-#  \item \code{origin} the label of the node where the corresponding species originated in the phylogeny
 #'  \item \code{hmin} the youngest bound of the time interval in which the fossil was sampled
 #'  \item \code{hmax} the oldest bound of the time interval in which the fossil was sampled.
 #'  This is equal to \code{hmin} if exact sampling times are known
@@ -19,14 +18,12 @@
 #' @export
 fossils<-function(data = NULL, from.taxonomy = FALSE){
   if(is.null(data)) {
-    #data = data.frame(sp = numeric(), edge = numeric(), origin = numeric(), hmin = numeric(), hmax = numeric(), stringsAsFactors = F)
     data = data.frame(sp = numeric(), edge = numeric(), hmin = numeric(), hmax = numeric(), stringsAsFactors = F)
   }
   else {
     if(is.list(data)) data <- as.data.frame(data)
 
     # check for required fields
-    #required_fields = c("origin", "sp", "edge", "hmin", "hmax")
     required_fields = c("sp", "edge", "hmin", "hmax")
     missing = which(! required_fields %in% colnames(data))
     if(length(missing) > 0) stop(paste0("Missing required fields: ", paste(required_fields[missing], collapse = ", ")))

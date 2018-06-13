@@ -426,7 +426,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
             # singletons
             if(mn == mx) {
               range = fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)]
-              #range = c(range - buffer, range + buffer)
             }
 
             # single edge
@@ -435,22 +434,16 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
             # multiple edges: FA edge
             else if(j == edge.mx) {
-              #range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
-              #           max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
               range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
                                     max(xx) - taxonomy$end[which(taxonomy$edge == j)])
             }
             # multiple edges: LA edge
             else if(j == edge.mn){
-              #range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
-              #           max(xx) - taxonomy$edge.start[which(taxonomy$edge == j)][1])
               range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
                          max(xx) - taxonomy$start[which(taxonomy$edge == j)])
             }
             # multiple edges: in-between edges
             else{
-              #range =  c(max(xx) - taxonomy$edge.start[which(taxonomy$edge == j)][1],
-              #           max(xx) - taxonomy$edge.end[which(taxonomy$edge == j)][1])
               range =  c(max(xx) - taxonomy$start[which(taxonomy$edge == j)],
                          max(xx) - taxonomy$end[which(taxonomy$edge == j)])
             }
