@@ -65,14 +65,14 @@ wd = sim.water.depth(strata)
 # simulate fossils using tree & max.age and strata
 f = sim.fossils.non.unif.depth(t, max.age = max.age, strata = strata,
 depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
-#plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
+plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 
 # simulate fossils using taxonomy & interval.ages
 s = sim.taxonomy(t, 0.1, 0.1, 1)
 times = seq(0, max.age, length.out = strata + 1)
 f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
      depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
-#plot(f, t, strata = strata, binned = TRUE)
+plot(f, t, strata = strata, binned = TRUE)
 
 # simulate fossils with variable preservation across lineages
 dist = function() {runif(1)}

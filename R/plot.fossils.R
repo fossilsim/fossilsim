@@ -78,14 +78,13 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
   fossils = x
 
-  if(!show.tree) align.tip.label = TRUE
-
   # hard coded options for tree appearance
   edge.color = "black"
   edge.lty = 1
   font = 3 # italic
   tip.color = "black"
   label.offset = 0.02
+  align.tip.label.lty = 3
   underscore = FALSE
   plot = TRUE
   node.depth = 1
@@ -94,6 +93,7 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   srt = 0
 
   if(is.null(extant.col)) extant.col = fossil.col
+  if(!show.tree) align.tip.label = TRUE
 
   if(!(is.fossils(fossils)))
     stop("fossils must be an object of class \"fossils\"")
@@ -103,6 +103,9 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
   if(!all(fossils$edge %in% tree$edge))
     stop("Mismatch between fossils and tree objects")
+
+  # tolerance for extant tips and interval/ fossil age comparisons
+  tol = min((min(tree$edge.length)/100), 1e-8)
 
   if(is.null(max))
     ba = basin.age(tree, root.edge = root.edge)
@@ -135,8 +138,8 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   # check interval ages & proxy data
   if(any(fossils$hmin != fossils$hmax)) binned = TRUE
 
-  if(binned && any(fossils$hmin != fossils$hmax) && !all(fossils$hmax %in% seq(ba/strata, ba, length = strata)))
-    stop("Mismatch between fossil ages and interval ages")
+  #if(binned && any(fossils$hmin != fossils$hmax) && !all(fossils$hmax %in% seq(ba/strata, ba, length = strata)))
+  #  stop("Mismatch between fossil ages and interval ages")
 
   if(show.strata || show.proxy){
     if( (is.null(interval.ages)) && (is.null(strata)) )
@@ -170,8 +173,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   type = "phylogram"
   direction = "rightwards"
   horizontal = TRUE # = "rightwards"
-
-  align.tip.label.lty = 3 # \todo put this somewhere else
 
   xe = tree$edge # used in the last part of the fxn
   yy = numeric(Ntip + Nnode)
@@ -222,6 +223,28 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     y.lim[1] = 1
   }
 
+  # define interval ages
+  if(show.strata || show.axis || binned || show.proxy){
+    if( (is.null(interval.ages)) ){
+      s1 = ba / strata # horizon length (= max age of youngest horizon)
+      horizons.max = seq(s1, ba, length = strata)
+      horizons.min = horizons.max - s1
+      s1 = horizons.max - horizons.min
+    } else {
+      horizons.min = utils::head(interval.ages, -1)
+      horizons.max = interval.ages[-1]
+      ba = max(horizons.max)
+      s1 = rev(horizons.max - horizons.min)
+      strata = length(horizons.max)
+    }
+    if(binned){
+      if(length( unlist( sapply(fossils$hmax, function(x){
+        if(x < tol) return(1)
+        which(abs(horizons.max - x) < tol) }))) != length(fossils$hmax))
+        stop("Mismatch between fossil ages and interval ages")
+    }
+  }
+
   # the order in which you use plot and par here is very important
   if(show.proxy){
     old.par = par("usr", "mar", "oma", "xpd", "mgp","fig")
@@ -241,21 +264,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   }
 
   if (plot) {
-
-    if(show.strata || show.axis || binned || show.proxy){
-      if( (is.null(interval.ages)) ){
-        s1 = ba / strata # horizon length (= max age of youngest horizon)
-        horizons.max = seq(s1, ba, length = strata)
-        horizons.min = horizons.max - s1
-        s1 = horizons.max - horizons.min
-      } else {
-        horizons.min = utils::head(interval.ages, -1)
-        horizons.max = interval.ages[-1]
-        ba = max(horizons.max)
-        s1 = rev(horizons.max - horizons.min)
-        strata = length(horizons.max)
-      }
-    }
 
     # add colored strata
     # rect(xleft, ybottom, xright, ytop)
@@ -368,15 +376,15 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
     }
 
     if (extant.col != fossil.col){
-      tol = min((min(tree$edge.length)/100),1e-8)
       fossils$col[which(fossils$h < tol)] = extant.col
     }
 
     if(show.fossils || show.ranges) {
       if(binned) {
         fossils$r = sapply(fossils$h, function(x) {
-          if(x < 1e-8) return(max(xx) - x)
-          y = max(which(horizons.max == x))
+          if(x < tol) return(max(xx) - x)
+          #y = max(which(horizons.max == x))
+          y = max(which(abs(horizons.max - x) < tol))
           max(xx) - horizons.max[y] + (rev(s1)[y]/2) })
       } else {
         fossils$r = max(xx) - fossils$h
