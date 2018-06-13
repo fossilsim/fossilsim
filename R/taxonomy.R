@@ -13,8 +13,8 @@
 #' Note some species may be associated with multiple edges}
 #' \item{\code{parent} = ancestor of species \code{sp}. Parent labels follow the same convention as species.
 #' The label assigned to the parent of the origin or root will be zero}
-#' \item{\code{start} = origin time of species}
-#' \item{\code{end} = end time of species}
+#' \item{\code{start} = origin time of species or start time of the corresponding \code{edge}}
+#' \item{\code{end} = end time of species or end time of the corresponding \code{edge}}
 #' \item{\code{mode} = speciation mode. "o" = origin or "r" = root (the edge/species that began the process).
 #' "b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenic speciation}
 #' }
@@ -23,9 +23,6 @@
 #' \itemize{
 #' \item{\code{cryptic} TRUE if the speciation event was cryptic. If missing the function assumes \code{cryptic = FALSE}}
 #' \item{\code{cryptic.id} = cryptic species identity. If cryptic = TRUE \code{cryptic.id} will differ from the true species identity \code{sp}}
-#' \item{\code{origin} = edge beginning the species}
-#' \item{\code{edge.start} = start time of corresponding \code{edge}}
-#' \item{\code{edge.end} = end time of corresponding \code{edge}}
 #' }
 #'
 #' @param data Dataframe of species taxonomy. See Details for the list of required fields.

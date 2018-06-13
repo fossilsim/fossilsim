@@ -5,7 +5,7 @@
 \title{Plot simulated fossils}
 \usage{
 \method{plot}{fossils}(x, tree, show.fossils = TRUE, show.tree = TRUE,
-  show.ranges = FALSE, show.strata = FALSE, strata = 1, max = NULL,
+  show.ranges = FALSE, show.strata = FALSE, strata = 1, max.age = NULL,
   interval.ages = NULL, binned = FALSE, show.axis = TRUE,
   show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
   preferred.environ = NULL, show.taxonomy = FALSE, taxonomy = NULL,
@@ -28,7 +28,7 @@
 
 \item{strata}{Number of stratigraphic intervals.}
 
-\item{max}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
+\item{max.age}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -93,8 +93,8 @@ plot(f, t, show.strata = TRUE, strata = 4)
 
 ## simulate fossils under a non-uniform model of preservation
 # assign a max interval based on tree height
-max = basin.age(t)
-times = c(0, 0.3, 1, max)
+max.age = basin.age(t)
+times = c(0, 0.3, 1, max.age)
 rates = c(4, 1, 0.1)
 f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
 plot(f, t, show.strata = TRUE, interval.ages = times)

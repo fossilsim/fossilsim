@@ -17,7 +17,7 @@
 #' @param show.strata If TRUE plot strata  (default = FALSE).
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param strata Number of stratigraphic intervals.
-#' @param max Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.
+#' @param max.age Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.
 #' @param show.axis If TRUE plot x-axis (default = TRUE).
 #' @param binned If TRUE fossils are plotted at the mid point of each interval.
 #' @param show.proxy If TRUE add water depth profile (default = FALSE).
@@ -52,8 +52,8 @@
 #'
 #' ## simulate fossils under a non-uniform model of preservation
 #' # assign a max interval based on tree height
-#' max = basin.age(t)
-#' times = c(0, 0.3, 1, max)
+#' max.age = basin.age(t)
+#' times = c(0, 0.3, 1, max.age)
 #' rates = c(4, 1, 0.1)
 #' f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
 #' plot(f, t, show.strata = TRUE, interval.ages = times)
@@ -65,7 +65,7 @@
 #' @importFrom grDevices colors rgb adjustcolor
 plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                        # age info/options
-                       show.strata = FALSE, strata = 1, max = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
+                       show.strata = FALSE, strata = 1, max.age = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
                        # proxy stuff
                        show.proxy = FALSE, proxy.data = NULL,
                        show.preferred.environ = FALSE, preferred.environ = NULL,
@@ -107,9 +107,9 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   # tolerance for extant tips and interval/ fossil age comparisons
   tol = min((min(tree$edge.length)/100), 1e-8)
 
-  if(is.null(max))
+  if(is.null(max.age))
     ba = basin.age(tree, root.edge = root.edge)
-  else ba = max
+  else ba = max.age
 
   # check the tree
   Ntip <- length(tree$tip.label)
@@ -137,9 +137,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
   # check interval ages & proxy data
   if(any(fossils$hmin != fossils$hmax)) binned = TRUE
-
-  #if(binned && any(fossils$hmin != fossils$hmax) && !all(fossils$hmax %in% seq(ba/strata, ba, length = strata)))
-  #  stop("Mismatch between fossil ages and interval ages")
 
   if(show.strata || show.proxy){
     if( (is.null(interval.ages)) && (is.null(strata)) )
@@ -383,7 +380,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
       if(binned) {
         fossils$r = sapply(fossils$h, function(x) {
           if(x < tol) return(max(xx) - x)
-          #y = max(which(horizons.max == x))
           y = max(which(abs(horizons.max - x) < tol))
           max(xx) - horizons.max[y] + (rev(s1)[y]/2) })
       } else {
