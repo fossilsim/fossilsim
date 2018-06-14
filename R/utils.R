@@ -1,3 +1,7 @@
+###########################################
+# Tree functions
+###########################################
+
 #' Define a basin age based on tree height
 #'
 #' @description
@@ -22,6 +26,139 @@ basin.age = function(tree,root.edge=TRUE){
   ba = round(ba,1) + 0.1
   return(ba)
 }
+
+# Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
+n.ages <- function(tree){
+  
+  depth = ape::node.depth.edgelength(tree)
+  node.ages = max(depth) - depth
+  names(node.ages) <- 1:(tree$Nnode+length(tree$tip))
+  
+  # adding possible offset if tree fully extinct
+  if(!is.null(tree$root.time)) node.ages = node.ages + tree$root.time - max(node.ages)
+  
+  return(node.ages)
+}
+
+# find all egdes between two edges
+# @param i the younger of the two edges
+# @param j the older of the two edges
+# @return a vector including the two edges and any edges in-between
+find.edges.inbetween <- function(i,j,tree){
+  if(i == j) return(i)
+  d = fetch.descendants(j, tree, return.edge.labels = TRUE)
+  if(!i %in% d) stop("i not a descendant of j")
+  parent = ancestor(i,tree)
+  edges = c(i)
+  while(parent != j){
+    edges = c(edges, parent)
+    parent = ancestor(parent,tree)
+  }
+  edges = c(edges,j)
+  return(edges)
+}
+
+# Identify parent nodes
+ancestor <- function(edge,tree){
+  parent = tree$edge[,1][which(tree$edge[,2]==edge)]
+  return(parent)
+}
+
+# Identify tips
+#
+# @param taxa Edge label.
+# @param tree Phylo object.
+# @return Boolean (true/false).
+# @examples
+# t = ape::rtree(6)
+# is.tip(t$edge[,2][6],t)
+is.tip <- function(taxa,tree){
+  return (length(which(tree$edge[,1]==taxa)) < 1)
+}
+
+# Identify extant tips
+#
+# @param taxa Edge label.
+# @param tree Phylo object.
+# @param tol Rounding error tolerance.
+# @return Boolean (true/false).
+# @examples
+# t = ape::rtree(6)
+# is.extant(t$edge[,2][6],t)
+is.extant <- function(taxa,tree,tol=NULL){
+  
+  if(is.null(tol))
+    tol = min((min(tree$edge.length)/100),1e-8)
+  
+  age = n.ages(tree)[taxa]
+  
+  return(abs(age) < tol)
+}
+
+# Identify the root
+root <- function(tree){
+  return(length(tree$tip.label) + 1)
+}
+
+# Test is root
+is.root <- function(edge,tree) {
+  return(edge == root(tree))
+}
+
+# map a vector of node numbers from one topology to another
+map_nodes<-function(x, t.old, t.new) {
+  ret = x
+  for(i in 1:length(ret)) {
+    if(x[i] > length(t.old$tip.label)) {
+      st = ape::extract.clade(t.old,x[i])$tip.label
+      ret[i] = ape::getMRCA(t.new,st)
+    }
+    else {
+      ret[i] = which(t.new$tip.label==t.old$tip.label[x[i]])
+    }
+  }
+  ret
+}
+
+# Fetch descendant lineages in a symmetric tree
+#
+# @param edge Edge label.
+# @param tree Phylo object.
+# @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
+# @examples
+# t = ape::rtree(6)
+# fetch.descendants(7,t)
+# fetch.descendants(7,t,return.edge.labels=TRUE)
+# @return
+# Vector of symmetric descendants
+# @export
+# required by find.edges.inbetween
+fetch.descendants = function(edge, tree, return.edge.labels = F) {
+  
+  aux = function(node) {
+    result = if(return.edge.labels) node else c()
+    if(!return.edge.labels && is.tip(node,tree))  result = tree$tip.label[node]
+    
+    descendants = tree$edge[which(tree$edge[,1]==node),2]
+    for(d in descendants) {
+      result = c(result, aux(d))
+    }
+    result
+  }
+  
+  result = c()
+  descendants = tree$edge[which(tree$edge[,1]==edge),2]
+  for(d in descendants) {
+    result = c(result, aux(d))
+  }
+  
+  result
+}
+
+
+###########################################
+# Fossils functions
+###########################################
 
 #' Count the total number of fossils
 #'
@@ -59,105 +196,10 @@ count.fossils.binned = function(fossils, interval.ages){
   return(k)
 }
 
-# Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
-n.ages<-function(tree){
 
-  depth = ape::node.depth.edgelength(tree)
-  node.ages = max(depth) - depth
-  names(node.ages) <- 1:(tree$Nnode+length(tree$tip))
-
-  # adding possible offset if tree fully extinct
-  if(!is.null(tree$root.time)) node.ages = node.ages + tree$root.time - max(node.ages)
-
-  return(node.ages)
-}
-
-# Identify parent nodes
-ancestor<-function(edge,tree){
-
-  parent<-tree$edge[,1][which(tree$edge[,2]==edge)]
-
-  return(parent)
-}
-
-# Identify tips
-#
-# @param taxa Edge label.
-# @param tree Phylo object.
-# @return Boolean (true/false).
-# @examples
-# t = ape::rtree(6)
-# is.tip(t$edge[,2][6],t)
-is.tip<-function(taxa,tree){
-  return (length(which(tree$edge[,1]==taxa)) < 1)
-}
-
-# Identify extant tips
-#
-# @param taxa Edge label.
-# @param tree Phylo object.
-# @param tol Rounding error tolerance.
-# @return Boolean (true/false).
-# @examples
-# t = ape::rtree(6)
-# is.extant(t$edge[,2][6],t)
-is.extant<-function(taxa,tree,tol=NULL){
-
-  if(is.null(tol))
-    tol = min((min(tree$edge.length)/100),1e-8)
-
-  age = n.ages(tree)[taxa]
-
-  return(abs(age) < tol)
-}
-
-
-# Identify the root
-root<-function(tree){
-
-  root = length(tree$tip.label) + 1
-
-  return(root)
-}
-
-# Test is root
-is.root<-function(edge,tree){
-
-  root = length(tree$tip.label)+1
-
-  return(edge == root)
-}
-
-# fetch immediate descendants
-descendants<-function(edge,tree){
-
-  if(edge %in% tree$edge[,1])
-    decs<-tree$edge[,2][which(tree$edge[,1]==edge)]
-  else
-    decs = NULL
-
-  return(decs)
-}
-
-# map a vector of node numbers from one topology to another
-map_nodes<-function(x, t.old, t.new)
-{
-  ret = x
-  for(i in 1:length(ret))
-  {
-    if(x[i] > length(t.old$tip.label))
-    {
-      st = ape::extract.clade(t.old,x[i])$tip.label
-      #ret[i] = phytools::findMRCA(t.new,st)
-      ret[i] = ape::getMRCA(t.new,st)
-    }
-    else
-    {
-      ret[i] = which(t.new$tip.label==t.old$tip.label[x[i]])
-    }
-  }
-  ret
-}
+###########################################
+# Taxonomy functions
+###########################################
 
 # find species start time in taxonomy obj
 species.start = function(species, taxonomy){
@@ -202,57 +244,3 @@ species.record.from.taxonomy = function(taxonomy) {
   spec$species.end = sapply(spec$sp, function(x) species.end(x, taxonomy))
   spec
 }
-
-# find all egdes between two edges
-# @param i the younger of the two edges
-# @param j the older of the two edges
-# @return a vector including the two edges and any edges in-between
-find.edges.inbetween<-function(i,j,tree){
-  if(i == j) return(i)
-  d = fetch.descendants(j, tree, return.edge.labels = TRUE)
-  if(!i %in% d) stop("i not a descendant of j")
-  parent = ancestor(i,tree)
-  edges = c(i)
-  while(parent != j){
-    edges = c(edges, parent)
-    parent = ancestor(parent,tree)
-  }
-  edges = c(edges,j)
-  return(edges)
-}
-
-# Fetch descendant lineages in a symmetric tree
-#
-# @param edge Edge label.
-# @param tree Phylo object.
-# @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
-# @examples
-# t = ape::rtree(6)
-# fetch.descendants(7,t)
-# fetch.descendants(7,t,return.edge.labels=TRUE)
-# @return
-# Vector of symmetric descendants
-# @export
-# required by find.edges.inbetween
-fetch.descendants = function(edge, tree, return.edge.labels = F) {
-
-  aux = function(node) {
-    result = if(return.edge.labels) node else c()
-    if(!return.edge.labels && is.tip(node,tree))  result = tree$tip.label[node]
-
-    descendants = tree$edge[which(tree$edge[,1]==node),2]
-    for(d in descendants) {
-      result = c(result, aux(d))
-    }
-    result
-  }
-
-  result = c()
-  descendants = tree$edge[which(tree$edge[,1]==edge),2]
-  for(d in descendants) {
-    result = c(result, aux(d))
-  }
-
-  result
-}
-
