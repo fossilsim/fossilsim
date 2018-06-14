@@ -195,8 +195,12 @@ find.species.in.taxonomy = function(taxonomy, branch, time = NULL) {
 
 # get species record from taxonomy, i.e discard edge attributes
 species.record.from.taxonomy = function(taxonomy) {
-  taxonomy$edge = NULL
-  unique(taxonomy)
+  spec = taxonomy
+  spec$edge = spec$start = spec$end = NULL
+  spec = unique(spec)
+  spec$species.start = sapply(spec$sp, function(x) species.start(x, taxonomy))
+  spec$species.end = sapply(spec$sp, function(x) species.end(x, taxonomy))
+  spec
 }
 
 # find all egdes between two edges
