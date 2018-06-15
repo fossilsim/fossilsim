@@ -140,7 +140,7 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' t = ape::rtree(6)
 #'
 #' # assign a max age based on tree height
-#' max.age = max.age(t)
+#' max.age = tree.max(t)
 #'
 #' # simulate fossils using max.age and strata & probabilities
 #' strata = 4
@@ -314,7 +314,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' t = ape::rtree(6)
 #'
 #' # assign a max age based on tree height
-#' max.age = max.age(t)
+#' max.age = tree.max(t)
 #'
 #' # generate water depth profile
 #' strata = 7

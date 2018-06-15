@@ -46,7 +46,7 @@ f = sim.fossils.poisson(rate, t)
 plot(f, t)
 
 # assign a max age based on tree height
-max.age = max.age(t)
+max.age = tree.max(t)
 
 # define intervals
 times = seq(0, max.age, length.out = 5)

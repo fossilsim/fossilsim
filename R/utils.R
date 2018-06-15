@@ -12,10 +12,10 @@
 #' @return max age
 #' @examples
 #' t = ape::rtree(6)
-#' max.age(t, root.edge = FALSE)
+#' tree.max(t, root.edge = FALSE)
 #'
 #' @export
-max.age = function(tree, root.edge = TRUE){
+tree.max = function(tree, root.edge = TRUE){
   node.ages<-n.ages(tree)
   if(root.edge && exists("root.edge",tree) )
     ba = max(node.ages) + tree$root.edge
