@@ -45,7 +45,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 }
 
 #' Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
-#' Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labeled as first.
+#' Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
 #'
 #' @param tree Combined tree with fossils.
 #' @return Tree with pruned fossils.
@@ -112,7 +112,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 
 #' Transforms a fossilRecordSimulation object from package paleotree to a tree and taxonomy and fossils objects.
 #'
-#' The returned tree is in paleotree format, with zero-length edges leading to tips at bifurcation and anagenic events.
+#' The returned tree is in paleotree format, with zero-length edges leading to tips at bifurcation and anagenetic events.
 #' Fossils and taxonomy are only specified on non-zero-length edges.
 #' The label assigned to the parent of the origin or root will be zero.
 #'
@@ -200,7 +200,7 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
       if(prev %in% taxonomy$edge) break()
       lgth = tree$edge.length[which(tree$edge[,2] == prev)]
       if(length(lgth) > 0 && lgth == 0) break()
-      
+
       ends = c(ends, age)
       node_idx = prev
       age = age + lgth
@@ -217,7 +217,7 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
       orig_edge = which(tree$edge[,2] == origin)
       if(length(orig_edge) == 0 || tree$edge.length[orig_edge] > 0) {
         desc_anc = which(tree$edge[,1] == origin)
-        if(any(tree$edge.length[desc_anc] == 0)) mode = 'a' # anagenic event
+        if(any(tree$edge.length[desc_anc] == 0)) mode = 'a' # anagenetic event
         else mode = 'b' # budding
       } else {
         mode = 's' # bifurcation event
@@ -249,7 +249,7 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
 
   tree$root.edge = root_time - tree$root.time
   tree$origin.time = root_time
-  
+
   #removing extant samples (if present) from fossils
   ext = which(fossildf$hmax < 1e-8)
   if(length(ext > 0)) fossildf = fossildf[-ext,]
@@ -276,7 +276,7 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
 fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
   if(is.null(taxonomy) && is.null(tree)) stop("Either tree or taxonomy needs to be provided")
   fossils = sim.extant.samples(fossils, tree = tree, taxonomy = taxonomy)
-  
+
   rec_names = c("taxon.id","ancestor.id","orig.time","ext.time", "still.alive","looks.like")
 
   if(length(fossils$sp) > 0 & !any(grepl("t", fossils$sp))){

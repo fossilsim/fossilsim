@@ -30,10 +30,10 @@
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
 #' @param show.tip.label Whether to show the tip labels on the phylogeny (defaults to FALSE).
-#' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).
-#' @param fossil.col Color of fossil occurrences.
-#' @param range.col Color of stratigraphic ranges.
-#' @param extant.col Color of extant samples. If show.taxonomy = TRUE extant.col will be ignored.
+#' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (following \code{lty}).
+#' @param fossil.col Colour of fossil occurrences.
+#' @param range.col Colour of stratigraphic ranges.
+#' @param extant.col Colour of extant samples. If show.taxonomy = TRUE extant.col will be ignored.
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
@@ -72,17 +72,17 @@
 #' @importFrom graphics par points lines text axis mtext segments rect plot
 #' @importFrom grDevices colors rgb adjustcolor
 plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
-                       # age info/options
-                       show.strata = FALSE, strata = 1, max.age = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
-                       # proxy stuff
-                       show.proxy = FALSE, proxy.data = NULL,
-                       show.preferred.environ = FALSE, preferred.environ = NULL,
-                       # taxonomy
-                       show.taxonomy = FALSE, taxonomy = NULL,
-                       # tree appearance
-                       root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
-                       # fossil appearance
-                       fossil.col = 1, range.col = rgb(0,0,1), extant.col = NULL, cex = 1.2, pch = 18, ...) {
+                        # age info/options
+                        show.strata = FALSE, strata = 1, max.age = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
+                        # proxy stuff
+                        show.proxy = FALSE, proxy.data = NULL,
+                        show.preferred.environ = FALSE, preferred.environ = NULL,
+                        # taxonomy
+                        show.taxonomy = FALSE, taxonomy = NULL,
+                        # tree appearance
+                        root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
+                        # fossil appearance
+                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = NULL, cex = 1.2, pch = 18, ...) {
 
   fossils = x
 
@@ -192,43 +192,29 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   if(root.edge)
     xx = xx + tree$root.edge
 
-  x.lim = NULL
-  y.lim = NULL
-
   # x.lim is defined by max(ba, tree age)
   if(ba > max(xx))
     xx = xx + (ba - max(xx))
 
-  if (is.null(x.lim)) {
-    x.lim = c(0, NA)
-    pin1 = par("pin")[1]
-    strWi = graphics::strwidth(tree$tip.label, "inches", cex = par("cex"))
-    xx.tips = xx[1:Ntip] * 1.04
-    alp = try(stats::uniroot(function(a) max(a * xx.tips + strWi) - pin1, c(0, 1e+06))$root, silent = TRUE)
-    if (is.character(alp)) {
-      tmp = max(xx.tips)
-      if (show.tip.label)
-        tmp = tmp * 1.5
-    } else {
-      tmp = if (show.tip.label)
-        max(xx.tips + strWi/alp)
-      else max(xx.tips)
-    }
+  x.lim = c(0, NA)
+  pin1 = par("pin")[1]
+  strWi = graphics::strwidth(tree$tip.label, "inches", cex = par("cex"))
+  xx.tips = xx[1:Ntip] * 1.04
+  alp = try(stats::uniroot(function(a) max(a * xx.tips + strWi) - pin1, c(0, 1e+06))$root, silent = TRUE)
+  if (is.character(alp)) {
+    tmp = max(xx.tips)
     if (show.tip.label)
-      tmp = tmp + label.offset
-    x.lim[2] = tmp
+      tmp = tmp * 1.5
+  } else {
+    tmp = if (show.tip.label)
+      max(xx.tips + strWi/alp)
+    else max(xx.tips)
   }
-  else if (length(x.lim) == 1) {
-    x.lim = c(0, x.lim)
-  }
+  if (show.tip.label)
+    tmp = tmp + label.offset
+  x.lim[2] = tmp
 
-  if (is.null(y.lim)) {
-    y.lim = c(1, Ntip)
-  }
-  else if (length(y.lim) == 1) {
-    y.lim = c(0, y.lim)
-    y.lim[1] = 1
-  }
+  y.lim = c(1, Ntip)
 
   # define interval ages
   if(show.strata || show.axis || binned || show.proxy){
@@ -437,7 +423,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
             # multiple edges: FA edge
             else if(j == edge.mx) {
               range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
-                                    max(xx) - taxonomy$end[which(taxonomy$edge == j)])
+                         max(xx) - taxonomy$end[which(taxonomy$edge == j)])
             }
             # multiple edges: LA edge
             else if(j == edge.mn){

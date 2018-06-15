@@ -1,11 +1,11 @@
 #' Simulate taxonomy
 #'
 #' Simulate a taxonomy object relating species identity to a phylo object under a mixed model of speciation.
-#' Anagenic and cryptic species can also be added later using the \code{sim.anagenic.species} and \code{sim.cryptic.species} functions.
+#' Anagenetic and cryptic species can also be added later using the \code{sim.anagenetic.species} and \code{sim.cryptic.species} functions.
 #'
 #' @param tree Phylo object.
 #' @param beta Probability of bifurcating speciation. Default = 0.
-#' @param lambda.a Rate of anagenic speciation. Default = 0.
+#' @param lambda.a Rate of anagenetic speciation. Default = 0.
 #' @param kappa Probability that speciation event is cryptic. Default = 0.
 #' @param root.edge If TRUE include root edge. Default = TRUE.
 #' @return An object of class taxonomy.
@@ -124,8 +124,8 @@ sim.taxonomy = function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRU
 
   species = taxonomy(species)
 
-  # simulate anagenic species
-  if(lambda.a > 0) species = sim.anagenic.species(tree, species, lambda.a)
+  # simulate anagenetic species
+  if(lambda.a > 0) species = sim.anagenetic.species(tree, species, lambda.a)
 
   # simulate cryptic species
   if(kappa > 0) species = sim.cryptic.species(species, kappa)
@@ -135,28 +135,28 @@ sim.taxonomy = function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRU
   # eof
 }
 
-#' Simulate anagenic species on a taxonomy object
+#' Simulate anagenetic species on a taxonomy object
 #'
 #' @param tree Phylo object.
 #' @param species Taxonomy object.
-#' @param lambda.a Rate of anagenic speciation. Default = 0.
+#' @param lambda.a Rate of anagenetic speciation. Default = 0.
 #' @return Object of class taxonomy.
 #'
 #' @examples
 #' t = ape::rtree(10)
 #' sp = sim.taxonomy(t, 1)
-#' sim.anagenic.species(t, sp, 0.1)
+#' sim.anagenetic.species(t, sp, 0.1)
 #'
 #' @seealso \code{\link{taxonomy}}
 #'
 #' @export
-sim.anagenic.species = function(tree, species, lambda.a){
+sim.anagenetic.species = function(tree, species, lambda.a){
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
   if(!"taxonomy" %in% class(species))
     stop("species must be an object of class \"taxonomy\"")
   if(any(species$mode=="a"))
-    stop("taxonomy object already contains anagenic species")
+    stop("taxonomy object already contains anagenetic species")
   if(lambda.a < 0)
     stop("lambda.a must be zero or positive")
 
@@ -169,7 +169,7 @@ sim.anagenic.species = function(tree, species, lambda.a){
 
     # identify the start of the new species id count
     # this is set to greater than the greatest edge label id to avoid any confusion with species labels
-    # since species labels can change with the addition of anagenic species
+    # since species labels can change with the addition of anagenetic species
     species.counter = max(as.numeric(names(node.ages))) + 1
 
     # calculate edge start and end times
@@ -205,7 +205,7 @@ sim.anagenic.species = function(tree, species, lambda.a){
         # remove edges associated with i from species df
         species = subset(species, !species$edge %in% potential.edges)
 
-        # sample anagenic speciation times from the branch duration
+        # sample anagenetic speciation times from the branch duration
         h = runif(rand, min = sp.end, max = sp.start)
 
         # order the new speciation times
@@ -281,7 +281,7 @@ sim.anagenic.species = function(tree, species, lambda.a){
 
             # any descendant parent labels associated with this species shouldn't need to change
 
-          } else { # intermediate anagenic species
+          } else { # intermediate anagenetic species
 
             sp = species.counter
             start = h[j-1]
