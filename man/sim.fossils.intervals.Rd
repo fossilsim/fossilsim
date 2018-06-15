@@ -45,7 +45,7 @@ If no taxonomic information is provided, the function assumes all speciation is 
 t = ape::rtree(6)
 
 # assign a max age based on tree height
-max.age = basin.age(t)
+max.age = tree.max(t)
 
 # simulate fossils using max.age and strata & probabilities
 strata = 4
@@ -57,12 +57,12 @@ plot(f, t, strata = strata, show.strata = TRUE)
 times = seq(0, max.age, length.out = 4)
 rates = c(5, 0, 5)
 f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
-plot(f, t)
+plot(f, t, interval.ages = times)
 
 # simulate fossils using taxonomy
 s = sim.taxonomy(t, 0.1, 0.1, 1)
 f = sim.fossils.intervals(taxonomy = s, interval.ages = times, rates = rates)
-plot(f, t)
+plot(f, t, interval.ages = times)
 
 }
 \seealso{

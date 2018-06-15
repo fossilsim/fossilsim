@@ -75,9 +75,9 @@ This function is adapted from the \emph{ape} function \code{plot.phylo} used to 
 The function can be used to plot simulated fossils (\code{show.fossils = TRUE}), with or without the corresponding tree (\code{show.tree = TRUE}),
 stratigraphic intervals (\code{show.strata = TRUE}), stratigraphic ranges (\code{show.ranges = TRUE}) and sampling proxy data (\code{show.proxy = TRUE}).
 Interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using the
-number of intervals (\code{strata}) and maximum interval age (\code{max}), where interval length \eqn{= basin.age/strata}.
+number of intervals (\code{strata}) and maximum interval age (\code{max}), where interval length \eqn{= max.age/strata}.
 If no maximum age is specified, the function calculates a maximum interval age slightly older than the root edge (or root age if \code{root.edge = FALSE}),
-using the function \code{basin.age}.
+using the function \code{tree.max()}.
 }
 \examples{
 set.seed(123)
@@ -101,7 +101,7 @@ plot(f, t, taxonomy = s, show.taxonomy = TRUE, show.ranges = TRUE)
 
 ## simulate fossils under a non-uniform model of preservation
 # assign a max interval based on tree height
-max.age = basin.age(t)
+max.age = tree.max(t)
 times = c(0, 0.3, 1, max.age)
 rates = c(4, 1, 0.1)
 f = sim.fossils.intervals(t, interval.ages = times, rates = rates)

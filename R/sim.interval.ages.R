@@ -27,7 +27,7 @@
 #' plot(f, t)
 #'
 #' # assign a max age based on tree height
-#' max.age = basin.age(t)
+#' max.age = tree.max(t)
 #'
 #' # define intervals
 #' times = seq(0, max.age, length.out = 5)
@@ -148,7 +148,7 @@ sim.interval.ages = function(fossils, tree = NULL, taxonomy = NULL,
 # f = sim.fossils.poisson(rate = 2, tree = t)
 #
 # # intervals
-# max.age = basin.age(t)
+# max.age = tree.max(t)
 # times = seq(0, max.age, length.out = 4)
 #
 # # simulate uncertainty

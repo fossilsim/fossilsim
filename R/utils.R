@@ -2,41 +2,39 @@
 # Tree functions
 ###########################################
 
-#' Define a basin age based on tree height
+#' Find the maximum age in a phylo object (root age or origin time)
 #'
 #' @description
-#' Function returns an age slightly older than the root.age or origin time using the formula
-#' \eqn{round(max,1) + 0.1}, where max is the root.age or origin time.
+#' Function returns the the root age or the origin time (if \code{root.edge = TRUE}).
 #'
 #' @param tree Phylo object.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
-#' @return basin age
+#' @return max age
 #' @examples
 #' t = ape::rtree(6)
-#' basin.age(t, root.edge = FALSE)
+#' tree.max(t, root.edge = FALSE)
 #'
 #' @export
-basin.age = function(tree,root.edge=TRUE){
+tree.max = function(tree, root.edge = TRUE){
   node.ages<-n.ages(tree)
   if(root.edge && exists("root.edge",tree) )
     ba = max(node.ages) + tree$root.edge
   else
     ba = max(node.ages)
 
-  ba = round(ba,1) + 0.1
   return(ba)
 }
 
 # Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
 n.ages <- function(tree){
-  
+
   depth = ape::node.depth.edgelength(tree)
   node.ages = max(depth) - depth
   names(node.ages) <- 1:(tree$Nnode+length(tree$tip))
-  
+
   # adding possible offset if tree fully extinct
   if(!is.null(tree$root.time)) node.ages = node.ages + tree$root.time - max(node.ages)
-  
+
   return(node.ages)
 }
 
@@ -86,12 +84,12 @@ is.tip <- function(taxa,tree){
 # t = ape::rtree(6)
 # is.extant(t$edge[,2][6],t)
 is.extant <- function(taxa,tree,tol=NULL){
-  
+
   if(is.null(tol))
     tol = min((min(tree$edge.length)/100),1e-8)
-  
+
   age = n.ages(tree)[taxa]
-  
+
   return(abs(age) < tol)
 }
 
@@ -134,24 +132,24 @@ map_nodes<-function(x, t.old, t.new) {
 # @export
 # required by find.edges.inbetween
 fetch.descendants = function(edge, tree, return.edge.labels = F) {
-  
+
   aux = function(node) {
     result = if(return.edge.labels) node else c()
     if(!return.edge.labels && is.tip(node,tree))  result = tree$tip.label[node]
-    
+
     descendants = tree$edge[which(tree$edge[,1]==node),2]
     for(d in descendants) {
       result = c(result, aux(d))
     }
     result
   }
-  
+
   result = c()
   descendants = tree$edge[which(tree$edge[,1]==edge),2]
   for(d in descendants) {
     result = c(result, aux(d))
   }
-  
+
   result
 }
 
