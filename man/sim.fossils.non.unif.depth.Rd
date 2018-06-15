@@ -56,7 +56,7 @@ If no taxonomic information is provided, the function assumes all speciation is 
 t = ape::rtree(6)
 
 # assign a max age based on tree height
-max.age = basin.age(t)
+max.age = max.age(t)
 
 # generate water depth profile
 strata = 7
