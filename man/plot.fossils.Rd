@@ -56,13 +56,13 @@
 
 \item{show.tip.label}{Whether to show the tip labels on the phylogeny (defaults to FALSE).}
 
-\item{align.tip.label}{A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).}
+\item{align.tip.label}{A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (following \code{lty}).}
 
-\item{fossil.col}{Color of fossil occurrences.}
+\item{fossil.col}{Colour of fossil occurrences.}
 
-\item{range.col}{Color of stratigraphic ranges.}
+\item{range.col}{Colour of stratigraphic ranges.}
 
-\item{extant.col}{Color of extant samples. If show.taxonomy = TRUE extant.col will be ignored.}
+\item{extant.col}{Colour of extant samples. If show.taxonomy = TRUE extant.col will be ignored.}
 
 \item{cex}{Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.}
 

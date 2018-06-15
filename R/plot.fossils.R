@@ -30,10 +30,10 @@
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
 #' @param show.tip.label Whether to show the tip labels on the phylogeny (defaults to FALSE).
-#' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).
-#' @param fossil.col Color of fossil occurrences.
-#' @param range.col Color of stratigraphic ranges.
-#' @param extant.col Color of extant samples. If show.taxonomy = TRUE extant.col will be ignored.
+#' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (following \code{lty}).
+#' @param fossil.col Colour of fossil occurrences.
+#' @param range.col Colour of stratigraphic ranges.
+#' @param extant.col Colour of extant samples. If show.taxonomy = TRUE extant.col will be ignored.
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param ... Additional parameters to be passed to \code{plot.default}.

@@ -17,3 +17,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Language: en-GB

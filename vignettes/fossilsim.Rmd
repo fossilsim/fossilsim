@@ -22,22 +22,22 @@ knitr::opts_chunk$set(
 ## Background and motivation
 
 `FossilSim` is an R package for simulating species taxonomy and fossil occurrence data in a phylogenetic framework.
-Simulations are useful for addressing many questions in phylogenetics and palaeobiology, and are especially useful for assessing the performance different methods, since the true underlying parameters (e.g. diversification and fossil recovery rates) are known.
-Tara Smiley provides an excellent demonstration of the value of simulations in palaebiology in this [blog post](http://blog.journals.cambridge.org/2018/03/19/testing-the-fossil-record-how-simulations-help-us-understand-the-relative-roles-of-diversification-and-preservation-underlying-diversity-gradients-in-deep-time/).
+Simulations can be used to address many questions in phylogenetics and palaeobiology, and are especially useful for assessing the performance of different methods, since the true underlying parameters (e.g. diversification and fossil recovery rates) are known.
+Tara Smiley provides an excellent demonstration of the value of simulations in palaeobiology in this [blog post](http://blog.journals.cambridge.org/2018/03/19/testing-the-fossil-record-how-simulations-help-us-understand-the-relative-roles-of-diversification-and-preservation-underlying-diversity-gradients-in-deep-time/).
 `FossilSim` output can be easily parsed for downstream analysis using R, or other software packages including [BEAST2](http://beast2.org/) and [RevBayes](https://revbayes.github.io).
-The package provides a wide range of flexible models, including models of interval-, lineage and environmental-dependent models of fossil recovery, in addition to plotting functions that can be used to visualise the output and produce publication quality figures.
-This vingette provides detailed examples of available functions for simulating data and how the package output can be used to interact with other R packages and programs.
+The package provides a wide range of flexible models, including models of interval-, lineage- and environment-dependent fossil recovery rates, in addition to plotting functions that can be used to visualise the output and produce publication quality figures.
+This vignette provides detailed examples of available functions for simulating data, plotting the package output and interacting with other R packages and programs.
 
 ## Installing the package
 
-`FossilSim` is available on CRAN or the latest developement version can be installed from [github](http://github.com/) using the package `devtools`.
+`FossilSim` is available on CRAN or the latest development version can be installed from [GitHub](http://github.com/) using the package `devtools`.
 
 ```{r, eval = FALSE}
 # TODO
 # to install the package via CRAN
 install.packages("FossilSim")
 
-# to install the package via CRAN
+# to install the package via GitHub
 devtools::install_github("rachelwarnock/fossilsim")
 
 # load the package into the current working environment
@@ -49,14 +49,14 @@ devtools::load_all()
 
 ### Package dependencies
 
-The above will automatically involve installing the package dependencies, `ape`, `TreeSim` and `phytools`.
+The installation above will automatically install the package dependencies, `ape`, `TreeSim` and `phytools`.
 
 ### Calling functions from FossilSim and other packages
 
 Once the package is loaded into your current working environment you can call the package functions directly, e.g. `sim.fossils.poisson()`.
 It is also possible to call functions in R without loading the package into your working environment, e.g. `FossilSim::sim.fossils.poisson()`.
-Throughout this vingette and other documentation assocaited with `FossilSim`, we call the package functions from the current working enviroment but we use the `::` format to call functions from other packages.
-This is done to make the source of all functions is as clear as possible.
+Throughout this vignette and other documentation associated with `FossilSim`, we call the `FossilSim` functions from the current working environment but we use the `::` format to call functions from other packages.
+This is done to make the source of all functions as clear as possible.
 
 ### Quick guide
 
@@ -74,8 +74,8 @@ plot(f, t)
 ```
 
 However, the package contains many options for simulating fossils and evaluating the output in a meaningful way requires understanding the underlying model parameters.
-Parsing the output for downstream analysis also requires becoming familar with the `FossilSim` objects.
-The following sections describe the package input and output, before the vingette goes onto describe details of available models.
+Parsing the output for downstream analysis also requires becoming familiar with the `FossilSim` objects.
+The following sections describe the package input and output, before the vignette goes on to describe details of available models.
 
 ## FossilSim input
 
@@ -83,7 +83,7 @@ The starting point for any data generation using `FossilSim` is a phylogenetic t
 `FossilSim` relies on the widely used `ape` package `phylo` object format for handling trees. 
 The `phylo` object stores information about the relationship among branches in a phylogeny in a matrix called `edge` and branch lengths are stored in a vector called `edge.length`.
 The age of the tips and internal nodes can be reconstructed by combining information from the `edge` matrix and the `edge.length` vector.
-If the tree has a root edge (i.e. a branch leading the root) the length of this edge is stored as a numeric variable called `root.edge`.
+If the tree has a root edge (i.e. a branch leading to the root) the length of this edge is stored as a numeric variable called `root.edge`.
 
 There are a huge number of packages and options for simulating trees that can be used as input in `FossilSim`, including the `ape` and `TreeSim` R packages.
 An empirical phylogeny can also be used as input.
@@ -91,28 +91,28 @@ The only general requirements are that trees are fully resolved and scaled to ti
 
 ## FossilSim output
 
-`FossilSim` can be used to simulate species taxonomy and fossils, which are stored and output as the `taxonomy` and `fossils` objects decribed below. 
+`FossilSim` can be used to simulate species taxonomy and fossils, which are stored and output as the `taxonomy` and `fossils` objects described below. 
 The functions used to simulate fossils can take either a `phylo` *or* `taxonomy` object as input.
 This means, in theory, the user never has to interact with the `taxonomy` object when simulating fossil data.
-However, it may still be useful to become familar with the concepts underlying the `taxonomy` object.
+However, it may still be useful to become familiar with the concepts underlying the `taxonomy` object.
 
 ### The `taxonomy` object
 
 A phylogenetic tree object does not typically contain information about species over time in the format used by most software packages.
-A timescaled phylogeny is informative about the minimum number of co-exisiting lineages at a given moment but not about the start and end point of species or the *mode* of speciation. 
-Three modes of speciations that have been discussed widely in palaeobiological literature and can be modelled using `FossilSim` include: 
+A timescaled phylogeny is informative about the minimum number of co-existing lineages at a given moment but not about the start and end point of species or the *mode* of speciation. 
+Three modes of speciations that have been discussed widely in palaeobiological literature can be modelled using `FossilSim`: 
 
   * *budding or asymmetric speciation*, which gives rise to one new species and does not result in the extinction of the ancestor
   * *bifurcating or symmetric speciation*, which gives rise to two new species and results in the extinction of the ancestor species
   * *anagenetic speciation*, which gives rise to one new species and results in the extinction of the ancestor
 
-The distinction between these processes is important because they have different consequences for parameter estiamtes using different methods.
+The distinction between these processes is important because they have consequences on parameter estimates using different methods.
 
 \todo insert a figure illustrating these processes
 
 In molecular phylogenetics, we typically draw trees as fully bifurcating structures (i.e. each node gives rise to two descendant branches).
 This is also how trees are stored in computer memory by most phylogenetic software packages, including `ape`.
-However, it may not be the case that each internal edge represents a single species. 
+However, it may not be the case that each internal edge represents a unique species. 
 Instead, some speciation events may be budding rather than bifurcating or anagenesis may have occurred at some point along internal edges.
 To explore the impact of different speciation modes it is valuable to know the relationship between species through time (the *taxonomy*) and the corresponding tree object.
  
@@ -120,33 +120,33 @@ To explore the impact of different speciation modes it is valuable to know the r
 described in the section [Simulating taxonomy].
 Information about the true species taxonomy is stored in the `taxonomy` object, which will be associated with the corresponding `phylo` object used to simulate species evolution. 
 
-The object contains a dataframe detailing species taxonomy, which contains the followng 7 fields for each edge in the corresponding `phylo` object:
+The object contains a dataframe detailing species taxonomy, which contains the following 7 fields for each edge and species in the corresponding `phylo` object:
 
-* `sp` the true species identity label. If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest node) associated with each species. This is not the case if the data set also contains anagenic species, when multiple species may be associated with a single edge
+* `sp` the true species identity label. If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest node) associated with each species. This is not the case if the data set also contains anagenetic species, when multiple species may be associated with a single edge.
 
-* `edge` edge label of the branch in the corresponding phylo object. Note some species may be associated with multiple edges
+* `edge` edge label of the branch in the corresponding phylo object. Note that some species may be associated with multiple edges.
 
-* `parent` ancestor of species sp. Parent labels follow the same convention as species. The label assigned to the parent of the origin or root will be zero
+* `parent` ancestor of species `sp`. Parent labels follow the same convention as species. The label assigned to the parent of the origin or root will be zero
 
-* `start` start time of the corresponding edge and/or origin time of the species. If the corresponding edge is also the oldest edge associated with the species this value will equal the species origination time. If speciation mode is asymmetric or symmetric the speciation time will match the start time of the corresponding edge. If speciation mode is anagenetic the speciation time will be younger than the start time of the corresponding edge
+* `start` start time of the corresponding edge and/or origin time of the species. If the corresponding edge is also the oldest edge associated with the species this value will equal the species origination time. If speciation mode is asymmetric or symmetric the speciation time will match the start time of the corresponding edge. If speciation mode is anagenetic the speciation time will be younger than the start time of the corresponding edge.
 
-* `end` end time of the corresponding edge and/or end time of the species. If the corresponding edge is also the youngest edge associated with the species this value will equal the species end time. Unless the species end time coincides with an anagenetic speciation event, the species end time will match the end time of the corresponding edge. If the species end time coincides with an anagenetic speciation event, the speciation time will be older than the end time of the corresponding edge
+* `end` end time of the corresponding edge and/or end time of the species. If the corresponding edge is also the youngest edge associated with the species this value will equal the species end time. Unless the species end time coincides with an anagenetic speciation event, the species end time will match the end time of the corresponding edge. If the species end time coincides with an anagenetic speciation event, the speciation time will be older than the end time of the corresponding edge.
 
 * `mode` mode = speciation mode. "o" = origin or "r" = root (the edge/species that began the process). "b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenetic speciation
 
 A new `taxonomy` object can be created by passing the above information to the `taxonomy()` function.
 
-Cryptic species can also be simulated. Under cryptic speciation the descendant species will be indistinguishable from the ancestor and the `taxonomy` object can incoporate this information using the additional optional fields:
+Cryptic species can also be simulated. Under cryptic speciation the descendant species will be indistinguishable from the ancestor and the `taxonomy` object can incorporate this information using the additional optional fields:
 
-* `cryptic` TRUE if the speciation event was crytpic. If this information is not passed to `taxonomy()`, the function assumes `cryptic = FALSE`
+* `cryptic` TRUE if the speciation event was cryptic. If this information is not passed to `taxonomy()`, the function assumes `cryptic = FALSE` for all species.
 
-* `cryptic.id` cryptic species identity, i.e. the ancestral species that the species will be identified as. If `cryptic = TRUE` `cryptic.id` will differ from the true species identity `sp`.
+* `cryptic.id` cryptic species identity, i.e. ancestral species that the current species will be identified as. If `cryptic = TRUE`, `cryptic.id` will differ from the true species identity `sp`.
 
 The relationship between information provided by the `taxonomy` object and the corresponding `phylo` object will become clear when you start simulating species and exploring the output.
 
 The `taxonomy` object can be used as the starting point for simulating fossils or other downstream analyses that require information about discrete species units.
 
-**Special Note** Although bifurcating tree structures are stored in computer memory, the birth-death process models used to simulate and analyse trees in phylogenetics actually assume budding speciation, although information about which descendant edge represents the ancestor versus descendant species may not be available.
+**Special Note** Please note that the birth and death rates used as parameters in the birth-death process generally do not correspond to the rates of appearance and extinction of species, unless speciation is entirely asymmetric/budding. For more information about this issue see: C.M. Warnock, Rachel & Silvestro, Daniele & Gavryushkina, Alexandra & Stadler, Tanja. (2017). CLOSING THE GAP BETWEEN PALEONTOLOGICAL AND NEONTOLOGICAL SPECIATION AND EXTINCTION RATE ESTIMATES. 10.1130/abs/2017AM-306182. 
 
 ### The `fossils` object
 
@@ -154,7 +154,7 @@ The `fossils` object contains information about fossil sampling times and their 
 In some simulation conditions we may know the age of fossils precisely.
 Alternatively, there may be some uncertainty associated with specimen ages, i.e. we only know the age to within some stratigraphic interval, which can be incorporated into the `fossils` object.
 
-The object contains a dataframe with species and age information for each fossil with the followng 4 fields:
+The object contains a dataframe with species and age information for each fossil with the following 4 fields:
 
 * `sp` the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny if no additional taxonomic information was provided or the species labels in the corresponding taxonomy object
 
@@ -164,15 +164,15 @@ The object contains a dataframe with species and age information for each fossil
 
 * `hmax` the oldest bound of the time interval in which the fossil was sampled. This is equal to `hmin` if exact sampling times are known
 
-The object also contains a logical variable `from.taxonomy` indicating whether the fossil record was simulating using a `taxonomy` object, in which case `from.taxonomy = TRUE`, or from a `phylo` object in which case `from.taxonomy = TRUE` (the default).
+The object also contains a logical variable `from.taxonomy` indicating whether the fossil record was simulating using a `taxonomy` object, in which case `from.taxonomy = TRUE`, or from a `phylo` object in which case `from.taxonomy = FALSE` (the default).
 
 ## Simulating taxonomy
 
-Species evolution or taxonomy can be simulated under a mixed model of speciation, which incorporates three modes of specaition: budding (or asymmetric), bifurcating (or symmetric) and anagenetic specaition.
+Species evolution or taxonomy can be simulated under a mixed model of speciation, which incorporates three modes of speciation: budding (or asymmetric), bifurcating (or symmetric) and anagenetic speciation.
 \todo add citation Stadler 2018
-Under this model, $\beta$ is the probability that a branching event corresponds to a bifurcation event, while $1 - \beta$ is the probability that the event correspondis to a budding event.
+Under this model, $\beta$ is the probability that a branching event corresponds to a bifurcation event, while $1 - \beta$ is the probability that the event corresponds to a budding event.
 If $\beta = 0$ all speciation occurs via budding. 
-If $\beta = 1$ all speciation occurs via bifurcation - this is equivalent to assumming all edges in a phylogenetic tree correspond to a unique species. 
+If $\beta = 1$ all speciation occurs via bifurcation - this is equivalent to assuming all edges in a phylogenetic tree correspond to a unique species. 
 Anagenetic speciation occurs along internal edges with rate $\lambda_a$. 
 Finally, $\kappa$ is the probability that a speciation event will be cryptic.
 The relationship between these processes and the underlying structure or branching process in the corresponding `phylo` object is described in section [The `taxonomy` object].
@@ -209,7 +209,7 @@ s = sim.taxonomy(t, beta = 0.5, lambda.a = 2, kappa = 0.1)
 
 In combination with 
 
-Seperate functions also estimate
+Separate functions also estimate
 
 ## Simulating fossils
 
@@ -253,7 +253,7 @@ plot(f, t, taxonomy = s, show.taxonomy = TRUE)
 max.age = 5
 # define the number of intervals
 strata = 4
-# define to a vector of sampling rates
+# define a vector of sampling rates
 rates = c(1, 0.1, 1, 0.1)
 # simulate fossils
 f = sim.fossils.intervals(t, rates = rates, max.age = max.age, strata = strata)
@@ -266,7 +266,7 @@ plot(f, t, show.strata = TRUE, strata = strata)
 ```{r fig4}
 # the following...
 times = c(0, sort(runif(3, min = 0, max = max.age)), max.age)
-# define to a vector of sampling rates
+# define a vector of sampling rates
 rates = c(1, 0.1, 1, 0.1)
 # simulate fossils
 f = sim.fossils.intervals(t, rates = rates, interval.ages = times)

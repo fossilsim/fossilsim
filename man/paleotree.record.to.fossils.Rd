@@ -15,7 +15,7 @@ paleotree.record.to.fossils(record, alphanumeric = TRUE)
 A list containing the converted tree, taxonomy and fossils
 }
 \description{
-The returned tree is in paleotree format, with zero-length edges leading to tips at bifurcation and anagenic events.
+The returned tree is in paleotree format, with zero-length edges leading to tips at bifurcation and anagenetic events.
 Fossils and taxonomy are only specified on non-zero-length edges.
 The label assigned to the parent of the origin or root will be zero.
 }

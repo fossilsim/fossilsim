@@ -8,7 +8,7 @@
 #' \itemize{
 #' \item{\code{sp} true species identity label.
 #' If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest node) associated with each species.
-#' This is not the case if the data set also contains anagenic species, when multiple species may be associated with a single edge}
+#' This is not the case if the data set also contains anagenetic species, when multiple species may be associated with a single edge}
 #' \item{\code{edge} edge label of the branch in the corresponding phylo object.
 #' Note some species may be associated with multiple edges}
 #' \item{\code{parent} = ancestor of species \code{sp}. Parent labels follow the same convention as species.
@@ -77,7 +77,7 @@ summary.taxonomy<-function(object, max.length = 50, round.x = 12, details = TRUE
   if(details){
     cat("\t", length(unique(x$sp[which(x$mode == "b")])), "budding species\n\t",
     length(unique(x$sp[which(x$mode == "s")])), "bifurcating species\n\t",
-    length(unique(x$sp[which(x$mode == "a")])), "anagenic species\n\t",
+    length(unique(x$sp[which(x$mode == "a")])), "anagenetic species\n\t",
     length(unique(x$sp[which(x$mode == "o")])), "origin species\n\t",
     length(unique(x$sp[which(x$mode == "r")])), "root species\n\t",
     length(unique(x$sp[which(x$cryptic == 1)])), "cryptic speciation events\n")

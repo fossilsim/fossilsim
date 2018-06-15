@@ -11,7 +11,7 @@ sim.taxonomy(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE)
 
 \item{beta}{Probability of bifurcating speciation. Default = 0.}
 
-\item{lambda.a}{Rate of anagenic speciation. Default = 0.}
+\item{lambda.a}{Rate of anagenetic speciation. Default = 0.}
 
 \item{kappa}{Probability that speciation event is cryptic. Default = 0.}
 
@@ -22,7 +22,7 @@ An object of class taxonomy.
 }
 \description{
 Simulate a taxonomy object relating species identity to a phylo object under a mixed model of speciation.
-Anagenic and cryptic species can also be added later using the \code{sim.anagenic.species} and \code{sim.cryptic.species} functions.
+Anagenetic and cryptic species can also be added later using the \code{sim.anagenetic.species} and \code{sim.cryptic.species} functions.
 }
 \examples{
 t = ape::rtree(10)

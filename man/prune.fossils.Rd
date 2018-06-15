@@ -3,7 +3,7 @@
 \name{prune.fossils}
 \alias{prune.fossils}
 \title{Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
-Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labeled as first.}
+Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.}
 \usage{
 prune.fossils(tree)
 }
@@ -15,7 +15,7 @@ Tree with pruned fossils.
 }
 \description{
 Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
-Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labeled as first.
+Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
 }
 \examples{
 # simulate tree
