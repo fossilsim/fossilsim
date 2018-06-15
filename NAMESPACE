@@ -2,6 +2,7 @@
 
 S3method(plot,SAtree)
 S3method(plot,fossils)
+S3method(plot,taxonomy)
 S3method(print,fossils)
 S3method(print,taxonomy)
 S3method(summary,fossils)

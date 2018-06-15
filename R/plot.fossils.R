@@ -71,7 +71,7 @@
 #' @export
 #' @importFrom graphics par points lines text axis mtext segments rect plot
 #' @importFrom grDevices colors rgb adjustcolor
-plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
+plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                        # age info/options
                        show.strata = FALSE, strata = 1, max.age = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
                        # proxy stuff
@@ -115,6 +115,9 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   # tolerance for extant tips and interval/ fossil age comparisons
   tol = min((min(tree$edge.length)/100), 1e-8)
 
+  if(is.null(tree$root.edge))
+    root.edge = FALSE
+
   if(is.null(max.age))
     ba = basin.age(tree, root.edge = root.edge)
   else ba = max.age
@@ -134,9 +137,6 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
 
   if(is.null(tree$edge.length))
     stop("tree must have edge lengths")
-
-  if(is.null(tree$root.edge))
-    root.edge = FALSE
 
   Nnode <- tree$Nnode
   if (any(tree$edge < 1) || any(tree$edge > Ntip + Nnode))
@@ -169,6 +169,8 @@ plot.fossils<-function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.rang
   # check taxonomy data
   if(show.taxonomy && is.null(taxonomy))
     stop("Specify taxonomy using \"taxonomy\"")
+  if(show.taxonomy && !"taxonomy" %in% class(taxonomy))
+    stop("taxonomy must be an object of class \"taxonomy\"")
   if(show.taxonomy && !all(fossils$edge %in% taxonomy$edge))
     stop("Mismatch between fossils and taxonomy objects")
   if(show.taxonomy && !all(tree$edge %in% taxonomy$edge))

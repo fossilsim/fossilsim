@@ -44,6 +44,6 @@ If the species end time coincides with an anagenetic speciation event, the speci
 Optional fields:
 \itemize{
 \item{\code{cryptic} TRUE if the speciation event was cryptic. If missing the function assumes \code{cryptic = FALSE}}
-\item{\code{cryptic.id} = cryptic species identity. If cryptic = TRUE \code{cryptic.id} will differ from the true species identity \code{sp}}
+\item{\code{cryptic.id} = cryptic species identity. If \code{cryptic = TRUE} \code{cryptic.id} will differ from the true species identity \code{sp}}
 }
 }
