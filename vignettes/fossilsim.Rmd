@@ -277,9 +277,9 @@ plot(f, t, show.strata = TRUE, interval.ages = times)
 
 #### Simulating fossils given a set of probabilities
 
-### Environmental-dependent fossil recovery
+### Environment-dependent fossil recovery
 
-### Lineage-dependent fossil recovery
+### Lineage-dependent fossil recovery rates
 
-### Environmental- and lineage dependent fossil recovery
+### Environment- and lineage dependent fossil recovery rates
 

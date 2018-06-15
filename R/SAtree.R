@@ -109,5 +109,5 @@ SAtree.from.fossils = function(tree, fossils) {
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
 
-  tree
+  SAtree(tree)
 }
