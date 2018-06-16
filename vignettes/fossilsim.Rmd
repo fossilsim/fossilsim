@@ -3,8 +3,6 @@ title: "The FossilSim package"
 author: "Joelle Barido-Sottani, Rachel C. M. Warnock"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-fig_width: 5
-fig_height: 5
 vignette: >
   %\VignetteIndexEntry{FossilSim}
   %\VignetteEngine{knitr::rmarkdown}
@@ -26,7 +24,7 @@ Simulations can be used to address many questions in phylogenetics and palaeobio
 Tara Smiley provides an excellent demonstration of the value of simulations in palaeobiology in this [blog post](http://blog.journals.cambridge.org/2018/03/19/testing-the-fossil-record-how-simulations-help-us-understand-the-relative-roles-of-diversification-and-preservation-underlying-diversity-gradients-in-deep-time/).
 `FossilSim` output can be easily parsed for downstream analysis using R, or other software packages including [BEAST2](http://beast2.org/) and [RevBayes](https://revbayes.github.io).
 The package provides a wide range of flexible models, including models of interval-, lineage- and environment-dependent fossil recovery rates, in addition to plotting functions that can be used to visualise the output and produce publication quality figures.
-This vignette provides detailed examples of available functions for simulating data, plotting the package output and interacting with other R packages and programs.
+This vignette provides detailed examples of available functions for simulating data and plotting the package output.
 
 ## Installing the package
 
@@ -122,15 +120,15 @@ Information about the true species taxonomy is stored in the `taxonomy` object, 
 
 The object contains a dataframe detailing species taxonomy, which contains the following 7 fields for each edge and species in the corresponding `phylo` object:
 
-* `sp` the true species identity label. If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest node) associated with each species. This is not the case if the data set also contains anagenetic species, when multiple species may be associated with a single edge.
+* `sp` the true species identity label. If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest node) associated with each species. This is not the case if the data set also contains anagenetic species, when multiple species may be associated with a single edge
 
-* `edge` edge label of the branch in the corresponding phylo object. Note that some species may be associated with multiple edges.
+* `edge` edge label of the branch in the corresponding phylo object. Note that some species may be associated with multiple edges
 
 * `parent` ancestor of species `sp`. Parent labels follow the same convention as species. The label assigned to the parent of the origin or root will be zero
 
-* `start` start time of the corresponding edge and/or origin time of the species. If the corresponding edge is also the oldest edge associated with the species this value will equal the species origination time. If speciation mode is asymmetric or symmetric the speciation time will match the start time of the corresponding edge. If speciation mode is anagenetic the speciation time will be younger than the start time of the corresponding edge.
+* `start` start time of the corresponding edge and/or origin time of the species. If the corresponding edge is also the oldest edge associated with the species this value will equal the species origination time. If speciation mode is asymmetric or symmetric the speciation time will match the start time of the corresponding edge. If speciation mode is anagenetic the speciation time will be younger than the start time of the corresponding edge
 
-* `end` end time of the corresponding edge and/or end time of the species. If the corresponding edge is also the youngest edge associated with the species this value will equal the species end time. Unless the species end time coincides with an anagenetic speciation event, the species end time will match the end time of the corresponding edge. If the species end time coincides with an anagenetic speciation event, the speciation time will be older than the end time of the corresponding edge.
+* `end` end time of the corresponding edge and/or end time of the species. If the corresponding edge is also the youngest edge associated with the species this value will equal the species end time. Unless the species end time coincides with an anagenetic speciation event, the species end time will match the end time of the corresponding edge. If the species end time coincides with an anagenetic speciation event, the end time will be older than the end time of the corresponding edge
 
 * `mode` mode = speciation mode. "o" = origin or "r" = root (the edge/species that began the process). "b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenetic speciation
 
@@ -146,7 +144,7 @@ The relationship between information provided by the `taxonomy` object and the c
 
 The `taxonomy` object can be used as the starting point for simulating fossils or other downstream analyses that require information about discrete species units.
 
-**Special Note** Please note that the birth and death rates used as parameters in the birth-death process generally do not correspond to the rates of appearance and extinction of species, unless speciation is entirely asymmetric/budding. For more information about this issue see: C.M. Warnock, Rachel & Silvestro, Daniele & Gavryushkina, Alexandra & Stadler, Tanja. (2017). CLOSING THE GAP BETWEEN PALEONTOLOGICAL AND NEONTOLOGICAL SPECIATION AND EXTINCTION RATE ESTIMATES. 10.1130/abs/2017AM-306182. 
+**Special Note** Please note that the birth and death rates used as parameters in the birth-death process generally do not correspond to the rates of appearance and extinction of species under the above processes, unless speciation is entirely asymmetric/budding. For more information about this issue see: C.M. Warnock, Rachel & Silvestro, Daniele & Gavryushkina, Alexandra & Stadler, Tanja. (2017). CLOSING THE GAP BETWEEN PALEONTOLOGICAL AND NEONTOLOGICAL SPECIATION AND EXTINCTION RATE ESTIMATES. 10.1130/abs/2017AM-306182. 
 
 ### The `fossils` object
 
@@ -164,7 +162,7 @@ The object contains a dataframe with species and age information for each fossil
 
 * `hmax` the oldest bound of the time interval in which the fossil was sampled. This is equal to `hmin` if exact sampling times are known
 
-The object also contains a logical variable `from.taxonomy` indicating whether the fossil record was simulating using a `taxonomy` object, in which case `from.taxonomy = TRUE`, or from a `phylo` object in which case `from.taxonomy = FALSE` (the default).
+The object also contains a logical variable `from.taxonomy` indicating whether the fossil record was simulated using a `taxonomy` object, in which case `from.taxonomy = TRUE`, or from a `phylo` object in which case `from.taxonomy = FALSE` (the default).
 
 ## Simulating taxonomy
 

@@ -16,7 +16,7 @@ plot.SAtree <- function(x, complete = FALSE, ...){
     else stop(paste('object "',class(x),'" is not of class "SAtree"',sep=""))
   }
 
-  x$complete = FALSE #TODO without this it doesn't work and I don't know why - Joëlle
+  x$complete = FALSE #TODO without this it doesn't work and I don't know why - Jo?lle
   sa.labels <- x$tip.label[x$edge[which(x$edge.length == 0),2]]
 
   # collapse sampled ancestor tips into 2-degree nodes
