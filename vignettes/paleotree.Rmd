@@ -1,0 +1,45 @@
+---
+title: "Conversions from and to paleotree format"
+author: "Joelle Barido-Sottani"
+date: "`r Sys.Date()`"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{FossilSim}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(FossilSim)
+```
+
+## Compatibility with paleotree
+
+Objects produced by `FossilSim` contain all the information required by the `paleotree` format and vice-versa, thus those two packages are fully compatible.
+
+Converting from `paleotree` is done using the `paleotree.record.to.fossils` function, which returns a list of the corresponding `phylo`, `taxonomy` and `fossils` objects.
+
+```{r}
+record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1, nTotalTaxa=c(30,40),
+                                    nExtant=0, nSamp = c(5,25))
+
+converted_record = paleotree.record.to.fossils(record)
+converted_record
+```
+
+If the `paleotree` record is fully extinct, i.e contains no extant samples, the age of the record will be encoded in the field `origin.time` of the tree.
+
+```{r}
+converted_record$tree$origin.time
+```
+
+Similarly, converting from the `FossilSim` objects to `paleotree` format is done using the `fossils.to.paleotree.record` function, which requires a `fossils` object and either a `phylo` or `taxonomy` object. If no taxonomy is provided, all speciation events in the tree will be assumed to be symmetric.
+
+```{r}
+t = ape::rtree(6)
+f = sim.fossils.poisson(rate = 2, tree = t)
+
+converted_record = fossils.to.paleotree.record(f, tree = t)
+converted_record
+```

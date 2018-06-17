@@ -15,19 +15,18 @@ is.fossils(data)
 \arguments{
 \item{data}{Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, the function creates an empty fossils object.}
 
-\item{from.taxonomy}{Boolean indicating whether the fossils were sampled using a taxonomy object. Default = FALSE.}
+\item{from.taxonomy}{Boolean indicating whether the fossils were sampled using a taxonomy object, as opposed to a tree object. Default = FALSE.}
 }
 \description{
 Create a fossil record object. The input is taken to be a dataframe or list.
 }
 \details{
-The fossil record object contains 5 fields containing for each fossil the following data:
+The fossil record object contains 4 fields for each fossil with the following information:
 \itemize{
- \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny
- and the species labels in the corresponding taxonomy object
+ \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny if no additional taxonomic
+ information was provided or the species labels in the corresponding taxonomy object
  \item \code{edge} the label of the sampled node or tip in the phylogeny, i.e the node at the end of the edge along which the fossil was sampled
- \item \code{origin} the label of the node where the corresponding species originated in the phylogeny
- \item \code{hmin} the youngest bound of the time interval in which the fossil was sampled
+ \item \code{hmin} the age of the fossil or the youngest bound of the time interval in which the fossil was sampled
  \item \code{hmax} the oldest bound of the time interval in which the fossil was sampled.
  This is equal to \code{hmin} if exact sampling times are known
 }

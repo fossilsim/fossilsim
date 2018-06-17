@@ -4,16 +4,17 @@
 \alias{plot.fossils}
 \title{Plot simulated fossils}
 \usage{
-\method{plot}{fossils}(fossils, tree, show.fossils = TRUE, show.tree = TRUE,
-  show.ranges = FALSE, show.strata = FALSE, strata = 1, max = NULL,
+\method{plot}{fossils}(x, tree, show.fossils = TRUE, show.tree = TRUE,
+  show.ranges = FALSE, show.strata = FALSE, strata = 1, max.age = NULL,
   interval.ages = NULL, binned = FALSE, show.axis = TRUE,
   show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
-  preferred.environ = NULL, root.edge = TRUE, hide.edge = FALSE,
-  edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
-  fcex = 1.2, fcol = "darkorange", ecol = NULL, ...)
+  preferred.environ = NULL, show.taxonomy = FALSE, taxonomy = NULL,
+  root.edge = TRUE, hide.edge = FALSE, edge.width = 1,
+  show.tip.label = FALSE, align.tip.label = FALSE, fossil.col = 1,
+  range.col = rgb(0, 0, 1), extant.col = NULL, cex = 1.2, pch = 18, ...)
 }
 \arguments{
-\item{fossils}{Fossils object.}
+\item{x}{Fossils object.}
 
 \item{tree}{Phylo object.}
 
@@ -21,13 +22,13 @@
 
 \item{show.tree}{If TRUE plot the tree  (default = TRUE).}
 
-\item{show.ranges}{If TRUE plot stratigraphic ranges (default = FALSE).}
+\item{show.ranges}{If TRUE plot stratigraphic ranges (default = FALSE). If show.taxonomy = FALSE all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).}
 
 \item{show.strata}{If TRUE plot strata  (default = FALSE).}
 
 \item{strata}{Number of stratigraphic intervals.}
 
-\item{max}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
+\item{max.age}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -39,9 +40,13 @@
 
 \item{proxy.data}{Vector of sampling proxy data (default = NULL).}
 
-\item{show.preferred.environ}{If TRUE add species prefferred environmental value (e.g. water depth) (default = FALSE).}
+\item{show.preferred.environ}{If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE).}
 
-\item{preferred.environ}{Prefferred environmental value (e.g. water depth).}
+\item{preferred.environ}{Preferred environmental value (e.g. water depth).}
+
+\item{show.taxonomy}{If TRUE highlight species taxonomy.}
+
+\item{taxonomy}{Taxonomy object.}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 
@@ -51,13 +56,17 @@
 
 \item{show.tip.label}{Whether to show the tip labels on the phylogeny (defaults to FALSE).}
 
-\item{align.tip.label}{A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).}
+\item{align.tip.label}{A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (following \code{lty}).}
 
-\item{fcex}{Numeric value giving the factor used to scale the points representing the fossils. Only used if \code{show.fossils = TRUE}.}
+\item{fossil.col}{Colour of fossil occurrences.}
 
-\item{fcol}{Color of fossil occurrences or ranges.}
+\item{range.col}{Colour of stratigraphic ranges.}
 
-\item{ecol}{Color of extant samples. This only works if binned = FALSE.}
+\item{extant.col}{Colour of extant samples. If show.taxonomy = TRUE extant.col will be ignored.}
+
+\item{cex}{Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.}
+
+\item{pch}{Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.}
 
 \item{...}{Additional parameters to be passed to \code{plot.default}.}
 }
@@ -66,28 +75,36 @@ This function is adapted from the \emph{ape} function \code{plot.phylo} used to 
 The function can be used to plot simulated fossils (\code{show.fossils = TRUE}), with or without the corresponding tree (\code{show.tree = TRUE}),
 stratigraphic intervals (\code{show.strata = TRUE}), stratigraphic ranges (\code{show.ranges = TRUE}) and sampling proxy data (\code{show.proxy = TRUE}).
 Interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using the
-number of intervals (\code{strata}) and maximum interval age (\code{max}), where interval length \eqn{= basin.age/strata}.
+number of intervals (\code{strata}) and maximum interval age (\code{max}), where interval length \eqn{= max.age/strata}.
 If no maximum age is specified, the function calculates a maximum interval age slightly older than the root edge (or root age if \code{root.edge = FALSE}),
-using the function \code{basin.age}.
+using the function \code{tree.max()}.
 }
 \examples{
 set.seed(123)
 
 ## simulate tree
-t <- TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
+t = TreeSim::sim.bd.taxa(8, 1, 1, 0.3)[[1]]
 
 ## simulate fossils under a Poisson sampling process
-f <- sim.fossils.poisson(rate = 3, tree = t)
+f = sim.fossils.poisson(rate = 3, tree = t)
 plot(f, t)
 # add a set of equal length strata
 plot(f, t, show.strata = TRUE, strata = 4)
+# show stratigraphic ranges
+plot(f, t, show.strata = TRUE, strata = 4, show.ranges = TRUE)
+
+## simulate fossils and highlight taxonomy
+s = sim.taxonomy(t, 0.5, 1)
+f = sim.fossils.poisson(rate = 3, taxonomy = s)
+plot(f, t, taxonomy = s, show.taxonomy = TRUE, show.ranges = TRUE)
+
 
 ## simulate fossils under a non-uniform model of preservation
 # assign a max interval based on tree height
-max = basin.age(t)
-times = c(0, 0.3, 1, max)
+max.age = tree.max(t)
+times = c(0, 0.3, 1, max.age)
 rates = c(4, 1, 0.1)
-f <- sim.fossils.intervals(t, interval.ages = times, rates = rates)
+f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
 plot(f, t, show.strata = TRUE, interval.ages = times)
 # add proxy data
 plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy.data = rates)

@@ -13,4 +13,8 @@ Imports:
     TreeSim,
     phytools
 Suggests:
-    paleotree
+    paleotree,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Language: en-GB

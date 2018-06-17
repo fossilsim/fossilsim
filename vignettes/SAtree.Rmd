@@ -1,0 +1,57 @@
+---
+title: "Exporting to zero-edge format"
+author: "Joelle Barido-Sottani"
+date: "`r Sys.Date()`"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{FossilSim}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(FossilSim)
+```
+
+## Zero-edge format
+
+Many phylogenetic inference softwares, such as [BEAST2](http://beast2.org/) and [RevBayes](https://revbayes.github.io), can handle trees containing fossil samples. In the zero-edge format, tip samples are represented normally in the tree, but sampled ancestors, i.e fossil samples which have sampled descendants, are represented as tips at the end of edges with length 0.
+
+This format is included in `FossilSim` as the `SAtree` objects.
+
+## Converting to SAtree
+
+`SAtree` objects can be built from a `fossils` object and the associated tree. Tips (both extinct and extant) will be labelled with the species they were sampled from followed by an index: the oldest sample for a given species will get index 1 and all other samples will be ordered from oldest to youngest.
+
+```{r}
+t = ape::rtree(6)
+f = sim.fossils.poisson(rate = 2, tree = t)
+
+SAt = SAtree.from.fossils(t,f)
+plot(SAt)
+```
+
+`SAtree` objects are also `phylo` objects and can still be used with all the functions compatible with that format.
+```{r}
+ape::plot.phylo(SAt)
+```
+
+## Other useful functions
+
+Other functions are present in `FossilSim` to modify trees. 
+`prune.fossils` will remove all intermediate fossil samples and keep only the first and last occurrences of any species.
+
+```{r}
+SAt_pruned = prune.fossils(SAt)
+ape::plot.phylo(SAt_pruned)
+```
+
+`sampled.tree.from.combined` removes all unsampled lineages from the tree, and can optionally apply a sampling probability to extant samples, or keep only a specified list of extant samples. NB: extinct tips will be considered unsampled by default unless they are sampled ancestors.
+
+```{r}
+SAt_sampled = sampled.tree.from.combined(SAt)
+ape::plot.phylo(SAt_sampled)
+```
+
+These two functions can be applied to any object of type `phylo`, but are designed to work on trees which include fossil samples.

@@ -2,27 +2,37 @@
 % Please edit documentation in R/conversions.R
 \name{paleotree.record.to.fossils}
 \alias{paleotree.record.to.fossils}
-\title{Transforms a fossilRecordSimulation object from package paleotree to a tree and taxonomy and fossils dataframes.}
+\title{Transforms a fossilRecordSimulation object from package paleotree to a tree and taxonomy and fossils objects.}
 \usage{
-paleotree.record.to.fossils(record)
+paleotree.record.to.fossils(record, alphanumeric = TRUE)
 }
 \arguments{
 \item{record}{fossilRecordSimulation object.}
+
+\item{alphanumeric}{If TRUE function will return alphanumeric species labels (i.e. species labels contain the "t" prefix) (default). If FALSE function will return numeric only species labels.}
 }
 \value{
 A list containing the converted tree, taxonomy and fossils
 }
 \description{
-The returned tree is in paleotree format, with zero-length edges leading to tips at bifurcation and anagenic events.
+The returned tree is in paleotree format, with zero-length edges leading to tips at bifurcation and anagenetic events.
 Fossils and taxonomy are only specified on non-zero-length edges.
+The label assigned to the parent of the origin or root will be zero.
 }
 \examples{
+if (requireNamespace("paleotree", quietly = TRUE)) {
 # simulate record
-record <- paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1,nTotalTaxa=c(30,40),
+record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1, nTotalTaxa=c(30,40),
     nExtant=0, nSamp = c(5,25))
+
 # transform format
 l_tf = paleotree.record.to.fossils(record)
 l_tf$tree
 l_tf$taxonomy
 l_tf$fossils
+}
+
+}
+\seealso{
+\code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{fossils.to.paleotree.record}}
 }

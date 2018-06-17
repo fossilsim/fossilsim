@@ -27,9 +27,11 @@ Designed to work with FBD.
 }
 \examples{
 # simulate tree
-t <- ape::rtree(6)
+t = ape::rtree(6)
+
 # simulate fossils
-f <- sim.fossils.poisson(rate = 2, tree = t)
+f = sim.fossils.poisson(rate = 2, tree = t)
+
 # output for BEAST
 beast.fbd.format(t, f) # output on the console
 beast.fbd.format(t, f, file="example.tre") # output in file

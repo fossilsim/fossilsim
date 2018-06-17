@@ -4,14 +4,14 @@
 \alias{sim.fossils.poisson}
 \title{Simulate fossils under a Poisson sampling model}
 \usage{
-sim.fossils.poisson(rate, tree = NULL, species = NULL, root.edge = TRUE)
+sim.fossils.poisson(rate, tree = NULL, taxonomy = NULL, root.edge = TRUE)
 }
 \arguments{
-\item{rate}{Poisson sampling rate.}
+\item{rate}{A single Poisson sampling rate or a vector of rates.}
 
 \item{tree}{Phylo object.}
 
-\item{species}{Taxonomy object.}
+\item{taxonomy}{Taxonomy object.}
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 }
@@ -19,25 +19,36 @@ sim.fossils.poisson(rate, tree = NULL, species = NULL, root.edge = TRUE)
 An object of class fossils.
 }
 \description{
-Simulate fossils for a phylo (\code{tree}) or taxonomy object (\code{species}).
+Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 If both are specified, the function uses taxonomy.
-If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. \code{beta = 1}).
+If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
+A vector of rates can be specified to allow for rate variation across lineages.
+If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
+or to each unique edge in the order in which they appear in the tree object.
+If the tree object has a root edge (\code{root.edge}), the first entry in the rates vector should correspond to this edge.
 }
 \examples{
-
 # simulate tree
-t <- ape::rtree(6)
+t = ape::rtree(6)
 
 # simulate fossils using the tree
 rate = 2
-f <- sim.fossils.poisson(rate, tree = t)
+f = sim.fossils.poisson(rate, tree = t)
 plot(f, t)
 
 # simulate fossils using taxonomy
-s <- create.taxonomy(t, 0.5, 1, 0.5)
-f <- sim.fossils.poisson(rate, species = s)
+s = sim.taxonomy(t, 0.5, 1, 0.5)
+f = sim.fossils.poisson(rate, taxonomy = s)
+plot(f, t)
+
+# simulate fossils with autocorrelated rate variation across lineages
+rates = sim.trait.values(rate = rate, taxonomy = s, v = 1)
+f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
 
 }
-\keyword{preservation}
-\keyword{uniform}
+\seealso{
+\code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}, \code{\link{sim.trait.values}}
+}
+\keyword{Poisson}
+\keyword{sampling}

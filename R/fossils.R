@@ -2,30 +2,29 @@
 #'
 #' Create a fossil record object. The input is taken to be a dataframe or list.
 #'
-#' The fossil record object contains 5 fields containing for each fossil the following data:
+#' The fossil record object contains 4 fields for each fossil with the following information:
 #' \itemize{
-#'  \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny
-#'  and the species labels in the corresponding taxonomy object
+#'  \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny if no additional taxonomic
+#'  information was provided or the species labels in the corresponding taxonomy object
 #'  \item \code{edge} the label of the sampled node or tip in the phylogeny, i.e the node at the end of the edge along which the fossil was sampled
-#'  \item \code{origin} the label of the node where the corresponding species originated in the phylogeny
-#'  \item \code{hmin} the youngest bound of the time interval in which the fossil was sampled
+#'  \item \code{hmin} the age of the fossil or the youngest bound of the time interval in which the fossil was sampled
 #'  \item \code{hmax} the oldest bound of the time interval in which the fossil was sampled.
 #'  This is equal to \code{hmin} if exact sampling times are known
 #' }
 #'
 #' @param data Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, the function creates an empty fossils object.
-#' @param from.taxonomy Boolean indicating whether the fossils were sampled using a taxonomy object. Default = FALSE.
+#' @param from.taxonomy Boolean indicating whether the fossils were sampled using a taxonomy object, as opposed to a tree object. Default = FALSE.
 #'
 #' @export
 fossils<-function(data = NULL, from.taxonomy = FALSE){
   if(is.null(data)) {
-    data = data.frame(sp = numeric(), edge = numeric(), origin = numeric(), hmin = numeric(), hmax = numeric(), stringsAsFactors = F)
+    data = data.frame(sp = numeric(), edge = numeric(), hmin = numeric(), hmax = numeric(), stringsAsFactors = F)
   }
   else {
     if(is.list(data)) data <- as.data.frame(data)
 
     # check for required fields
-    required_fields = c("origin", "sp", "edge", "hmin", "hmax")
+    required_fields = c("sp", "edge", "hmin", "hmax")
     missing = which(! required_fields %in% colnames(data))
     if(length(missing) > 0) stop(paste0("Missing required fields: ", paste(required_fields[missing], collapse = ", ")))
 
@@ -77,8 +76,5 @@ as.fossils.default<-function(data, ...){
 #' @export
 #' @rdname  fossils
 is.fossils<-function(data){
-  if(inherits(data, "fossils"))
-    TRUE
-  else
-    FALSE
+  inherits(data, "fossils")
 }
