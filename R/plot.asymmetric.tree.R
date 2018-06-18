@@ -9,14 +9,14 @@
 #' plot(SAtree(tree), complete=TRUE)
 #'
 #' @export
-#' TODO optional tip labels ?
+# TODO optional tip labels ?
 plot.SAtree <- function(x, complete = FALSE, ...){
   if(!("SAtree" %in% class(x)) ){
     if("phylo" %in% class(x)) x = SAtree(x)
     else stop(paste('object "',class(x),'" is not of class "SAtree"',sep=""))
   }
 
-  x$complete = FALSE #TODO without this it doesn't work and I don't know why - Jo?lle
+  x$complete = FALSE #TODO without this it doesn't work and I don't know why - Jolle
   sa.labels <- x$tip.label[x$edge[which(x$edge.length == 0),2]]
 
   # collapse sampled ancestor tips into 2-degree nodes
