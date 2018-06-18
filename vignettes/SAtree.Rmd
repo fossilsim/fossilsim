@@ -26,7 +26,8 @@ This format is included in `FossilSim` as the `SAtree` objects.
 
 ```{r}
 t = ape::rtree(6)
-f = sim.fossils.poisson(rate = 2, tree = t)
+tax = sim.taxonomy(t)
+f = sim.fossils.poisson(rate = 2, taxonomy = tax)
 
 SAt = SAtree.from.fossils(t,f)
 plot(SAt)

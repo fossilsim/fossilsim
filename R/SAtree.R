@@ -33,7 +33,7 @@ SAtree.from.fossils = function(tree, fossils) {
   if(length(fossils[,1])==0) return(tree)
 
   fossils$h = (fossils$hmin + fossils$hmax)/2
-  fossils = fossils[order(fossils$edge, -fossils$h),]
+  fossils = fossils[order(fossils$sp, -fossils$h),]
 
   ntips = length(tree$tip.label)
   totalnodes = ntips + tree$Nnode
