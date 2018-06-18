@@ -9,14 +9,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
   
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 library(FossilSim)
 ```
 
 ## Compatibility with paleotree
 
-Objects produced by `FossilSim` contain all the information required by the `paleotree` format and vice-versa, thus those two packages are fully compatible.
+Objects produced by `FossilSim` contain all the information required by the `paleotree` format and vice-versa, thus these two packages are fully compatible.
 
 Converting from `paleotree` is done using the `paleotree.record.to.fossils` function, which returns a list of the corresponding `phylo`, `taxonomy` and `fossils` objects.
 
@@ -34,7 +34,7 @@ If the `paleotree` record is fully extinct, i.e contains no extant samples, the 
 converted_record$tree$origin.time
 ```
 
-Similarly, converting from the `FossilSim` objects to `paleotree` format is done using the `fossils.to.paleotree.record` function, which requires a `fossils` object and either a `phylo` or `taxonomy` object. If no taxonomy is provided, all speciation events in the tree will be assumed to be symmetric.
+Similarly, converting from the `FossilSim` objects to `paleotree` format is done using the `fossils.to.paleotree.record` function, which requires a `fossils` object and either a `phylo` or `taxonomy` object. If no taxonomy is provided, all speciation events in the tree will be assumed to be symmetric (bifurcating).
 
 ```{r}
 t = ape::rtree(6)
