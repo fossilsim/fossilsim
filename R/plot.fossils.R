@@ -121,6 +121,9 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   if(is.null(max.age))
     ba = tree.max(tree, root.edge = root.edge)
   else ba = max.age
+  
+  offset = 0 # distance from youngest tip to present
+  if(!is.null(tree$origin.time)) offset = min(n.ages(tree))
 
   # check the tree
   Ntip <- length(tree$tip.label)
@@ -193,8 +196,8 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     xx = xx + tree$root.edge
 
   # x.lim is defined by max(ba, tree age)
-  if(ba > max(xx))
-    xx = xx + (ba - max(xx))
+  if(ba - offset > max(xx))
+    xx = xx + (ba - offset - max(xx))
 
   x.lim = c(0, NA)
   pin1 = par("pin")[1]
@@ -219,8 +222,8 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   # define interval ages
   if(show.strata || show.axis || binned || show.proxy){
     if( (is.null(interval.ages)) ){
-      s1 = ba / strata # horizon length (= max age of youngest horizon)
-      horizons.max = seq(s1, ba, length = strata)
+      s1 = (ba - offset) / strata # horizon length (= max age of youngest horizon)
+      horizons.max = seq(s1 + offset, ba, length = strata)
       horizons.min = horizons.max - s1
       s1 = horizons.max - horizons.min
     } else {
@@ -270,7 +273,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
 
       # x-axis:
       #s1 = ba / strata
-      x.left = 0 - (ba - max(xx))
+      x.left = 0 - (ba - offset - max(xx))
       x.right = x.left + s1[1]
       cc = 1 # color switch
 
@@ -289,7 +292,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
         axis.strata = c(axis.strata, x.left)
       }
 
-      x.labs = rev(round(c(0, horizons.max),2))
+      x.labs = rev(round(c(offset, horizons.max),2))
 
       if(show.proxy)
         labs = FALSE
@@ -374,12 +377,12 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
 
     if(show.fossils || show.ranges) {
       if(binned) {
-        fossils$r = sapply(fossils$h, function(x) {
+        fossils$r = sapply(fossils$h - offset, function(x) {
           if(x < tol) return(max(xx) - x)
           y = max(which(abs(horizons.max - x) < tol))
           max(xx) - horizons.max[y] + (rev(s1)[y]/2) })
       } else {
-        fossils$r = max(xx) - fossils$h
+        fossils$r = max(xx) - fossils$h + offset
       }
     }
 
@@ -423,17 +426,17 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
             # multiple edges: FA edge
             else if(j == edge.mx) {
               range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
-                         max(xx) - taxonomy$end[which(taxonomy$edge == j)])
+                         max(xx) + offset - taxonomy$end[which(taxonomy$edge == j)])
             }
             # multiple edges: LA edge
             else if(j == edge.mn){
               range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
-                         max(xx) - taxonomy$start[which(taxonomy$edge == j)])
+                         max(xx) + offset - taxonomy$start[which(taxonomy$edge == j)])
             }
             # multiple edges: in-between edges
             else{
-              range =  c(max(xx) - taxonomy$start[which(taxonomy$edge == j)],
-                         max(xx) - taxonomy$end[which(taxonomy$edge == j)])
+              range =  c(max(xx) + offset - taxonomy$start[which(taxonomy$edge == j)],
+                         max(xx) + offset - taxonomy$end[which(taxonomy$edge == j)])
             }
             # plot ranges
             sp = yy[j]
