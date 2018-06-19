@@ -23,13 +23,15 @@ This format is included in `FossilSim` as the `SAtree` objects.
 ## Converting to SAtree
 
 `SAtree` objects can be built from a `fossils` object and the associated tree. Tips (both extinct and extant) will be labelled with the species they were sampled from followed by an index: the oldest sample for a given species will get index 1 and all other samples will be ordered from oldest to youngest.
+The `SAtree` format also includes a field `complete` which indicates whether the tree should be considered as including all lineages of the process or only sampled lineages. Note that if the tree is complete, the youngest tip of a given extinct species represents the extinction event for this species and not a fossil sample.
 
 ```{r}
 t = ape::rtree(6)
 f = sim.fossils.poisson(rate = 2, tree = t)
 
 SAt = SAtree.from.fossils(t,f)
-plot(SAt)
+print(SAt)
+print(SAt$complete)
 ```
 
 `SAtree` objects are also `phylo` objects and can still be used with all the functions compatible with that format.
@@ -47,7 +49,7 @@ SAt_pruned = prune.fossils(SAt)
 ape::plot.phylo(SAt_pruned)
 ```
 
-`sampled.tree.from.combined` removes all unsampled lineages from the tree, and can optionally apply a sampling probability to extant samples, or keep only a specified list of extant samples. NB: extinct tips will be considered unsampled by default unless they are sampled ancestors.
+`sampled.tree.from.combined` removes all unsampled lineages from the tree, and can optionally apply a sampling probability to extant samples, or keep only a specified list of extant samples.
 
 ```{r}
 SAt_sampled = sampled.tree.from.combined(SAt)

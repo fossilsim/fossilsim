@@ -26,7 +26,7 @@
 
 \item{show.strata}{If TRUE plot strata  (default = FALSE).}
 
-\item{strata}{Number of stratigraphic intervals.}
+\item{strata}{Number of stratigraphic intervals (default = 1).}
 
 \item{max.age}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
 
@@ -36,13 +36,13 @@
 
 \item{show.axis}{If TRUE plot x-axis (default = TRUE).}
 
-\item{show.proxy}{If TRUE add water depth profile (default = FALSE).}
+\item{show.proxy}{If TRUE add profile of sampling data to plot (e.g rates in time-dependent rates model) (default = FALSE).}
 
-\item{proxy.data}{Vector of sampling proxy data (default = NULL).}
+\item{proxy.data}{Vector of sampling proxy data (default = NULL). Should be as long as the number of stratigraphic intervals.}
 
-\item{show.preferred.environ}{If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE).}
+\item{show.preferred.environ}{If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE). Only works if combined with \code{show.proxy = TRUE}.}
 
-\item{preferred.environ}{Preferred environmental value (e.g. water depth).}
+\item{preferred.environ}{Preferred environmental value (e.g. water depth). Currently only one value can be shown.}
 
 \item{show.taxonomy}{If TRUE highlight species taxonomy.}
 

@@ -4,11 +4,13 @@
 \alias{SAtree}
 \title{Tree with sampled ancestors represented as zero-length edges}
 \usage{
-SAtree(tree)
+SAtree(tree, complete = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
+
+\item{complete}{Whether the tree is complete. Default TRUE. If the tree is not complete, then all fossil tips correspond to fossil samples, otherwise only sampled ancestors are considered samples.}
 }
 \description{
-Converts a phylo object to SAtree
+Converts a phylo object to SAtree.
 }

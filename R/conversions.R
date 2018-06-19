@@ -20,6 +20,12 @@
 #' plot(t3)
 #' @export
 sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
+  if(!("SAtree" %in% class(tree)) ){
+    if("phylo" %in% class(tree)) tree = SAtree(tree)
+    else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
+  }
+  if(!tree$complete && rho == 1 && is.null(sampled_tips)) stop("Tree is already sampled") 
+  
   remove_tips = c()
 
   depths = ape::node.depth.edgelength(tree)
@@ -32,7 +38,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
         remove_tips = c(remove_tips, i)
       }
     }
-    else { #extinct tip
+    else if(tree$complete) { #extinct tip
       edge = which(tree$edge[,2]==i)
       if(tree$edge.length[edge] > 1e-5) { #not on zero-length edge = not a fossil
         remove_tips = c(remove_tips, i)
@@ -41,6 +47,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
   }
 
   tree = ape::drop.tip(tree, remove_tips)
+  tree$complete = FALSE
   tree
 }
 
@@ -68,6 +75,11 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' plot(t4)
 #' @export
 prune.fossils = function(tree) {
+  if(!("SAtree" %in% class(tree)) ){
+    if("phylo" %in% class(tree)) tree = SAtree(tree)
+    else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
+  }
+  
   remove_tips = c()
 
   split_names = cbind(sub("_[^_]*$","",tree$tip.label),sub("^.+_","",tree$tip.label))
