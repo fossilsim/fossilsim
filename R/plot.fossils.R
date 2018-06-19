@@ -16,14 +16,14 @@
 #' @param show.ranges If TRUE plot stratigraphic ranges (default = FALSE). If show.taxonomy = FALSE all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).
 #' @param show.strata If TRUE plot strata  (default = FALSE).
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
-#' @param strata Number of stratigraphic intervals.
+#' @param strata Number of stratigraphic intervals (default = 1).
 #' @param max.age Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.
 #' @param show.axis If TRUE plot x-axis (default = TRUE).
 #' @param binned If TRUE fossils are plotted at the mid point of each interval.
-#' @param show.proxy If TRUE add water depth profile (default = FALSE).
-#' @param proxy.data Vector of sampling proxy data (default = NULL).
-#' @param show.preferred.environ If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE).
-#' @param preferred.environ Preferred environmental value (e.g. water depth).
+#' @param show.proxy If TRUE add profile of sampling data to plot (e.g rates in time-dependent rates model) (default = FALSE).
+#' @param proxy.data Vector of sampling proxy data (default = NULL). Should be as long as the number of stratigraphic intervals.
+#' @param show.preferred.environ If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE). Only works if combined with \code{show.proxy = TRUE}.
+#' @param preferred.environ Preferred environmental value (e.g. water depth). Currently only one value can be shown.
 #' @param show.taxonomy If TRUE highlight species taxonomy.
 #' @param taxonomy Taxonomy object.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
