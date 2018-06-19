@@ -1,13 +1,15 @@
 #' Tree with sampled ancestors represented as zero-length edges
 #'
 #' @description
-#' Converts a phylo object to SAtree
+#' Converts a phylo object to SAtree.
 #'
 #' @param tree Phylo object.
+#' @param complete Whether the tree is complete. Default TRUE. If the tree is not complete, then all fossil tips correspond to fossil samples, otherwise only sampled ancestors are considered samples.
 #'
 #' @export
-SAtree = function(tree) {
+SAtree = function(tree, complete = TRUE) {
   if(! "phylo" %in% class(tree)) stop("SAtree must be a valid phylo object")
+  tree$complete = complete
   attr(tree, "class") <- c("SAtree", class(tree))
   tree
 }
@@ -109,5 +111,5 @@ SAtree.from.fossils = function(tree, fossils) {
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
 
-  SAtree(tree)
+  SAtree(tree, TRUE)
 }
