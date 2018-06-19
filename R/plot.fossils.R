@@ -503,10 +503,9 @@ add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.
   par(fig = c(0,1,0,0.4), new = T)
   # change the y-axis scale for depth
   u = par("usr") # current scale
-  depth.profile = rev(depth.profile)
-  depth = depth.profile # some redundancy here
-  tol = max(depth) * 0.1
-  par(usr = c(u[1], u[2], min(depth) - tol, max(depth) + tol))
+  depth = rev(depth.profile)
+  tol = max(depth, PD) * 0.1
+  par(usr = c(u[1], u[2], min(depth, PD) - tol, max(depth, PD) + tol))
   time = c()
   depth = c()
   for(i in 1:length(depth.profile)){
