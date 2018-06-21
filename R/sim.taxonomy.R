@@ -346,6 +346,8 @@ sim.anagenetic.species = function(tree, species, lambda.a){
 sim.cryptic.species = function(species, kappa){
   if(!"taxonomy" %in% class(species))
     stop("species must be an object of class \"taxonomy\"")
+  if(any(species$cryptic == 1))
+    stop("taxonomy object already contains cryptic species")
   if(!(kappa >= 0 && kappa <= 1))
     stop("kappa must be a probability between 0 and 1")
 

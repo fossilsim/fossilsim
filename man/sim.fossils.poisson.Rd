@@ -19,7 +19,7 @@ sim.fossils.poisson(rate, tree = NULL, taxonomy = NULL, root.edge = TRUE)
 An object of class fossils.
 }
 \description{
-Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
+Fossils can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 A vector of rates can be specified to allow for rate variation across lineages.
@@ -48,7 +48,7 @@ plot(f, t)
 
 }
 \seealso{
-\code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}, \code{\link{sim.trait.values}}
+\code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.environment}}, \code{\link{sim.trait.values}}
 }
 \keyword{Poisson}
 \keyword{sampling}

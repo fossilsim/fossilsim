@@ -19,9 +19,9 @@ sim.fossils.intervals(tree = NULL, taxonomy = NULL, interval.ages = NULL,
 
 \item{strata}{Number of stratigraphic intervals.}
 
-\item{probabilities}{Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals.}
+\item{probabilities}{Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals and the first entry should correspond to youngest interval.}
 
-\item{rates}{Poisson sampling rate for each interval. The number of rates should match the number of intervals.}
+\item{rates}{Poisson sampling rate for each interval. The number of rates should match the number of intervals and the first entry should correspond to youngest interval.}
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
@@ -36,7 +36,7 @@ In the second scenario all intervals will be of equal length.
 Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 or \code{probabilities}, which represent the probabilities of sampling per interval.
 When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
-Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
+Fossils can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 }
@@ -66,7 +66,7 @@ plot(f, t, interval.ages = times)
 
 }
 \seealso{
-\code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.non.unif.depth}}
+\code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.environment}}
 }
 \keyword{fossil}
 \keyword{non-uniform}

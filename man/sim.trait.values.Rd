@@ -34,7 +34,7 @@ If the tree object has a root edge (\code{root.edge}), the first entry in the ve
 Fossil recovery rates or other parameter values can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 Available models include "autocorrelated", "independent" and a "innovative" model in which changes in parameter values are coincident with speciation events.
 Under the \code{autocorrelated} model, trait values evolve along lineages according to a Brownian motion process, where the strength of the relationship between ancestor and descendant values is determined by the parameter \eqn{\nu} (\code{v}).
-If \eqn{\nu} is small values will be more similar between ancestor and descendants, and if \eqn{\nu} is zero all values will be equal.
+If \eqn{\nu} is small values will be more similar between ancestor and descendants, and if \eqn{\nu} is zero all trait values will be equal.
 For a given species \eqn{i} with ancestor \eqn{j}, a new trait value \eqn{\kappa_i} is drawn from a lognormal distribution with
 \deqn{\kappa_i ~ LN( ln([\kappa_j] - (\sigma^2/2), \sigma)}
 where \eqn{\sigma = \nu * t_i} and \eqn{t_i} is the lineage duration of the species.
