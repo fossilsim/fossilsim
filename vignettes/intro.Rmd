@@ -41,7 +41,6 @@ The package provides a wide range of flexible models, including models of interv
 `FossilSim` is available on CRAN or the latest development version can be installed from [GitHub](http://github.com/) using the package `devtools`.
 
 ```{r, eval = FALSE}
-# TODO
 # to install the package via CRAN
 install.packages("FossilSim")
 
@@ -63,12 +62,12 @@ The installation above will automatically install the package dependencies, `ape
 
 Once the package is loaded into your current working environment you can call the package functions directly, e.g. `sim.fossils.poisson()`.
 It is also possible to call functions in R without loading the package into your working environment, e.g. `FossilSim::sim.fossils.poisson()`.
-Throughout this vignette and other documentation associated with `FossilSim`, we call the `FossilSim` functions from the current working environment but we use the `::` format to call functions from other packages.
+Throughout this vignette and other documentation associated with `FossilSim`, we call the `FossilSim` functions from the current working environment but use the `::` format to call functions from other packages.
 This is done to make the source of all functions as clear as possible.
 
 ### Quick start
 
-Simulating data using `FossilSim` can be as simple as in the following code snippets.
+Simulating data using `FossilSim` can be as simple as the following code snippets.
 
 ```{r, echo = FALSE}
 set.seed(121)
@@ -111,14 +110,15 @@ The only general requirements are that trees are fully resolved and scaled to ti
 
 ## FossilSim output
 
-`FossilSim` can be used to simulate species taxonomy and fossil sampling times, which are stored and output as the `taxonomy` and `fossils` objects described below. 
+`FossilSim` can be used to simulate species taxonomy and fossil sampling times, which are stored and output as the `taxonomy` and `fossils` objects described in the **"Simulating taxonomy"** and **"Simulating fossils" vignettes**. 
 The functions used to simulate fossils can take either a `phylo` *or* `taxonomy` object as input.
 This means, in theory, the user never has to interact with the `taxonomy` object when simulating fossil data.
 However, it may still be useful to become familiar with the concepts underlying the `taxonomy` object.
 
 ## What next?
 
-For detailed information about the `taxonomy` object and models for simualting taxonomy see the vignette "Simulating taxonomy".
-For detailed information about the `fossils` object and models for simualting fossils see the vignette "Simulating fossils".
+Information about the `taxonomy` object and models for simualting taxonomy can be found in the vignette "Simulating taxonomy".
+Information about the `fossils` object and models for simualting fossils can be found in the vignette "Simulating fossils".
 See the `paleotree` vignette to see how `FossilSim` objects can be converted into `paleotree` objects.
+
 
