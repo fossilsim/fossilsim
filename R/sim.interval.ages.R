@@ -13,7 +13,7 @@
 #' @param strata Number of stratigraphic intervals.
 #' @param use.species.ages If TRUE reassigned fossil ages will respect the speciation times. Default = FALSE.
 #' @param root.edge If TRUE include root edge.
-#' @param sim.extant Whether extant samples should get simulated ages as well, default FALSE.
+#' @param sim.extant If TRUE simulate age uncertainty for extant samples as well, default FALSE.
 #'
 #' @return An object of class fossils.
 #'

@@ -4,7 +4,7 @@
 #' Fossil recovery rates or other parameter values can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 #' Available models include "autocorrelated", "independent" and a "innovative" model in which changes in parameter values are coincident with speciation events.
 #' Under the \code{autocorrelated} model, trait values evolve along lineages according to a Brownian motion process, where the strength of the relationship between ancestor and descendant values is determined by the parameter \eqn{\nu} (\code{v}).
-#' If \eqn{\nu} is small values will be more similar between ancestor and descendants, and if \eqn{\nu} is zero all values will be equal.
+#' If \eqn{\nu} is small values will be more similar between ancestor and descendants, and if \eqn{\nu} is zero all trait values will be equal.
 #' For a given species \eqn{i} with ancestor \eqn{j}, a new trait value \eqn{\kappa_i} is drawn from a lognormal distribution with
 #' \deqn{\kappa_i ~ LN( ln([\kappa_j] - (\sigma^2/2), \sigma)}
 #' where \eqn{\sigma = \nu * t_i} and \eqn{t_i} is the lineage duration of the species.
@@ -143,22 +143,26 @@ sim.trait.values = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = 
   return(rates)
 }
 
-#' Simulate water depth profile
+#' Simulate an environmental gradient
 #'
 #' @description
-#' Function returns water depth profile using the sine wave function \eqn{y = depth*sin(cycles*pi*(x-1/4))}.
+#' Function returns a vector using the sine wave function \eqn{y = depth*sin(cycles*pi*(x-1/4))}
+#' for a given set of intervals.
+#' This vector can be used as a gradient to simulate fossils under an environment-dependent model of fossil recovery using the
+#' function \code{sim.fossils.environment}.
 #'
-#' @param strata Number of stratigraphic intervals
+#' @param strata Number of stratigraphic intervals.
 #' @param depth Maximum water depth.
-#' @param cycles Number of cycles (transgressions and regressions).
-#' @return dataframe of sampled water depths.
+#' @param cycles Number of cycles (e.g. transgressions and regressions).
+#' @return vector of sampled water depths.
 #' @examples
 #' strata = 100
-#' wd = sim.water.depth(strata)
+#' wd = sim.gradient(strata)
 #' plot(wd, type="l")
 #' @keywords non-uniform fossil preservation
 #' @export
-sim.water.depth = function(strata, depth = 2, cycles = 2){
+#' @seealso \code{\link{sim.fossils.environment}}
+sim.gradient = function(strata, depth = 2, cycles = 2){
 
   # define the x-axis values
   x = seq(0,2,length.out=strata)

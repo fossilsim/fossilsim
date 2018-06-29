@@ -25,7 +25,7 @@ sim.interval.ages(fossils, tree = NULL, taxonomy = NULL,
 
 \item{root.edge}{If TRUE include root edge.}
 
-\item{sim.extant}{Whether extant samples should get simulated ages as well, default FALSE.}
+\item{sim.extant}{If TRUE simulate age uncertainty for extant samples as well, default FALSE.}
 }
 \value{
 An object of class fossils.

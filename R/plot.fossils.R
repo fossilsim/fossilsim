@@ -121,7 +121,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   if(is.null(max.age))
     ba = tree.max(tree, root.edge = root.edge)
   else ba = max.age
-  
+
   offset = 0 # distance from youngest tip to present
   if(!is.null(tree$origin.time)) offset = min(n.ages(tree))
 
@@ -233,11 +233,15 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       s1 = rev(horizons.max - horizons.min)
       strata = length(horizons.max)
     }
-    if(binned){
+    # the following is to catch datasets with hmin != hmax combinations that differ from user specified interval bounds
+    use.species.ages = FALSE
+    if(binned & any(fossils$hmax != fossils$hmin)){
       if(length( unlist( sapply(fossils$hmax, function(x){
         if(x < tol) return(1)
-        which(abs(horizons.max - x) < tol) }))) != length(fossils$hmax))
-        stop("Mismatch between fossil ages and interval ages")
+        which(abs(horizons.max - x) < tol) }))) != length(fossils$hmax)){
+        use.species.ages = TRUE
+        binned = FALSE
+      }
     }
   }
 
@@ -349,8 +353,11 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       text(xx.tmp + lox, yy.tmp + loy, tree$tip.label,adj = adj, font = font, srt = srt, cex = cex, col = tip.color)
     }
 
+    # binned but assigned to an independent set of interval ages
+    if(use.species.ages)
+      fossils$h = (fossils$hmax - fossils$hmin)/2 + fossils$hmin
     # not binned
-    if(!binned) fossils$h = fossils$hmin
+    else if(!binned) fossils$h = fossils$hmin
     # binned & already assigned to intervals
     else if (binned & any(fossils$hmin != fossils$hmax))
       fossils$h = fossils$hmax
@@ -518,7 +525,7 @@ add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.
   # plot proxy
   lines(time,depth)
   if(show.preferred.depth)
-    lines(x = axis.strata, y = rep(PD, length(axis.strata)), col = "grey75", lwd = 2, lty = 3)
+    lines(x = axis.strata, y = rep(PD, length(axis.strata)), col = "gray12", lwd = 2, lty = 3)
   if(show.axis){
     axis(1, col = 'grey75', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey75', cex.axis = .7)
     mtext(1, col = 'grey75', text="Time before present", line = 1.5)

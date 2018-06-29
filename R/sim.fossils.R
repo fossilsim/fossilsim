@@ -1,7 +1,7 @@
 #' Simulate fossils under a Poisson sampling model
 #'
 #' @description
-#' Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
+#' Fossils can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 #' A vector of rates can be specified to allow for rate variation across lineages.
@@ -36,7 +36,7 @@
 #' plot(f, t)
 #'
 #' @keywords Poisson sampling
-#' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.non.unif.depth}}, \code{\link{sim.trait.values}}
+#' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.environment}}, \code{\link{sim.trait.values}}
 #' @export
 #'
 #' @importFrom stats rpois runif rlnorm
@@ -120,7 +120,7 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' Preservation can be specified using \code{rates}, which represent the rates of a Poisson process in each interval,
 #' or \code{probabilities}, which represent the probabilities of sampling per interval.
 #' When using \code{probabilities}, at most one fossil per species will be sampled per interval. \cr \cr
-#' Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
+#' Fossils can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 #'
@@ -129,8 +129,8 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param max.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
-#' @param rates Poisson sampling rate for each interval. The number of rates should match the number of intervals.
-#' @param probabilities Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals.
+#' @param rates Poisson sampling rate for each interval. The number of rates should match the number of intervals and the first entry should correspond to youngest interval.
+#' @param probabilities Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals and the first entry should correspond to youngest interval.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #' @param use.exact.times If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.
 #' @return An object of class fossils.
@@ -161,7 +161,7 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #'
 #' @keywords uniform fossil preservation
 #' @keywords non-uniform fossil preservation
-#' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.non.unif.depth}}
+#' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.environment}}
 #' @export
 sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
                                  interval.ages = NULL, max.age = NULL, strata = NULL,
@@ -273,23 +273,24 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
   return(fdf)
 }
 
-#' Simulate fossils under a non-uniform model of preservation (Holland, 1995)
+#' Simulate fossils under an environment-dependent model of preservation (Holland, 1995)
 #'
 #' @description
-#' This function uses a three parameter Gaussian model to simulate non-uniform fossil preservation along a specified phylogeny.
-#' Preservation varies with respect to water depth, which is used as a proxy for changes in sedimentary environment.
+#' This function uses a three parameter Gaussian model to simulate non-uniform fossil recovery along a specified phylogeny.
+#' Preservation varies with respect to water depth, which is a useful for proxy for changes in the depositional environment.
 #' The per interval probability of sampling is \deqn{P(collection) = PA e ^ (-(d - PD)^2 / 2*DT^2 ) }
 #' where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{DT} is depth tolerance and \emph{d} is current water depth.
 #' \emph{PD} is the depth at which the species is most likely to be found and is equivalent to the mean of the distribution.
 #' \emph{PA} is the probability of sampling an occurrence at this depth.
-#' \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation. \cr \cr
+#' \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation.
+#' Although here fossil recovery is described with respect to water depth, the model could be applied in the context of any environmental gradient. \cr \cr
 #' Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
 #' maximum interval age (\code{max.age}) and the number of intervals (\code{strata}), where interval length \eqn{= max.age/strata}. \cr \cr
 #' A vector of values can be specified for the model parameters \emph{PA}, \emph{PD} and \emph{DT} to allow for variation across lineages.
 #' If a vector is provided, each entry will apply to each unique species in the order in which they appear in the taxonomy object (if taxonomy is provided),
 #' or to each unique edge in the order in which they appear in the tree object.
 #' If the tree object has a root edge (\code{root.edge}), the first entry in the vector will apply to this edge. \cr \cr
-#' Simulate fossils for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
+#' Fossils can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
 #'
@@ -298,10 +299,10 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param max.age Maximum age of the oldest stratigraphic interval or age at the base of the basin.
 #' @param strata Number of stratigraphic intervals.
-#' @param depth.profile Vector of relative water depth. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.
-#' @param PA Peak abundance parameter value or a vector of values.
+#' @param proxy.data Vector of relative water depth or other proxy data. The first number corresponds to the youngest interval. The length of the vector should be 1 less than the length of interval.ages.
 #' @param PD Preferred depth parameter value or a vector of values.
 #' @param DT Depth tolerance parameter value or a vector of values.
+#' @param PA Peak abundance parameter value or a vector of values.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #'
 #' @return An object of class fossils, where \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval.
@@ -318,34 +319,34 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #'
 #' # generate water depth profile
 #' strata = 7
-#' wd = sim.water.depth(strata)
+#' wd = sim.gradient(strata)
 #'
 #' # simulate fossils using tree & max.age and strata
-#' f = sim.fossils.non.unif.depth(t, max.age = max.age, strata = strata,
-#' depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
+#' f = sim.fossils.environment(t, max.age = max.age, strata = strata,
+#' proxy.data = wd, PD = 0.5, DT = 1, PA = 1)
 #' plot(f, t, show.proxy = TRUE, proxy.data = wd, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using taxonomy & interval.ages
 #' s = sim.taxonomy(t, 0.1, 0.1, 1)
 #' times = seq(0, max.age, length.out = strata + 1)
-#' f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
-#'      depth.profile = wd, PA = 1, PD = 0.5, DT = 1)
+#' f = sim.fossils.environment(taxonomy = s, interval.ages = times,
+#'      proxy.data = wd, PD = 0.5, DT = 1, PA = 1)
 #' plot(f, t, strata = strata, binned = TRUE)
 #'
 #' # simulate fossils with variable preservation across lineages
 #' dist = function() {runif(1)}
 #' PD = sim.trait.values(1, taxonomy = s, model = "innovative", dist = dist,
 #'                      change.pr = 0.1)
-#' f = sim.fossils.non.unif.depth(taxonomy = s, interval.ages = times,
-#'      depth.profile = wd, PA = 1, PD = PD, DT = 1)
+#' f = sim.fossils.environment(taxonomy = s, interval.ages = times,
+#'      proxy.data = wd, PD = PD, DT = 1, PA = 1)
 #' plot(f, t, strata = strata, binned = TRUE)
 #'
 #' @keywords non-uniform fossil preseravtion
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.intervals}}, \code{\link{sim.trait.values}}
 #' @export
-sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
+sim.fossils.environment = function(tree = NULL, taxonomy = NULL,
                                       interval.ages = NULL, max.age = NULL, strata = NULL,
-                                      depth.profile = NULL, PA = 0.5, PD = 0.5, DT = 0.5,
+                                      proxy.data = NULL, PD = 0.5, DT = 0.5, PA = 0.5,
                                       root.edge = TRUE){
 
   if(is.null(tree) && is.null(taxonomy))
@@ -373,9 +374,9 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
     else interval.ages <- seq(0, max.age, length = strata + 1)
   }
 
-  if(is.null(depth.profile)) stop("No water depth profile specified")
-  if(length(depth.profile) != (length(interval.ages)-1))
-    stop("Mismatch between the number of intervals and depth profile values")
+  if(is.null(proxy.data)) stop("No proxy data specified")
+  if(length(proxy.data) != (length(interval.ages)-1))
+    stop("Mismatch between the number of intervals and proxy data values")
 
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
@@ -414,7 +415,7 @@ sim.fossils.non.unif.depth = function(tree = NULL, taxonomy = NULL,
     DT = rep(DT, length(unique(taxonomy$sp)))
 
   # calculate per interval per species probabilities
-  probabilities = sapply(depth.profile, function(x) {PA * exp( (-(x-PD)**2) / (2 * (DT ** 2)) )})
+  probabilities = sapply(proxy.data, function(x) {PA * exp( (-(x-PD)**2) / (2 * (DT ** 2)) )})
 
   fdf = fossils()
 
