@@ -525,7 +525,7 @@ add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.
   # plot proxy
   lines(time,depth)
   if(show.preferred.depth)
-    lines(x = axis.strata, y = rep(PD, length(axis.strata)), col = "grey75", lwd = 2, lty = 3)
+    lines(x = axis.strata, y = rep(PD, length(axis.strata)), col = "gray12", lwd = 2, lty = 3)
   if(show.axis){
     axis(1, col = 'grey75', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey75', cex.axis = .7)
     mtext(1, col = 'grey75', text="Time before present", line = 1.5)

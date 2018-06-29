@@ -1,0 +1,124 @@
+---
+title: "The FossilSim package"
+author: "Joelle Barido-Sottani, Rachel C. M. Warnock"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{FossilSim}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 5, fig.height = 5
+)
+```
+
+This vignette provides a [Quick start] and a brief introduction to the package input and output.
+
+## Contents
+
+* [Background and motivation]
+* [Installing the package]
+* [Quick start]
+* [FossilSim input]
+* [FossilSim output]
+* [What next?]
+
+## Background and motivation
+
+`FossilSim` is an R package for simulating species taxonomy and fossil occurrence data in a phylogenetic framework.
+Simulations can be used to address many questions in phylogenetics and palaeobiology, and are especially useful for assessing the performance of different methods, since the true underlying parameters (e.g. diversification and fossil recovery rates) are known.
+Tara Smiley provides an excellent demonstration of the value of simulations in palaeobiology in this [blog post](http://blog.journals.cambridge.org/2018/03/19/testing-the-fossil-record-how-simulations-help-us-understand-the-relative-roles-of-diversification-and-preservation-underlying-diversity-gradients-in-deep-time/).
+`FossilSim` output can be easily parsed for downstream analysis using R, or other software packages including [BEAST2](http://beast2.org/) and [RevBayes](https://revbayes.github.io).
+The package provides a wide range of flexible models, including models of interval-, lineage- and environment-dependent fossil recovery, in addition to plotting functions that can be used to visualise the output and produce publication quality figures.
+
+## Installing the package
+
+`FossilSim` is available on CRAN or the latest development version can be installed from [GitHub](http://github.com/) using the package `devtools`.
+
+```{r, eval = FALSE}
+# TODO
+# to install the package via CRAN
+install.packages("FossilSim")
+
+# to install the package via GitHub
+devtools::install_github("rachelwarnock/fossilsim")
+
+# load the package into the current working environment
+library(FossilSim)
+```
+```{r, echo = FALSE, results = "hide", message = FALSE}
+devtools::load_all()
+```
+
+### Package dependencies
+
+The installation above will automatically install the package dependencies, `ape`, `TreeSim` and `phytools`.
+
+### Calling functions from FossilSim and other packages
+
+Once the package is loaded into your current working environment you can call the package functions directly, e.g. `sim.fossils.poisson()`.
+It is also possible to call functions in R without loading the package into your working environment, e.g. `FossilSim::sim.fossils.poisson()`.
+Throughout this vignette and other documentation associated with `FossilSim`, we call the `FossilSim` functions from the current working environment but we use the `::` format to call functions from other packages.
+This is done to make the source of all functions as clear as possible.
+
+### Quick start
+
+Simulating data using `FossilSim` can be as simple as in the following code snippets.
+
+```{r, echo = FALSE}
+set.seed(121)
+```
+
+```{r}
+# simulate a tree using ape
+tips = 8
+t = ape::rtree(tips)
+# simulate fossils using fossilsim
+rate = 2
+f = sim.fossils.poisson(rate, t)  
+# plot the output
+plot(f, t)
+```
+
+```{r}
+# simulate taxonomy using fossilsim
+beta = 0.5 # probability of symmetric speciation
+lambda.a = 0.1  # rate of anagenesis
+s = sim.taxonomy(t, beta, lambda.a)  
+# plot the output
+plot(s, t, legend.position = "bottomright")
+```
+
+The package contains many options for simulating fossils and evaluating the output in a meaningful way requires understanding the underlying model parameters.
+Parsing the output for downstream analysis also requires becoming familiar with the `FossilSim` objects.
+
+## FossilSim input
+
+The starting point for any data generation using `FossilSim` is a phylogenetic tree.
+`FossilSim` relies on the widely used `ape` package `phylo` object format for handling trees. 
+The `phylo` object stores information about the relationship among branches in a phylogeny in a matrix called `edge` and branch lengths are stored in a vector called `edge.length`.
+The age of the tips and internal nodes can be reconstructed by combining information from the `edge` matrix and the `edge.length` vector.
+If the tree has a root edge (i.e. a branch leading to the root) the length of this edge is stored as a numeric variable called `root.edge`.
+
+There are a huge number of packages and options for simulating trees that can be used as input in `FossilSim`, including the `ape` and `TreeSim` R packages.
+An empirical phylogeny can also be used as input.
+The only general requirements are that trees are fully resolved and scaled to time.
+
+## FossilSim output
+
+`FossilSim` can be used to simulate species taxonomy and fossil sampling times, which are stored and output as the `taxonomy` and `fossils` objects described below. 
+The functions used to simulate fossils can take either a `phylo` *or* `taxonomy` object as input.
+This means, in theory, the user never has to interact with the `taxonomy` object when simulating fossil data.
+However, it may still be useful to become familiar with the concepts underlying the `taxonomy` object.
+
+## What next?
+
+For detailed information about the `taxonomy` object and models for simualting taxonomy see the vignette "Simulating taxonomy".
+For detailed information about the `fossils` object and models for simualting fossils see the vignette "Simulating fossils".
+See the `paleotree` vignette to see how `FossilSim` objects can be converted into `paleotree` objects.
+

@@ -276,7 +276,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' Simulate fossils under an environment-dependent model of preservation (Holland, 1995)
 #'
 #' @description
-#' This function uses a three parameter Gaussian model to simulate non-uniform fossil preservation along a specified phylogeny.
+#' This function uses a three parameter Gaussian model to simulate non-uniform fossil recovery along a specified phylogeny.
 #' Preservation varies with respect to water depth, which is a useful for proxy for changes in the depositional environment.
 #' The per interval probability of sampling is \deqn{P(collection) = PA e ^ (-(d - PD)^2 / 2*DT^2 ) }
 #' where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{DT} is depth tolerance and \emph{d} is current water depth.
