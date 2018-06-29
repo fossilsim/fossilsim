@@ -6,7 +6,7 @@
 #'
 #' @examples
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
-#' plot(SAtree(tree), complete=TRUE)
+#' plot(tree, complete=TRUE)
 #'
 #' @export
 # TODO optional tip labels ?
