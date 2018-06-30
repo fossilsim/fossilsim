@@ -29,17 +29,20 @@ This vignette provides information about how the package stores and outputs info
 
 ### The taxonomy object
 
-A phylogenetic tree object does not typically contain information about species over time in the format used by most software packages.
+A phylogenetic tree object, in the format used by most software packages, does not typically contain information about species over time.
 A timescaled phylogeny is informative about the minimum number of co-existing lineages at a given moment but not about the start and end point of species or the *mode* of speciation. 
-Three modes of speciations that have been discussed widely in palaeobiological literature can be modelled using `FossilSim`: 
+Three modes of speciation that have been discussed widely in palaeobiological literature are shown in Fig. 1. and can be modelled using `FossilSim`: 
 
   * *budding or asymmetric speciation*, which gives rise to one new species and does not result in the extinction of the ancestor
   * *bifurcating or symmetric speciation*, which gives rise to two new species and results in the extinction of the ancestor species
   * *anagenetic speciation*, which gives rise to one new species and results in the extinction of the ancestor
 
-The distinction between these processes is important because they have consequences on parameter estimates using different methods.
+```{r echo=FALSE, out.width = "80%", fig.cap = cap}
+knitr::include_graphics("speciation_types.jpg")
+cap = "**Fig. 1**. Three different modes of speciation that can be simulated using FossilSim."
+```
 
-\todo insert a figure illustrating these processes
+The distinction between these processes is important because they have consequences on parameter estimates using different methods.
 
 In molecular phylogenetics, we typically draw trees as fully bifurcating structures (i.e. each node gives rise to two descendant branches).
 This is also how trees are stored in computer memory by most phylogenetic software packages, including `ape`.
@@ -69,15 +72,15 @@ A new `taxonomy` object can be created by passing the above information to the `
 
 Cryptic species can also be simulated. Under cryptic speciation the descendant species will be indistinguishable from the ancestor and the `taxonomy` object can incorporate this information using the additional optional fields:
 
-* `cryptic` TRUE if the speciation event was cryptic. If this information is not passed to `taxonomy()`, the function assumes `cryptic = FALSE` for all species.
+* `cryptic` TRUE if the speciation event was cryptic. If this information is not passed to `taxonomy()`, the function assumes `cryptic = FALSE` for all species
 
-* `cryptic.id` cryptic species identity, i.e. ancestral species that the current species will be identified as. If `cryptic = TRUE`, `cryptic.id` will differ from the true species identity `sp`.
+* `cryptic.id` cryptic species identity, i.e. ancestral species that the current species will be identified as. If `cryptic = TRUE`, `cryptic.id` will differ from the true species identity `sp`
 
 The relationship between information provided by the `taxonomy` object and the corresponding `phylo` object will become clear when you start simulating species and exploring the output.
 
 The `taxonomy` object can be used as the starting point for simulating fossils or other downstream analyses that require information about discrete species units.
 
-**Special Note** The birth and death rates used as parameters in the birth-death process typically do not correspond to the rates of appearance and extinction of species under the above processes, unless speciation is entirely asymmetric/budding.
+**Special Note** The birth and death rates used as parameters in the birth-death process typically do not correspond to the rates of appearance and extinction of species under the above processes, unless speciation occurs entirely via budding.
 
 ## Simulating taxonomy
 
