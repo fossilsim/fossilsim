@@ -18,6 +18,6 @@ Make a stratigraphic range plot from a tree object of class SAtree
 }
 \examples{
 tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
-plot(SAtree(tree), complete=TRUE)
+plot(tree, complete=TRUE)
 
 }

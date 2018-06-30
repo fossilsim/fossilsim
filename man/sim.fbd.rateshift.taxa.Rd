@@ -23,10 +23,13 @@ is the fossil sampling rate prior (ancestral) to time times[i].}
 \item{times}{Vector of mass extinction and rate shift times.
 Time is 0 today and increasing going backwards in time. Specify the vector as times[i]}
 
-\item{complete}{Keep unsampled extinct lineages?}
+\item{complete}{If TRUE, the tree including the extinct lineages and
+non-sampled lineages is returned (so the tree has
+round(n/frac[1]) extant tips). If FALSE, the extinct lineages
+and non-sampled lineages are suppressed.}
 }
 \value{
-List of numbsim simulated trees with n extant sampled tips.
+List of numbsim simulated SAtrees with n extant sampled tips.
 }
 \description{
 sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating rate shifts.

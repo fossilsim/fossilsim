@@ -4,7 +4,7 @@
 \alias{sim.fbd.taxa}
 \title{sim.fbd.taxa: Simulating fossilized birth-death trees on a fixed number of extant taxa.}
 \usage{
-sim.fbd.taxa(n, numbsim, lambda, mu, psi, complete = FALSE)
+sim.fbd.taxa(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE)
 }
 \arguments{
 \item{n}{Number of extant sampled tips.}
@@ -17,10 +17,17 @@ sim.fbd.taxa(n, numbsim, lambda, mu, psi, complete = FALSE)
 
 \item{psi}{Fossil sampling rate.}
 
-\item{complete}{Keep unsampled extinct lineages?}
+\item{frac}{When complete = FALSE: The actual
+number of extant tips is n/frac, but only n tips are included
+(incomplete sampling). When complete = TRUE: all extinct and
+non-sampled lineages are included, i.e. the tree has n/frac
+extant tips.}
+
+\item{complete}{If TRUE, the tree with the extinct and non-sampled lineages
+is returned. If FALSE, the extinct lineages are suppressed.}
 }
 \value{
-List of numbsim simulated trees with n extant sampled tips.
+List of numbsim simulated SAtrees with n extant sampled tips.
 }
 \description{
 sim.fbd.taxa: Simulating fossilized birth-death trees on a fixed number of extant taxa.
