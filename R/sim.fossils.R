@@ -31,7 +31,7 @@
 #' plot(f, t)
 #'
 #' # simulate fossils with autocorrelated rate variation across lineages
-#' rates = sim.trait.values(rate = rate, taxonomy = s, v = 1)
+#' rates = sim.trait.values(init = rate, taxonomy = s, v = 1)
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
