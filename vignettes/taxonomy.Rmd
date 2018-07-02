@@ -87,7 +87,7 @@ The `taxonomy` object can be used as the starting point for simulating fossils o
 ## Simulating taxonomy
 
 Species evolution or taxonomy can be simulated in `FossilSim` under a mixed model of speciation that can incorporate three modes of speciation -- budding (or asymmetric), bifurcating (or symmetric) and anagenetic -- in addition to cryptic speciation [@Stadler2018].
-This model of mixed speciation was described previously in [@Bapst2013b] \todo add citation and is also available as part of the `paleotree` package [@Bapst2012].
+This model of mixed speciation was described previously in [@Bapst2013b] and is also available as part of the `paleotree` package [@Bapst2012].
 
 In a birth-death process $\lambda$ is the rate at which branching events occur, while $\mu$ is the rate at which lineage termination occurs. 
 These are the parameters typically used to simulate birth-death trees (see the code snippet below for an example).
@@ -146,7 +146,7 @@ s = sim.taxonomy(t, beta = 0.5, lambda.a = 1, kappa = 0.1)
 plot(s, t, legend.position = "topleft")
 ```
 
-Note that `plot.taxonomy` only plots the true species, and ignores any information about cryptic specieation (i.e. the function uses the `sp` labels and ignores `cryptic.id`).
+Note that `plot.taxonomy` only plots the true species, and ignores any information about cryptic speciation (i.e. the function uses the `sp` labels and ignores `cryptic.id`).
 
 Given an existing `taxonomy` object you can also add anagenetic or cryptic species downstream using the functions `sim.anagenetic.species` and `sim.cryptic.species`.
 These functions also return a `taxonomy` object.

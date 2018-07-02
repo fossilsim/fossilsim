@@ -240,7 +240,7 @@ The probability of fossil recovery during a given interval of time is a function
 $Pr_{collection_i}(d) = PA * exp(-(d - PD)^2/ (2*DT^2))$,
 
 where $d$ is current water depth, $PD$ and $DT$ are the mean and the standard deviation of the distribution, respectively, and $PA$ describes the amplitude of the distribution.
-Here the model is described in the context of marine taxa, however the model and the function `sim.fossils.environment` can be applied to any enviromental or depositional context, in which some measure of environmental gradient can be generated. 
+Here the model is described in the context of marine taxa, however the model and the function `sim.fossils.environment` can be applied to any environmental or depositional context, in which some measure of environmental gradient can be generated. 
 
 The following code snippet illustrate how to explore the role of the model parameters $PD$, $DT$ and $PA$ in determining species response curves.
 
@@ -277,7 +277,7 @@ curve(response.curve(x, PD, DT, PA), -6, -2.2, add = TRUE, lwd = 1.5, col = cols
 The user is free to use a vector containing any gradient values to simulate fossil occurrences.
 In the following example we will use a vector of gradient values generated using the function `sim.gradient`, which return values for the following simple sine wave function,
 $y = d*sin(cycles*pi*(x-1/4))$, where $x$ is the number of intervals or strata.
-The function output can be used to represent changes in relative water depth, where the number of cycles may be equivalent to the number of trangression/regression events.
+The function output can be used to represent changes in relative water depth, where the number of cycles may be equivalent to the number of transgression/regression events.
 
 Interval ages can be specified in the same way as the function `sim.fossils.intervals` via `max.age` and `strata` or the `intervals` vector.
 
@@ -335,10 +335,10 @@ plot(f, t, interval.ages = times, show.strata = TRUE, show.proxy = TRUE, proxy.d
 ## Lineage-dependent fossil recovery
 
 Variation in fossil recovery parameters across different lineages or species can be generated using the function `sim.trait.values`. 
-The function output is a vector of simulated trait values that can be used to specify the `rate` pararmeter in `sim.fossils.poisson` or the `PD`, `DT` and `PA` parameters in `sim.fossils.environment`.
+The function output is a vector of simulated trait values that can be used to specify the `rate` parameter in `sim.fossils.poisson` or the `PD`, `DT` and `PA` parameters in `sim.fossils.environment`.
 
-Trait values can be simualted for a given `phylo` or `taxonomy` object. 
-If the function is provided with a `phylo` object, trait values are simulated assumming bifurcating speciation and simulated trait values are output for each edge in the order in which they appear in the `phylo` object dataframe.
+Trait values can be simulated for a given `phylo` or `taxonomy` object. 
+If the function is provided with a `phylo` object, trait values are simulated assuming bifurcating speciation and simulated trait values are output for each edge in the order in which they appear in the `phylo` object dataframe.
 If the tree also has a root edge (`tree$root.edge`), the first entry in the vector will correspond to the first entry in the vector.
 If the function is provided with a `taxonomy` object, simulated trait values are output for each species in the order in which they appear in the `taxonomy` object dataframe.
 
