@@ -23,8 +23,8 @@ Create a fossil record object. The input is taken to be a dataframe or list.
 \details{
 The fossil record object contains 4 fields for each fossil with the following information:
 \itemize{
- \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny if no additional taxonomic
- information was provided or the species labels in the corresponding taxonomy object
+ \item \code{sp} the label of the corresponding species. This label matches the edge labels in the corresponding phylo object or the species labels in the corresponding taxonomy object if additional taxonomic
+ information was provided
  \item \code{edge} the label of the sampled node or tip in the phylogeny, i.e the node at the end of the edge along which the fossil was sampled
  \item \code{hmin} the age of the fossil or the youngest bound of the time interval in which the fossil was sampled
  \item \code{hmax} the oldest bound of the time interval in which the fossil was sampled.
