@@ -12,7 +12,7 @@
 #' Under the \code{independent} model a new trait value is drawn for each species from any valid user-specified distribution (\code{dist}).
 #' Under the \code{innovative} model values change at each speciation event with a given probability (\code{innovative.pr}) and new values are drawn from any valid user-specified distribution (\code{dist}).
 #'
-#' @param rate Initial value at the origin or root of the phylo or taxonomy object. Default = 1.
+#' @param init Initial value at the origin or root of the phylo or taxonomy object. Default = 1.
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
@@ -33,18 +33,18 @@
 #'
 #' # simulate rates under the autocorrelated rates model
 #' rate = 1
-#' rates = sim.trait.values(rate = rate, taxonomy = s, v = 1)
+#' rates = sim.trait.values(rate, taxonomy = s, v = 1)
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
 #' # simulate rates under the independent rates model
 #' dist = function() { rlnorm(1, log(rate), 1) }
-#' rates = sim.trait.values(rate = rate, taxonomy = s, model = "independent", dist = dist)
+#' rates = sim.trait.values(rate, taxonomy = s, model = "independent", dist = dist)
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
 #' # simualte rates under the innovative model
-#' rates = sim.trait.values(rate = rate, taxonomy = s, model = "innovative",
+#' rates = sim.trait.values(rate, taxonomy = s, model = "innovative",
 #'                         dist = dist, change.pr = 0.1)
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
@@ -54,7 +54,7 @@
 #' Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352-361.
 #'
 #' @export
-sim.trait.values = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
+sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
                              model = "autocorrelated", v = 0.01,
                              dist = function(){runif(1,0,2)}, change.pr = 0.01){
 
@@ -130,7 +130,7 @@ sim.trait.values = function(rate = 1, tree = NULL, taxonomy = NULL, root.edge = 
 
   root = unique(taxonomy$sp[which(taxonomy$parent == 0)])
 
-  taxonomy = aux(root, taxonomy, rate)
+  taxonomy = aux(root, taxonomy, init)
 
   # extract unique rates
   rates = unique(cbind(taxonomy["sp"],taxonomy["rate"]))$rate

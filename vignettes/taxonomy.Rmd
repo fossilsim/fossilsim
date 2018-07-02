@@ -1,8 +1,10 @@
 ---
-title: "The FossilSim package"
+title: "Simulating taxonomy"
 author: "Joelle Barido-Sottani, Rachel C. M. Warnock"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: bibliography.bib
+csl: mee.csl
 vignette: >
   %\VignetteIndexEntry{FossilSim}
   %\VignetteEngine{knitr::rmarkdown}
@@ -39,7 +41,7 @@ Three modes of speciation that have been discussed widely in palaeobiological li
 
 ```{r echo=FALSE, out.width = "80%", fig.cap = cap}
 knitr::include_graphics("speciation_types.jpg")
-cap = "**Fig. 1**. Three different modes of speciation that can be simulated using FossilSim."
+cap = "**Fig. 1**. Three different modes of speciation that can be simulated using FossilSim. Budding and bifurcation are also referred to as asymmetric and symmetric speciation."
 ```
 
 The distinction between these processes is important because they have consequences on parameter estimates using different methods.
@@ -84,9 +86,8 @@ The `taxonomy` object can be used as the starting point for simulating fossils o
 
 ## Simulating taxonomy
 
-Species evolution or taxonomy can be simulated in `FossilSim` under a mixed model of speciation that can incorporate three modes of speciation -- budding (or asymmetric), bifurcating (or symmetric) and anagenetic -- in addition to cryptic speciation.
-\todo add citation Stadler 2018
-This model of mixed speciation was described previously by Bapst \todo add citation and is also available as part of the `paleotree` package.
+Species evolution or taxonomy can be simulated in `FossilSim` under a mixed model of speciation that can incorporate three modes of speciation -- budding (or asymmetric), bifurcating (or symmetric) and anagenetic -- in addition to cryptic speciation [@Stadler2018].
+This model of mixed speciation was described previously in [@Bapst2013b] \todo add citation and is also available as part of the `paleotree` package [@Bapst2012].
 
 In a birth-death process $\lambda$ is the rate at which branching events occur, while $\mu$ is the rate at which lineage termination occurs. 
 These are the parameters typically used to simulate birth-death trees (see the code snippet below for an example).
@@ -98,7 +99,7 @@ If $\beta = 1$ all speciation occurs via bifurcation, which is equivalent to ass
 * $\lambda_a$ is the rate of anagenetic speciation that occurs along internal edges 
 * $\kappa$ is the probability that any given speciation event will be cryptic
 
-The relationship between these processes and the underlying structure or branching process in the corresponding `phylo` object is described in section [The `taxonomy` object].
+The relationship between these processes and the underlying tree structure in the corresponding `phylo` object is described in section [The taxonomy object].
 Simulating species evolution or taxonomy for any user specified tree in `FossilSim` is straightforward.
 
 ```{r}
@@ -127,7 +128,7 @@ This means even without setting the random number seed `sim.taxonomy` will alway
 The `plot.taxonomy` function will produce a plot highlighting species taxonomy along with the corresponding bifurcating tree object.
 
 Note that R detects what type of object you are trying plot, in this case taxonomy, and will automatically call `plot.taxonomy` when you apply the function `plot` to an object of class `taxonomy`.
-Use `?plot.taxonomy` to view the further options that can be used to change the appearance of the figure.
+Use `?plot.taxonomy` to view further options that can be used to change the appearance of the figure.
 
 ```{r}
 plot(s, t, legend.position = "topleft")
@@ -168,3 +169,4 @@ These functions can not be used with `taxonomy` objects that already contain ana
 
 See the `paleotree` vignette to see how `FossilSim` objects can be converted into `paleotree` objects.
 
+## References
