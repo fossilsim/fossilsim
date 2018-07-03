@@ -74,6 +74,7 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 
 				if( frac < 1 )
 				{
+				  n = round(length(extant.tips) * frac)
 					unsampled.tips <- c( unsampled.tips, extant.tips[!(extant.tips %in% sample(extant.tips, n))] )
 				}
 
