@@ -434,17 +434,17 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
               # multiple edges: FA edge
               else if(j == edge.mx) {
                 range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
-                           max(xx) + offset - taxonomy$end[which(taxonomy$edge == j)])
+                           max(xx) + offset - taxonomy$end[which(taxonomy$edge == j & taxonomy$sp == i)])
               }
               # multiple edges: LA edge
               else if(j == edge.mn){
                 range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
-                           max(xx) + offset - taxonomy$start[which(taxonomy$edge == j)])
+                           max(xx) + offset - taxonomy$start[which(taxonomy$edge == j & taxonomy$sp == i)])
               }
               # multiple edges: in-between edges
               else{
-                range =  c(max(xx) + offset - taxonomy$start[which(taxonomy$edge == j)],
-                           max(xx) + offset - taxonomy$end[which(taxonomy$edge == j)])
+                range =  c(max(xx) + offset - taxonomy$start[which(taxonomy$edge == j & taxonomy$sp == i)],
+                           max(xx) + offset - taxonomy$end[which(taxonomy$edge == j & taxonomy$sp == i)])
               }
               # plot ranges
               sp = yy[j]
