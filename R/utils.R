@@ -242,3 +242,29 @@ species.record.from.taxonomy = function(taxonomy) {
   spec$species.end = sapply(spec$sp, function(x) species.end(x, taxonomy))
   spec
 }
+
+# return tip.labels of extinct tips, given tolerance tol
+# adapted from geiger
+is.extinct <- function (phy, tol=NULL) {
+    if (!"phylo" %in% class(phy)) {
+        stop("\"phy\" is not of class \"phylo\".");
+    }
+    if (is.null(phy$edge.length)) {
+        stop("\"phy\" does not have branch lengths.");
+    }
+    if (is.null(tol)) {
+        tol <- min(phy$edge.length)/100;
+    }
+    Ntip <- length(phy$tip.label)
+    phy <- reorder(phy);
+    xx <- numeric(Ntip + phy$Nnode);
+    for (i in 1:length(phy$edge[,1])) {
+        xx[phy$edge[i,2]] <- xx[phy$edge[i,1]] + phy$edge.length[i];
+    }
+    aa <- max(xx[1:Ntip]) - xx[1:Ntip] > tol;
+    if (any(aa)) {
+        return(phy$tip.label[which(aa)]);
+    } else {
+        return(NULL);
+    }
+}
