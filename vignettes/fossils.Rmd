@@ -3,6 +3,8 @@ title: "Simulating fossils"
 author: "Rachel C. M. Warnock"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: bibliography.bib
+csl: mee.csl
 vignette: >
   %\VignetteIndexEntry{FossilSim}
   %\VignetteEngine{knitr::rmarkdown}
@@ -38,6 +40,7 @@ This vignette provides information about how the package stores and outputs info
   * [The autocorrelated fossil recovery model]
   * [The independent fossil recovery model]
   * [The innovative fossil recovery model]
+  * [Environment and lineage-dependent fossil recovery]
 * [Extant species and tip sampling]
 
 ### The fossils object
@@ -48,7 +51,7 @@ Alternatively, there may be some uncertainty associated with specimen ages, i.e.
 
 The object contains a dataframe with species and age information for each fossil with the following 4 fields:
 
-* `sp` the label of the corresponding species. This label matches the edge labels in the corresponding phylogeny if no additional taxonomic information was provided or the species labels in the corresponding taxonomy object
+* `sp` the label of the corresponding species. This label matches the edge labels in the corresponding `phylo` object or the species labels in the corresponding `taxonomy` object if taxonomic information was provided
 
 * `edge` the label of the sampled node or tip in the phylogeny, i.e the node at the end of the edge along which the fossil was sampled
 
@@ -60,7 +63,7 @@ The object also contains a logical variable `from.taxonomy` indicating whether t
 
 ## Constant fossil recovery
 
-The simplest model of fossil recovery is a Poisson sampling process, where fossils are sampled along lineages with constant rate $\psi$ (parameter `rate` below).
+The simplest model of fossil recovery is a Poisson sampling process, where fossils are sampled along lineages with constant rate $\psi$ (function argument `rate`).
 
 Fossils can be simulated using a `phylo` object or an existing `taxonomy` object generated using the function `sim.taxonomy`.
 
@@ -89,7 +92,7 @@ f
 ```
 
 Each entry in the `fossils` dataframe corresponds to a fossil sampling time.
-`sp` and `edge` are the species and edge labels, respectively, which will be the same since we assume symmetric speciation.
+`sp` and `edge` are the species and edge labels, respectively, which will be the same here since we assume symmetric speciation.
 
 `hmin` and `hmax` are the youngest and oldest sampling ages associated with each fossil, respectively.
 Since this function returns exact fossil sampling times `hmin` and `hmax` are equal.
@@ -99,8 +102,16 @@ Since this function returns exact fossil sampling times `hmin` and `hmax` are eq
 plot(f, t)
 ```
 ```{r}
-# plot fossil stratigraphic ranges
+# plot stratigraphic ranges
 plot(f, t, show.ranges = TRUE)
+```
+```{r, eval = FALSE, include = FALSE}
+# plot stratigraphic ranges only
+plot(f, t, show.ranges = TRUE, show.fossils = FALSE, show.tree = FALSE)
+# add stratigraphic intervals 
+plot(f, t, show.strata = TRUE, strata = 4)
+# more tips on plotting strata
+# http://simpson-carl.github.io/articles/15/timescales.to.base
 ```
 
 ### Simulating fossils for a taxonomy object
@@ -122,8 +133,6 @@ Note that `sp` and `edge` are not all equal, since some species are assigned to 
 
 ## Interval-dependent fossil recovery
 
-PLOT SOME PROXY DATA
-
 Under the interval-dependent model, fossil recovery changes in a piece-wise manner across a set of user defined intervals.
 Interval ages can be specified using a fixed set of uniform length intervals, by passing the function the maximum interval age (`max.age`) and the number of intervals (`strata`), or a vector of non-uniform intervals (`interval.ages`).
 
@@ -138,8 +147,7 @@ max.age = tree.max(t)
 # define the number of intervals
 strata = 4
 
-# TODO revisit the wording here
-# define a vector of sampling rates from youngest to oldest
+# define a vector of sampling rates, where the first entry corresponds the youngest interval
 rates = c(1, 0.1, 1, 0.1)
 
 # simulate fossils
@@ -162,14 +170,14 @@ rates = c(1, 0.1, 1, 0.1)
 # simulate fossils
 f = sim.fossils.intervals(t, rates = rates, interval.ages = times)
  
-# plot the output
-plot(f, t, show.strata = TRUE, interval.ages = times)
+# plot the output and show sampling or proxy data
+plot(f, t, show.strata = TRUE, interval.ages = times, show.proxy = TRUE, proxy = rates)
 ```
 
 ### Simulating fossils using per-interval probabilities
 
 Fossil recovery can also be specified using a set of per-interval probabilities. 
-Using this approach at most one fossil per species will be sampled per interval.
+At most one fossil per species will be sampled per interval using this approach.
 
 ```{r}
 # define max interval age based on tree age
@@ -206,7 +214,7 @@ plot(f, t, show.strata = TRUE, strata = strata)
 
 Alternatively, if you simulate fossils using a function that only returns exact fossil sampling times, e.g. using the `sim.fossils.poisson` function, you can later assign fossils to different intervals using the `sim.interval.ages` function.
 You can also generate output using this function that respect the species duration times by setting `use.species.ages = TRUE`, i.e. the function will not return a value for `hmin` or `hmax` that are younger or older than the true species age.
-To use this option you also need to pass a `phylo` or `taxonomy` object to function.
+To use this option you also need to pass a `phylo` or `taxonomy` object to the function.
 
 ```{r}
 # simulate fossils
@@ -221,31 +229,28 @@ plot(f, t, show.strata = TRUE, strata = strata)
 
 ## Environment-dependent fossil recovery
 
-NAME THE FUNCTION
+The function `sim.fossils.environment` can be used to simulate fossil recovery that reflects species environmental preferences.
+The variables that control the distribution and abundance of species also control depositional environment, meaning changes in ecological or environmental gradient across a given area will be reflected in the patterns of deposition. 
+A species response curve, which describes the abundance of a species relative to an environmental gradient, can therefore be used to model distributions of fossil occurrences. See the plot below for examples.
 
-The variables that control the distribution and abundance of species also control depositional environment, meaning observed changes in deposition reflect changes in environmental or ecological gradient across the same area.
-A species response curve, which describes the abundance of a species relative to an environmental gradient, can therefore be used to model distributions of fossil occurrences.
-
-Holland (1995) described a three parameter Gaussian model for simulating environment-dependent fossil recovery.
-\todo add citation
-In this model each species has three parameters, species preferred depth (`PD`), depth tolerance (`DT`) and peak abundance (`PA`). 
-See the plot below for examples.
+@Holland1995 described a three parameter Gaussian model for simulating environment-dependent fossil recovery.
+In this model each species has three parameters, species preferred depth ($PD$), depth tolerance ($DT$) and peak abundance ($PA$) (function arguments `PD`, `DT` and `PA`).
 The probability of fossil recovery during a given interval of time is a function of water depth, given by,
 
 $Pr_{collection_i}(d) = PA * exp(-(d - PD)^2/ (2*DT^2))$,
 
-where `d` is current water depth, `PD` and `DT` are the mean and the standard deviation of the distribution, respectively, and `PA` describes the amplitude of the distribution.
-Here the model is described in the context of marine taxa, however the model and the function `sim.fossils.environment` can be applied to any enviromental or depositional context, in which some measure of environmental gradient can be generated. 
+where $d$ is current water depth, $PD$ and $DT$ are the mean and the standard deviation of the distribution, respectively, and $PA$ describes the amplitude of the distribution.
+Here the model is described in the context of marine taxa, however the model and the function `sim.fossils.environment` can be applied to any environmental or depositional context, in which some measure of environmental gradient can be generated. 
 
-The following code snippet illustrate how to explore the role of the model parameters `PD`,`DT` and `PA` in determining species response curves.
+The following code snippet illustrate how to explore the role of the model parameters $PD$, $DT$ and $PA$ in determining species response curves.
 
 ```{r}
 # define a set of colors for 4 species
 # color palette chosen using RColorBrewer
-cols = c("#E41A1C", "#377EB8", "#984EA3", "#4DAF4A") 
+cols = c("#E41A1C", "#377EB8", "#984EA3", "#4DAF4A") # red, blue, purple, green
 
 # species response curve function
-response.curve = function(x) PA * exp(-(x - PD)^2/ (2*DT^2))
+response.curve = function(x, pd, dt, pa) pa * exp(-(x - pd)^2/ (2*dt^2))
 
 # define species variables # species 1
 PA = 1 # peak abundance
@@ -253,29 +258,28 @@ PD = 2 # preferred depth
 DT = 1 # depth tolerance
 
 # plot species resonse curve
-curve(response.curve, -2, 6, bty = "n", xlab = "relative depth", ylab = "Pr(collection)", xlim = c(-6,6), lwd = 1.5, col = cols[1])
+curve(response.curve(x, PD, DT, PA), -2, 6, bty = "n", xlab = "relative depth", ylab = "Pr(collection)", xlim = c(-6,6), lwd = 1.5, col = cols[1])
 
 # redefine depth tolerance and compare the output # species 2
 DT = 0.5
-curve(response.curve, -1, 5, add = TRUE, lwd = 1.5, col = cols[2])
+curve(response.curve(x, PD, DT, PA), -1, 5, add = TRUE, lwd = 1.5, col = cols[2])
 
 # redefine preferred depth and compare the output # species 3
 PD = -2
-curve(response.curve, -5, 1, add = TRUE, lwd = 1.5, col = cols[3])
+curve(response.curve(x, PD, DT, PA), -5, 1, add = TRUE, lwd = 1.5, col = cols[3])
 
 # redefine prferred depth and peak abundance # species 4
 PD = -4
 PA = 0.5
-curve(response.curve, -6, -2.2, add = TRUE, lwd = 1.5, col = cols[4])
+curve(response.curve(x, PD, DT, PA), -6, -2.2, add = TRUE, lwd = 1.5, col = cols[4])
 ```
 
-In the following example fossil occurences are simualted for a vector of gradient values generated using the function `sim.gradient`, which return values for the following simple sine wave function,
+The user is free to use a vector containing any gradient values to simulate fossil occurrences.
+In the following example we will use a vector of gradient values generated using the function `sim.gradient`, which return values for the following simple sine wave function,
 $y = d*sin(cycles*pi*(x-1/4))$, where $x$ is the number of intervals or strata.
-The function output can be used to represent changes in relative water depth, where the cycles are equivalent to the number of trangression/regression events.
+The function output can be used to represent changes in relative water depth, where the number of cycles may be equivalent to the number of transgression/regression events.
 
-The user is free to use a vector of any gradient values. 
-
-Intervals can be specified in the same way as the function `sim.fossils.intervals` via `max.age` and `strata` or the `intervals` vector.
+Interval ages can be specified in the same way as the function `sim.fossils.intervals` via `max.age` and `strata` or the `intervals` vector.
 
 ```{r, fig.show="hold"}
 # define the interval parameters
@@ -294,7 +298,7 @@ DT = 2
 PA = 1
 
 # simulate fossils
-f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT)
+f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT, PA = PA)
 
 # plot output and include proxy data & preferred depth
 plot(f, t, interval.ages = times, show.strata = TRUE, show.proxy = TRUE, proxy.data = wd, show.preferred.environ = TRUE, preferred.environ = PD, fossil.col = cols[1])
@@ -303,7 +307,7 @@ plot(f, t, interval.ages = times, show.strata = TRUE, show.proxy = TRUE, proxy.d
 DT = 0.5
 
 # simulate fossils
-f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT)
+f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT, PA = PA)
 
 # plot output
 plot(f, t, interval.ages = times, show.strata = TRUE, show.proxy = TRUE, proxy.data = wd, show.preferred.environ = TRUE, preferred.environ = PD, fossil.col = cols[2])
@@ -312,7 +316,7 @@ plot(f, t, interval.ages = times, show.strata = TRUE, show.proxy = TRUE, proxy.d
 PD = -2
 
 # simulate fossils
-f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT)
+f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT, PA = PA)
 
 # plot output
 plot(f, t, interval.ages = times, show.strata = TRUE, show.proxy = TRUE, proxy.data = wd, show.preferred.environ = TRUE, preferred.environ = PD, fossil.col = cols[3])
@@ -322,7 +326,7 @@ PD = -4
 PA = 0.5
 
 # simulate fossils
-f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT)
+f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT, PA = PA)
 
 # plot output
 plot(f, t, interval.ages = times, show.strata = TRUE, show.proxy = TRUE, proxy.data = wd, show.preferred.environ = TRUE, preferred.environ = PD, fossil.col = cols[4])
@@ -330,23 +334,28 @@ plot(f, t, interval.ages = times, show.strata = TRUE, show.proxy = TRUE, proxy.d
 
 ## Lineage-dependent fossil recovery
 
-Variation in fossil recovery parameters across different lineages or species can be generated using the function `sim.trait.values`. Simulated trait values can then be used to define the parameters in the functions `sim.fossils.poisson` and `sim.fossils.environment`.
+Variation in fossil recovery parameters across different lineages or species can be generated using the function `sim.trait.values`. 
+The function output is a vector of simulated trait values that can be used to specify the `rate` parameter in `sim.fossils.poisson` or the `PD`, `DT` and `PA` parameters in `sim.fossils.environment`.
 
-\todo input
+Trait values can be simulated for a given `phylo` or `taxonomy` object. 
+If the function is provided with a `phylo` object, trait values are simulated assuming bifurcating speciation and simulated trait values are output for each edge in the order in which they appear in the `phylo` object dataframe.
+If the tree also has a root edge (`tree$root.edge`), the first entry in the vector will correspond to the first entry in the vector.
+If the function is provided with a `taxonomy` object, simulated trait values are output for each species in the order in which they appear in the `taxonomy` object dataframe.
 
 ### The autocorrelated fossil recovery model
 
-Under the `autocorrelated` model, traits evolve along lineages according to a a Brownian motion process, where the strength of the relationship between ancestor and descendant values is determined by the parameter $\nu$ (function argument `v`).
+Under the `autocorrelated` model, traits evolve along lineages according to a Brownian motion process, where the strength of the relationship between ancestor and descendant values is determined by the parameter $\nu$ (function argument `v`).
+New trait values are drawn from a lognormal distribution, where the mean is equal to the value of the ancestor and the variance is a function of $\nu$ and the species or edge duration.
 If $\nu$ is small values will be more similar between ancestor and descendants, and if $\nu$ is zero all trait values will be equal.
-New rates are drawn from a lognormal distribution with ...
-\todo cite Heath et al. (2014) 
-This is equivalent to the autocorrelated relaxed clock model described in Kishino et al. (2001). \todo add citation.
+This is model is described in @Heath2014 and is equivalent to the autocorrelated relaxed clock model described in @Kishino2001.
 
 ```{r}
-# simulate trait values under the autocorrelated model (the default model)
-rate = 1 # initial rate at the root or origin
+# define the initial rate at the root or origin
+rate = 1 
+
+# simulate rates under the autocorrelated model (the default option)
 rates = sim.trait.values(rate, tree = t, v = 0.01)
-# TODO rates are ordered
+# simulated rates
 rates
 
 # simulate fossils
@@ -362,14 +371,14 @@ Under the `independent` model a new trait value is drawn for each species from a
 To be valid the function just has to return a single value.
 
 ```{r}
-# define the initial value at the root or origin
-rate = 1 
+# define the initial rate at the root or origin
+rate = 1
 
 # define the distribution used to sample new rates
-# in this case an exponential with a mean = 1
+# in this case an exponential with mean = 1
 dist = function() { rexp(1) }
 
-# simulate trait values under the independent traits model
+# simulate trait values under the independent model
 rates = sim.trait.values(rate, tree = t, model = "independent", dist = dist)
 
 # simulate fossils
@@ -395,8 +404,8 @@ dist = function() { rexp(1, 1/4) }
 # define the probability of the trait value changing at each speciation event
 change.pr = 0.5
 
-# simulate trait values under the independent traits model
-rates = sim.trait.values(rate, tree = t, model = "innovative", dist = dist)
+# simulate trait values under the innovative model
+rates = sim.trait.values(rate, tree = t, model = "innovative", dist = dist, change.pr = change.pr)
 
 # simulate fossils
 f = sim.fossils.poisson(t, rate = rates)
@@ -415,25 +424,48 @@ PD = 2
 DT = 0.5
 
 # simulate lineage variable peak abundance values
-#TODO change rate to root.value
-PA 
 
-# simualte fossils
+# define the distribution used to sample new PA values
+# in this case a uniform in the interval 0, 1
+dist = function() { runif(1) }
 
+# simulate trait values under the independent model
+PA = sim.trait.values(init = 0.1, tree = t, model = "independent", dist = dist)
+
+# simulate fossils
+f = sim.fossils.environment(t, interval.ages = times, proxy.data = wd, PD = PD, DT = DT, PA = PA)
+
+# plot the output
+plot(f, t, show.strata = TRUE, interval.ages = times)
 
 ```
 
 ## Extant species and tip sampling
 
-The functions X and X can be used to simulate incomplete extant species or tip sampling. The parameter `rho` is the probability that an extant species or tip with be sampled.
+The functions `sim.extant.samples` and `sim.tip.samples` can be used to simulate incomplete extant species and tip sampling, respectively. The parameter `rho` is the probability that an extant species or a tip will be sampled.
 
 ```{r}
-# simualte fossil
+# simulate fossils
+f = sim.fossils.poisson(t, rate = rates)
 
 # simulate extant species sampling
+f2 = sim.extant.samples(f, t, rho = 0.5)
 
 # plot the output
+plot(f2, t, extant.col = "red")
+
+# for tip sampling only, create a fossil object with no fossils
+f = fossils()
 
 # simulate tip sampling
-  
+f2 = sim.tip.samples(f, t, rho = 0.75)
+
+# plot the output
+plot(f2, t)  
 ```
+
+## See also
+
+See the `paleotree` vignette to see how `FossilSim` objects can be converted into `paleotree` objects.
+
+## References

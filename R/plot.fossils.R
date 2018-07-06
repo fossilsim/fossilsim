@@ -353,137 +353,139 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       text(xx.tmp + lox, yy.tmp + loy, tree$tip.label,adj = adj, font = font, srt = srt, cex = cex, col = tip.color)
     }
 
-    # binned but assigned to an independent set of interval ages
-    if(use.species.ages)
-      fossils$h = (fossils$hmax - fossils$hmin)/2 + fossils$hmin
-    # not binned
-    else if(!binned) fossils$h = fossils$hmin
-    # binned & already assigned to intervals
-    else if (binned & any(fossils$hmin != fossils$hmax))
-      fossils$h = fossils$hmax
-    # binned but not assigned to intervals
-    else if(binned & all(fossils$hmin == fossils$hmax))
-      fossils$h = sim.interval.ages(fossils, tree, interval.ages = c(0, horizons.max))$hmax
+    if(length(fossils$sp)){
+      # binned but assigned to an independent set of interval ages
+      if(use.species.ages)
+        fossils$h = (fossils$hmax - fossils$hmin)/2 + fossils$hmin
+      # not binned
+      else if(!binned) fossils$h = fossils$hmin
+      # binned & already assigned to intervals
+      else if (binned & any(fossils$hmin != fossils$hmax))
+        fossils$h = fossils$hmax
+      # binned but not assigned to intervals
+      else if(binned & all(fossils$hmin == fossils$hmax))
+        fossils$h = sim.interval.ages(fossils, tree, interval.ages = c(0, horizons.max))$hmax
 
-    fossils$col = fossil.col
+      fossils$col = fossil.col
 
-    # taxonomy colours
-    if(show.taxonomy){
-      sps = unique(fossils$sp)
-      col = sample(grDevices::rainbow(length(sps)))
-      j = 0
-      for(i in sps){
-        j = j + 1
-        fossils$col[which(fossils$sp == i)] = col[j]
-      }
-    }
-
-    if (extant.col != fossil.col){
-      fossils$col[which(fossils$h < tol)] = extant.col
-    }
-
-    if(show.fossils || show.ranges) {
-      if(binned) {
-        fossils$r = sapply(fossils$h - offset, function(x) {
-          if(x < tol) return(max(xx) - x)
-          y = max(which(abs(horizons.max - x) < tol))
-          max(xx) - horizons.max[y] + (rev(s1)[y]/2) })
-      } else {
-        fossils$r = max(xx) - fossils$h + offset
-      }
-    }
-
-    # fossils
-    if(show.fossils & !show.ranges){
-      points(fossils$r, yy[fossils$edge], cex = cex, pch = pch, col = fossils$col)
-    }
-
-    # ranges
-    if(show.ranges){
-
-      # for show.taxonomy = TRUE
-      # fetch oldest and youngest edge associated with a species
-      # deal with the oldest part of the ranges
-      # deal with the youngest part of the ranges
-      # everyting inbetween
+      # taxonomy colours
       if(show.taxonomy){
+        sps = unique(fossils$sp)
+        col = sample(grDevices::rainbow(length(sps)))
+        j = 0
+        for(i in sps){
+          j = j + 1
+          fossils$col[which(fossils$sp == i)] = col[j]
+        }
+      }
 
-        for(i in unique(fossils$sp)){
+      if (extant.col != fossil.col){
+        fossils$col[which(fossils$h < tol)] = extant.col
+      }
 
-          mn = min(fossils$h[which(fossils$sp == i)])
-          mx = max(fossils$h[which(fossils$sp == i)])
-          edge.mn = fossils$edge[which(fossils$sp == i & fossils$h == mn)]
-          edge.mx = fossils$edge[which(fossils$sp == i & fossils$h == mx)]
+      if(show.fossils || show.ranges) {
+        if(binned) {
+          fossils$r = sapply(fossils$h - offset, function(x) {
+            if(x < tol) return(max(xx) - x)
+            y = max(which(abs(horizons.max - x) < tol))
+            max(xx) - horizons.max[y] + (rev(s1)[y]/2) })
+        } else {
+          fossils$r = max(xx) - fossils$h + offset
+        }
+      }
 
-          edges = find.edges.inbetween(edge.mn, edge.mx, tree)
+      # fossils
+      if(show.fossils & !show.ranges){
+        points(fossils$r, yy[fossils$edge], cex = cex, pch = pch, col = fossils$col)
+      }
 
-          col = fossils$col[which(fossils$sp == i)]
+      # ranges
+      if(show.ranges){
 
-          for(j in edges){
+        # for show.taxonomy = TRUE
+        # fetch oldest and youngest edge associated with a species
+        # deal with the oldest part of the ranges
+        # deal with the youngest part of the ranges
+        # everyting inbetween
+        if(show.taxonomy){
 
-            # singletons
-            if(mn == mx) {
-              range = fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)]
+          for(i in unique(fossils$sp)){
+
+            mn = min(fossils$h[which(fossils$sp == i)])
+            mx = max(fossils$h[which(fossils$sp == i)])
+            edge.mn = fossils$edge[which(fossils$sp == i & fossils$h == mn)]
+            edge.mx = fossils$edge[which(fossils$sp == i & fossils$h == mx)]
+
+            edges = find.edges.inbetween(edge.mn, edge.mx, tree)
+
+            col = fossils$col[which(fossils$sp == i)]
+
+            for(j in edges){
+
+              # singletons
+              if(mn == mx) {
+                range = fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)]
+              }
+
+              # single edge
+              else if(edge.mn == edge.mx) range = fossils$r[which(fossils$edge == edge.mn
+                                                                  & fossils$sp == i)]
+
+              # multiple edges: FA edge
+              else if(j == edge.mx) {
+                range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
+                           max(xx) + offset - taxonomy$end[which(taxonomy$edge == j)])
+              }
+              # multiple edges: LA edge
+              else if(j == edge.mn){
+                range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
+                           max(xx) + offset - taxonomy$start[which(taxonomy$edge == j)])
+              }
+              # multiple edges: in-between edges
+              else{
+                range =  c(max(xx) + offset - taxonomy$start[which(taxonomy$edge == j)],
+                           max(xx) + offset - taxonomy$end[which(taxonomy$edge == j)])
+              }
+              # plot ranges
+              sp = yy[j]
+
+              w = 0.1
+
+              # plot ranges & fossils
+              if(length(range) > 1){
+                rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(col, alpha.f = 0.3))
+                if(show.fossils)
+                  points(range, rep(sp, length(range)), cex = cex, pch = pch, col = col)
+                else
+                  points(c(min(range), max(range)), c(sp, sp), cex = cex, pch = pch, col = col)
+              } else # plot singletons
+                points(range, sp, cex = cex, pch = pch, col = col)
+
             }
+          }
+        } else{
+          for(i in unique(fossils$edge)) {
 
-            # single edge
-            else if(edge.mn == edge.mx) range = fossils$r[which(fossils$edge == edge.mn
-                                                                & fossils$sp == i)]
+            range = fossils$r[which(fossils$edge == i)]
 
-            # multiple edges: FA edge
-            else if(j == edge.mx) {
-              range =  c(fossils$r[which(fossils$edge == edge.mx & fossils$sp == i)],
-                         max(xx) + offset - taxonomy$end[which(taxonomy$edge == j)])
-            }
-            # multiple edges: LA edge
-            else if(j == edge.mn){
-              range =  c(fossils$r[which(fossils$edge == edge.mn & fossils$sp == i)],
-                         max(xx) + offset - taxonomy$start[which(taxonomy$edge == j)])
-            }
-            # multiple edges: in-between edges
-            else{
-              range =  c(max(xx) + offset - taxonomy$start[which(taxonomy$edge == j)],
-                         max(xx) + offset - taxonomy$end[which(taxonomy$edge == j)])
-            }
-            # plot ranges
-            sp = yy[j]
+            sp = yy[i]
 
             w = 0.1
 
             # plot ranges & fossils
             if(length(range) > 1){
-              rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(col, alpha.f = 0.3))
+              rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(range.col, alpha.f = 0.2))
               if(show.fossils)
-                points(range, rep(sp, length(range)), cex = cex, pch = pch, col = col)
+                points(range, rep(sp, length(range)), cex = cex, pch = pch, col = fossil.col)
               else
-                points(c(min(range), max(range)), c(sp, sp), cex = cex, pch = pch, col = col)
+                points(c(min(range), max(range)), c(sp, sp), cex = cex, pch = pch, col = fossil.col)
             } else # plot singletons
-              points(range, sp, cex = cex, pch = pch, col = col)
-
+              points(range, sp, cex = cex, pch = pch, col = fossil.col)
           }
         }
-      } else{
-        for(i in unique(fossils$edge)) {
-
-          range = fossils$r[which(fossils$edge == i)]
-
-          sp = yy[i]
-
-          w = 0.1
-
-          # plot ranges & fossils
-          if(length(range) > 1){
-            rect(min(range), sp+w, max(range), sp-w, col=adjustcolor(range.col, alpha.f = 0.2))
-            if(show.fossils)
-              points(range, rep(sp, length(range)), cex = cex, pch = pch, col = fossil.col)
-            else
-              points(c(min(range), max(range)), c(sp, sp), cex = cex, pch = pch, col = fossil.col)
-          } else # plot singletons
-            points(range, sp, cex = cex, pch = pch, col = fossil.col)
-        }
       }
+      fossils$r = NULL
     }
-    fossils$r = NULL
 
     # water depth profile
     add.depth.axis = TRUE

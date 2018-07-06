@@ -117,8 +117,8 @@ However, it may still be useful to become familiar with the concepts underlying 
 
 ## What next?
 
-Information about the `taxonomy` object and models for simualting taxonomy can be found in the vignette "Simulating taxonomy".
-Information about the `fossils` object and models for simualting fossils can be found in the vignette "Simulating fossils".
+Information about the `taxonomy` object and models for simulating taxonomy can be found in the vignette "Simulating taxonomy".
+Information about the `fossils` object and models for simulating fossils can be found in the vignette "Simulating fossils".
 See the `paleotree` vignette to see how `FossilSim` objects can be converted into `paleotree` objects.
 
 

@@ -30,7 +30,7 @@
 #' sim.fbd.age(age, numbsim, lambda, mu, psi)
 #' @keywords fossilized birth death
 #' @export
-sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac, mrca = FALSE, complete = FALSE, K = 0)
+sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, complete = FALSE, K = 0)
 {
 	trees = TreeSim::sim.bd.age(age,numbsim,lambda,mu,frac,mrca,complete=T,K)
 	for(i in 1:length(trees))
@@ -74,6 +74,7 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac, mrca = FALSE, complet
 
 				if( frac < 1 )
 				{
+				  n = round(length(extant.tips) * frac)
 					unsampled.tips <- c( unsampled.tips, extant.tips[!(extant.tips %in% sample(extant.tips, n))] )
 				}
 
