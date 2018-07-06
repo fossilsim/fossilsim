@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.asymmetric.tree.R
 \name{plot.SAtree}
 \alias{plot.SAtree}
-\title{Make a stratigraphic range plot from a tree object of class SAtree}
+\title{Make a stratigraphic range plot from a tree object of class SAtree.}
 \usage{
 \method{plot}{SAtree}(x, complete = FALSE, ...)
 }
@@ -14,7 +14,10 @@
 \item{...}{Additional parameters to be passed to \code{plot.default}.}
 }
 \description{
-Make a stratigraphic range plot from a tree object of class SAtree
+Make a stratigraphic range plot from a tree object of class SAtree.
+}
+\note{
+This function assumes all speciation events are asymmetric.
 }
 \examples{
 tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
