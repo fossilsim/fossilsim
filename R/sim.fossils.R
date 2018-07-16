@@ -149,15 +149,15 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, root.edge = T
 #' plot(f, t, strata = strata, show.strata = TRUE)
 #'
 #' # simulate fossils using interval.ages & rates
-#' times = seq(0, max.age, length.out = 4)
-#' rates = c(5, 0, 5)
+#' times = c(0, sort(runif(3, min = 0, max = max.age)), max.age)
+#' rates = c(5, 0, 5, 0)
 #' f = sim.fossils.intervals(t, interval.ages = times, rates = rates)
-#' plot(f, t, interval.ages = times)
+#' plot(f, t, interval.ages = times, show.strata = TRUE)
 #'
 #' # simulate fossils using taxonomy
 #' s = sim.taxonomy(t, 0.1, 0.1, 1)
 #' f = sim.fossils.intervals(taxonomy = s, interval.ages = times, rates = rates)
-#' plot(f, t, interval.ages = times)
+#' plot(f, t, interval.ages = times, show.strata = TRUE)
 #'
 #' @keywords uniform fossil preservation
 #' @keywords non-uniform fossil preservation
