@@ -256,7 +256,7 @@ is.extinct <- function (phy, tol=NULL) {
         tol <- min(phy$edge.length)/100;
     }
     Ntip <- length(phy$tip.label)
-    phy <- reorder(phy);
+    phy <- ape::reorder.phylo(phy);
     xx <- numeric(Ntip + phy$Nnode);
     for (i in 1:length(phy$edge[,1])) {
         xx[phy$edge[i,2]] <- xx[phy$edge[i,1]] + phy$edge.length[i];
@@ -267,4 +267,58 @@ is.extinct <- function (phy, tol=NULL) {
     } else {
         return(NULL);
     }
+}
+
+# returns the heights of each node
+# written by Liam J. Revell 2011, 2012, 2013, 2015, 2016
+# modified by Klaus Schliep 2017
+nodeHeights<-function(tree,...){
+    nHeight <- function(tree){
+        tree <- ape::reorder.phylo(tree)
+        edge <- tree$edge
+        el <- tree$edge.length
+        res <- numeric(max(tree$edge))
+        for(i in seq_len(nrow(edge))) res[edge[i,2]] <- res[edge[i,1]] + el[i] 
+        res
+    }
+    nh <- nHeight(tree)
+    return(matrix(nh[tree$edge], ncol=2L))
+}
+
+# function adds a new tip to the tree
+# written by Liam J. Revell 2012, 2013, 2014, 2015
+bind.tip<-function(tree,tip.label,edge.length=NULL,where=NULL,position=0,...){
+  if(!inherits(tree,"phylo")) stop("tree should be an object of class \"phylo\".")
+  use.edge.length<-if(is.null(tree$edge.length)) FALSE else TRUE
+  if(use.edge.length==FALSE) tree<-ape::compute.brlen(tree)
+  if(is.null(where)) where<-length(tree$tip.label)+1
+  if(where<=length(tree$tip.label)&&position==0){
+    pp<-1e-12
+    if(tree$edge.length[which(tree$edge[,2]==where)]<=1e-12){
+      tree$edge.length[which(tree$edge[,2]==where)]<-2e-12
+      ff<-TRUE
+    } else ff<-FALSE
+  } else pp<-position
+  if(is.null(edge.length)&&ape::is.ultrametric(tree)){
+    H<-nodeHeights(tree)
+    if(where==(length(tree$tip.label)+1)) edge.length<-max(H)
+    else edge.length<-max(H)-H[tree$edge[,2]==where,2]+position
+  }
+  tip<-list(edge=matrix(c(2,1),1,2),
+    tip.label=tip.label,
+    edge.length=edge.length,
+    Nnode=1)
+    class(tip)<-"phylo"
+  obj<-ape::bind.tree(tree,tip,where=where,position=pp)
+  if(where<=length(tree$tip.label)&&position==0){
+    nn<-obj$edge[which(obj$edge[,2]==which(obj$tip.label==tip$tip.label)),1]
+    obj$edge.length[which(obj$edge[,2]==nn)]<-obj$edge.length[which(obj$edge[,2]==nn)]+1e-12
+    obj$edge.length[which(obj$edge[,2]==which(obj$tip.label==tip$tip.label))]<-0
+    obj$edge.length[which(obj$edge[,2]==which(obj$tip.label==tree$tip.label[where]))]<-0
+  }
+  root.time<-if(!is.null(obj$root.time)) obj$root.time else NULL
+  #obj<-untangle(obj,"read.tree")
+  if(!is.null(root.time)) obj$root.time<-root.time
+  if(!use.edge.length) obj$edge.length<-NULL
+  obj
 }

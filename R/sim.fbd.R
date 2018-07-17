@@ -57,7 +57,7 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 					h = f$hmin[j] - lineage.end # replaced f[j,1]
 
 					# replaced f[j,2]
-					tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
+					tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
 
 					f$edge = map_nodes(f$edge, tree, tmp) # replaced f[,2]
 
@@ -153,7 +153,7 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
 				h = f$hmin[j] - lineage.end # replaced f[j,1]
 
 				# replaced f[j,2]
-				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
+				tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
 
 				f$edge = map_nodes(f$edge,tree,tmp) # replaced f[,2]
 
@@ -228,7 +228,7 @@ sim.fbd.taxa <- function(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE
 				h = f$hmin[j] - lineage.end # replaced f[j,1]
 
 				# replaced f[j,2]
-				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
+				tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
 
 				f$edge = map_nodes(f$edge,tree,tmp) # replaced f[,2]
 
