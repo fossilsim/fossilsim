@@ -1,4 +1,4 @@
-#' Make a stratigraphic range plot from a tree object of class SAtree
+#' Make a stratigraphic range plot from a tree object of class SAtree.
 #'
 #' @param x SAtree to plot.
 #' @param complete Plot unsampled species.
@@ -8,8 +8,9 @@
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
 #' plot(tree, complete=TRUE)
 #'
+#' @note
+#' This function assumes all speciation events are asymmetric.
 #' @export
-# TODO optional tip labels ?
 plot.SAtree <- function(x, complete = FALSE, ...){
   if(!("SAtree" %in% class(x)) ){
     if("phylo" %in% class(x)) x = SAtree(x)
