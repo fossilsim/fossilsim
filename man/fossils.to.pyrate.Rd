@@ -2,33 +2,34 @@
 % Please edit documentation in R/conversions.R
 \name{fossils.to.pyrate}
 \alias{fossils.to.pyrate}
-\title{Generate output in the format used by the program pyrate}
+\title{Generate output in the format used by the program PyRate}
 \usage{
-fossils.to.pyrate(fossils, python = FALSE, traits = NULL, cutoff = NULL,
-  random = FALSE, min = NULL, print.extant = FALSE, file = "")
+fossils.to.pyrate(fossils, python = TRUE, traits = NULL, cutoff = NULL,
+  random = FALSE, min = NULL, exclude.extant.singletons = TRUE,
+  file = "")
 }
 \arguments{
 \item{fossils}{Fossils object.}
 
-\item{python}{If TRUE the function outputs a file in python format.
-If FALSE the function outputs a standard text file in the format used by pyrate (default).}
+\item{python}{If TRUE the function outputs the data in the python format used by PyRate (default).
+If FALSE the function outputs a tab-delimited table used by tools associated with PyRate.}
 
-\item{traits}{Vector of trait values equal to the number of specimens, including extant samples if present in the fossils dataframe.
-Each entry corresponds to the order in which they appear in fossils$sp.}
+\item{traits}{Vector of trait values equal to the number of unique species in the fossils dataframe.
+The order should correspond to the order in which they appear in \code{unique(fossils$sp)}.}
 
-\item{cutoff}{Exclude occurrences with age uncertainty greater than this value. i.e. \code{hmax - hmin > cutoff}.}
+\item{cutoff}{Exclude occurrences with age uncertainty greater than this value i.e. \code{hmax - hmin > cutoff}.}
 
 \item{random}{If TRUE use a random number from within the interval U(hmin, hmax) for specimen ages,
 otherwise use the midpoint of this interval (default). Applicable only when \code{python = TRUE} and for specimens with \code{hmin != hmax}.}
 
-\item{min}{Value used to represent the minimum possible interval age of extinct specimens with \code{hmin = 0}. By default \code{min = NULL} and the function uses the sampling times in the fossils dataframe.}
+\item{min}{Value used to represent the minimum possible interval age of extinct specimens with \code{hmin = 0}. By default \code{min = NULL} and the function will use the sampling times in the fossils dataframe.}
 
-\item{print.extant}{If TRUE also output sampling times and trait values for extant samples. Default = FALSE.}
+\item{exclude.extant.singletons}{If TRUE exclude species that have extant samples only (default = TRUE).}
 
 \item{file}{Output file name.}
 }
 \description{
-Generate output in the format used by the program pyrate
+Generate output in the format used by the program PyRate
 }
 \examples{
 
@@ -56,10 +57,10 @@ plot(f, t)
 
 # generate input files for pyrate
 fossils.to.pyrate(f)
-fossils.to.pyrate(f, python = TRUE)
+fossils.to.pyrate(f, python = FALSE)
 
 # add trait values
-traits = runif(length(f$sp))
+traits = runif(length(unique(f$sp)))
 fossils.to.pyrate(f, traits = traits)
 
 }

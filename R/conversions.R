@@ -375,18 +375,18 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
   record
 }
 
-#' Generate output in the format used by the program pyrate
+#' Generate output in the format used by the program PyRate
 #'
 #' @param fossils Fossils object.
-#' @param python If TRUE the function outputs a file in python format.
-#' If FALSE the function outputs a standard text file in the format used by pyrate (default).
-#' @param traits Vector of trait values equal to the number of specimens, including extant samples if present in the fossils dataframe.
-#' Each entry corresponds to the order in which they appear in fossils$sp.
-#' @param cutoff Exclude occurrences with age uncertainty greater than this value. i.e. \code{hmax - hmin > cutoff}.
+#' @param python If TRUE the function outputs the data in the python format used by PyRate (default).
+#' If FALSE the function outputs a tab-delimited table used by tools associated with PyRate.
+#' @param traits Vector of trait values equal to the number of unique species in the fossils dataframe.
+#' The order should correspond to the order in which they appear in \code{unique(fossils$sp)}.
+#' @param cutoff Exclude occurrences with age uncertainty greater than this value i.e. \code{hmax - hmin > cutoff}.
 #' @param random If TRUE use a random number from within the interval U(hmin, hmax) for specimen ages,
 #' otherwise use the midpoint of this interval (default). Applicable only when \code{python = TRUE} and for specimens with \code{hmin != hmax}.
-#' @param min Value used to represent the minimum possible interval age of extinct specimens with \code{hmin = 0}. By default \code{min = NULL} and the function uses the sampling times in the fossils dataframe.
-#' @param print.extant If TRUE also output sampling times and trait values for extant samples. Default = FALSE.
+#' @param min Value used to represent the minimum possible interval age of extinct specimens with \code{hmin = 0}. By default \code{min = NULL} and the function will use the sampling times in the fossils dataframe.
+#' @param exclude.extant.singletons If TRUE exclude species that have extant samples only (default = TRUE).
 #' @param file Output file name.
 #'
 #' @examples
@@ -415,22 +415,22 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
 #'
 #' # generate input files for pyrate
 #' fossils.to.pyrate(f)
-#' fossils.to.pyrate(f, python = TRUE)
+#' fossils.to.pyrate(f, python = FALSE)
 #'
 #' # add trait values
-#' traits = runif(length(f$sp))
+#' traits = runif(length(unique(f$sp)))
 #' fossils.to.pyrate(f, traits = traits)
 #'
 #' @export
-fossils.to.pyrate = function(fossils, python = FALSE, traits = NULL, cutoff = NULL, random = FALSE, min = NULL, print.extant = FALSE, file = ""){
+fossils.to.pyrate = function(fossils, python = TRUE, traits = NULL, cutoff = NULL, random = FALSE, min = NULL,
+                             exclude.extant.singletons = TRUE, file = ""){
 
   if(length(fossils$sp) < 1) stop("Number of specimens must be > 0")
 
-  if(!is.null(traits) && length(fossils$sp) != length(traits))
-    stop("Number of trait values must equal the number of fossils")
+  if(!is.null(traits) && length(unique(fossils$sp)) != length(traits))
+    stop("Number of trait values must equal the number of species")
 
-  if(!is.null(traits)) fossils = round(cbind(fossils, traits), digits = 6)
-  else fossils = round(fossils, digits = 6)
+  if(!is.null(traits)) traits = data.frame(sp = unique(fossils$sp), trait = round(traits, digits = 6))
 
   if(!is.null(cutoff) && !(cutoff > 0)) stop("Cutoff must be > 0")
 
@@ -438,17 +438,16 @@ fossils.to.pyrate = function(fossils, python = FALSE, traits = NULL, cutoff = NU
   tol = 1e-8
 
   if(!is.null(min)){
-    fossils$hmin[which(fossils$hmin != fossils$hmax & fossils$hmin < tol)] = min
+    fossils$hmin[which(fossils$hmin != fossils$hmax && fossils$hmin < tol)] = min
     if(any(fossils$hmin > fossils$hmax)) stop("min value has generated intervals with hmax < hmin")
   }
 
   # deal with specimen age options
   if(!is.null(cutoff) && cutoff > 0){
     cat(paste0("Excluding ", length(which(fossils$hmax - fossils$hmin > cutoff)), " occurrences based on cutoff...\n"))
-    fossils = fossils[-which(fossils$hmax - fossils$hmin > cutoff),]
-    # this logic is incorrect
+    fossils = fossils[which(fossils$hmax - fossils$hmin < cutoff),]
     if(length(fossils$sp) < 1) stop("Number of specimens after cutoff must be > 0")
-    else if(!print.extant && length(fossils[-which(fossils$hmax - fossils$hmin < tol),]$sp) < 1) stop("Number of specimens after cutoff must be > 0")
+    else if(exclude.extant.singletons && length(fossils[-which(fossils$hmin == fossils$hmax && fossils$hmin < tol),]$sp) < 1) stop("Number of specimens after cutoff must be > 0")
   }
 
   if(python){
@@ -459,6 +458,8 @@ fossils.to.pyrate = function(fossils, python = FALSE, traits = NULL, cutoff = NU
     } else if (any(fossils$hmax != fossils$hmin)) { # use median ages
       fossils$hmin = round(unlist(lapply(1:dim(fossils)[1], function(x) { mean( c(fossils$hmin[x], fossils$hmax[x])) })), digits = 6)
       fossils$hmax = fossils$hmin
+    } else {
+      fossils = round(fossils, digits = 6)
     }
   }
 
@@ -478,11 +479,11 @@ fossils.to.pyrate = function(fossils, python = FALSE, traits = NULL, cutoff = NU
       times = c()
       values = c()
       for(j in 1:length(occs$sp)){
-        # skip extant samples
-        if(occs$hmin[j] < tol && !print.extant) next
-        else times = c(times, occs$hmin[j])
-        if(!is.null(traits)) values = c(values, occs$traits[j])
+        times = c(times, occs$hmin[j])
       }
+      if(!is.null(traits)) values = c(values, traits$trait[which(traits$sp == sp)])
+
+      if(exclude.extant.singletons && length(times) == 1 && times[1] == 0) next
 
       if(length(times) > 0){
         data_1 = c(data_1, paste0("array([", paste(times, collapse = ","), "])"))
@@ -519,17 +520,20 @@ fossils.to.pyrate = function(fossils, python = FALSE, traits = NULL, cutoff = NU
       sp = unique(fossils$sp)[i]
       occs = fossils[which(fossils$sp == sp),]
       # identify extant lineages
-      if(any(occs$hmin == occs$hmax & occs$hmin < tol))
+      if(any(occs$hmin == occs$hmax && occs$hmin < tol))
         status = "extant"
       else status = "extinct"
+      if(!is.null(traits)) tr = traits$trait[which(traits$sp == sp)]
+
+      if(exclude.extant.singletons && length(occs$sp) == 1 && occs$hmax == 0) next
 
       for(j in 1:length(occs$sp)){
         # skip extant samples
-        if(occs$hmin[j] == occs$hmax[j] && occs$hmin[j] < tol && !print.extant) next
+        if(occs$hmin[j] == occs$hmax[j] && occs$hmin[j] < tol) next
         if(is.null(traits))
           cat(paste0("taxa",i), "\t", status, "\t", occs$hmin[j], "\t", occs$hmax[j], "\n", file = file, append = TRUE)
         else
-          cat(paste0("taxa",i), "\t", status, "\t", occs$hmin[j], "\t", occs$hmax[j], "\t", occs$traits[j], "\n", file = file, append = TRUE)
+          cat(paste0("taxa",i), "\t", status, "\t", occs$hmin[j], "\t", occs$hmax[j], "\t", tr, "\n", file = file, append = TRUE)
       }
     }
   }
