@@ -375,7 +375,7 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
   record
 }
 
-#' Generate input file for analysis using the program pyrate
+#' Generate output in the format used by the program pyrate
 #'
 #' @param fossils Fossils object.
 #' @param python If TRUE the function outputs a file in python format.
@@ -414,12 +414,12 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
 #' plot(f, t)
 #'
 #' # generate input files for pyrate
-#' pyrate.input(f)
-#' pyrate.input(f, python = TRUE)
+#' fossils.to.pyrate(f)
+#' fossils.to.pyrate(f, python = TRUE)
 #'
 #' # add trait values
 #' traits = runif(length(f$sp))
-#' pyrate.input(f, traits = traits)
+#' fossils.to.pyrate(f, traits = traits)
 #'
 #' @export
 fossils.to.pyrate = function(fossils, python = FALSE, traits = NULL, cutoff = NULL, random = FALSE, min = NULL, print.extant = FALSE, file = ""){

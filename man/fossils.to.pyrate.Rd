@@ -2,7 +2,7 @@
 % Please edit documentation in R/conversions.R
 \name{fossils.to.pyrate}
 \alias{fossils.to.pyrate}
-\title{Generate input file for analysis using the program pyrate}
+\title{Generate output in the format used by the program pyrate}
 \usage{
 fossils.to.pyrate(fossils, python = FALSE, traits = NULL, cutoff = NULL,
   random = FALSE, min = NULL, print.extant = FALSE, file = "")
@@ -28,7 +28,7 @@ otherwise use the midpoint of this interval (default). Applicable only when \cod
 \item{file}{Output file name.}
 }
 \description{
-Generate input file for analysis using the program pyrate
+Generate output in the format used by the program pyrate
 }
 \examples{
 
@@ -55,11 +55,11 @@ f = sim.extant.samples(f, t, rho = 1)
 plot(f, t)
 
 # generate input files for pyrate
-pyrate.input(f)
-pyrate.input(f, python = TRUE)
+fossils.to.pyrate(f)
+fossils.to.pyrate(f, python = TRUE)
 
 # add trait values
 traits = runif(length(f$sp))
-pyrate.input(f, traits = traits)
+fossils.to.pyrate(f, traits = traits)
 
 }
