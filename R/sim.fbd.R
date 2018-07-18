@@ -57,7 +57,7 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 					h = f$hmin[j] - lineage.end # replaced f[j,1]
 
 					# replaced f[j,2]
-					tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
+					tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
 
 					f$edge = map_nodes(f$edge, tree, tmp) # replaced f[,2]
 
@@ -67,14 +67,14 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 			node.ages = n.ages(tree)
 			if( complete == FALSE )
 			{
-				fossil.tips = geiger::is.extinct(tree,tol=0.000001)
+				fossil.tips = is.extinct(tree,tol=0.000001)
 				extant.tips = tree$tip.label[!(tree$tip.label %in% fossil.tips)]
 
 				unsampled.tips = fossil.tips[!grepl("fossil",fossil.tips)]
 
 				if( frac < 1 )
 				{
-				  n = round(length(extant.tips) * frac)
+				  	n = round(length(extant.tips) * frac)
 					unsampled.tips <- c( unsampled.tips, extant.tips[!(extant.tips %in% sample(extant.tips, n))] )
 				}
 
@@ -153,7 +153,7 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
 				h = f$hmin[j] - lineage.end # replaced f[j,1]
 
 				# replaced f[j,2]
-				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
+				tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
 
 				f$edge = map_nodes(f$edge,tree,tmp) # replaced f[,2]
 
@@ -163,7 +163,7 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
 		node.ages = n.ages(tree)
 		if( complete == FALSE )
 		{
-			fossil.tips = geiger::is.extinct(tree,tol=0.000001)
+			fossil.tips = is.extinct(tree,tol=0.000001)
 
 			unsampled.tips = fossil.tips[!grepl("fossil",fossil.tips)]
 
@@ -228,7 +228,7 @@ sim.fbd.taxa <- function(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE
 				h = f$hmin[j] - lineage.end # replaced f[j,1]
 
 				# replaced f[j,2]
-				tmp = phytools::bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
+				tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
 
 				f$edge = map_nodes(f$edge,tree,tmp) # replaced f[,2]
 
@@ -239,7 +239,7 @@ sim.fbd.taxa <- function(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE
 
 		if( complete == FALSE )
 		{
-			fossil.tips = geiger::is.extinct(tree,tol=0.000001)
+			fossil.tips = is.extinct(tree,tol=0.000001)
 			extant.tips = tree$tip.label[!(tree$tip.label %in% fossil.tips)]
 
 			unsampled.tips = fossil.tips[!grepl("fossil",fossil.tips)]

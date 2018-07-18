@@ -34,7 +34,13 @@ print(SAt)
 print(SAt$complete)
 ```
 
-`SAtree` objects are also `phylo` objects and can still be used with all the functions compatible with that format.
+Note that the default plotting function for `SAtree` objects is `plot.asymmetric.tree` which plots a stratigraphic range representation of the tree and fossil samples, while assuming that all speciation events are asymmetric.
+
+```{r}
+plot(SAt)
+```
+
+To use a different plotting function, not that `SAtree` objects are also `phylo` objects and can still be used with all the plotting compatible with that format.
 ```{r}
 ape::plot.phylo(SAt)
 ```
