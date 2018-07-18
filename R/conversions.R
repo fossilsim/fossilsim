@@ -447,7 +447,7 @@ fossils.to.pyrate = function(fossils, python = TRUE, traits = NULL, cutoff = NUL
     cat(paste0("Excluding ", length(which(fossils$hmax - fossils$hmin > cutoff)), " occurrences based on cutoff...\n"))
     fossils = fossils[which(fossils$hmax - fossils$hmin < cutoff),]
     if(length(fossils$sp) < 1) stop("Number of specimens after cutoff must be > 0")
-    else if(exclude.extant.singletons && length(fossils[-which(fossils$hmin == fossils$hmax && fossils$hmin < tol),]$sp) < 1) stop("Number of specimens after cutoff must be > 0")
+    else if(exclude.extant.singletons && length(fossils[-which(fossils$hmin == fossils$hmax & fossils$hmin < tol),]$sp) < 1) stop("Number of specimens after cutoff must be > 0")
   }
 
   if(python){
@@ -520,7 +520,7 @@ fossils.to.pyrate = function(fossils, python = TRUE, traits = NULL, cutoff = NUL
       sp = unique(fossils$sp)[i]
       occs = fossils[which(fossils$sp == sp),]
       # identify extant lineages
-      if(any(occs$hmin == occs$hmax && occs$hmin < tol))
+      if(any( (occs$hmin - occs$hmax < tol) & occs$hmin < tol))
         status = "extant"
       else status = "extinct"
       if(!is.null(traits)) tr = traits$trait[which(traits$sp == sp)]
