@@ -40,7 +40,7 @@ The package provides a wide range of flexible models, including models of interv
 
 `FossilSim` is available on CRAN or the latest development version can be installed from [GitHub](http://github.com/) using the package `devtools`.
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, purl = FALSE}
 # to install the package via CRAN
 install.packages("FossilSim")
 
@@ -51,12 +51,12 @@ devtools::install_github("rachelwarnock/fossilsim")
 library(FossilSim)
 ```
 ```{r, echo = FALSE, results = "hide", message = FALSE}
-devtools::load_all()
+library(FossilSim)
 ```
 
 ### Package dependencies
 
-The installation above will automatically install the package dependencies, `ape`, `TreeSim` and `phytools`.
+The installation above will automatically install the package dependencies, `ape` and `TreeSim`.
 
 ### Calling functions from FossilSim and other packages
 
