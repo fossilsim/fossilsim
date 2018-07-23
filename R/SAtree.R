@@ -32,7 +32,8 @@ SAtree = function(tree, complete = TRUE) {
 #' plot(t2)
 #' @export
 SAtree.from.fossils = function(tree, fossils) {
-  if(length(fossils[,1])==0) return(tree)
+  tryCatch(
+  {if(length(fossils[,1])==0) return(tree)
 
   fossils$h = (fossils$hmin + fossils$hmax)/2
   fossils = fossils[order(fossils$sp, -fossils$h),]
@@ -111,5 +112,6 @@ SAtree.from.fossils = function(tree, fossils) {
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
 
-  SAtree(tree, TRUE)
+  SAtree(tree, TRUE)},
+  error = function(e) { print(e) })
 }

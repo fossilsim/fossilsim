@@ -39,32 +39,13 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 		{
 			t = trees[[i]]
 			f <- sim.fossils.poisson(tree = t, rate = psi)
+			
+			tree = SAtree.from.fossils(t,f)
 
-			f <- f[order(f$hmin, decreasing = TRUE),] # replaced f$h
-
-			num_fossils = length(f$edge) # replaced f[,2]
-
-			tree = t
-			origin = max(n.ages(tree)) + tree$root.edge
-			if(num_fossils > 0)
-			{
-				for(j in 1:num_fossils)
-				{
-					node.ages = n.ages(tree)
-					a = which(names(node.ages) == f$edge[j]) # replaced f[j,2]
-					lineage.end = node.ages[[a]]
-
-					h = f$hmin[j] - lineage.end # replaced f[j,1]
-
-					# replaced f[j,2]
-					tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
-
-					f$edge = map_nodes(f$edge, tree, tmp) # replaced f[,2]
-
-					tree = tmp
-				}
-			}
 			node.ages = n.ages(tree)
+
+			origin = max(n.ages(tree)) + tree$root.edge
+
 			if( complete == FALSE )
 			{
 				fossil.tips = is.extinct(tree,tol=0.000001)
@@ -136,31 +117,10 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
 
 		f <- sim.fossils.intervals(tree = t, interval.ages = horizons, rates = psi) # reordered
 
-		f <- f[order(f$hmin, decreasing = TRUE),] # replaced f$h
+		tree = SAtree.from.fossils(t,f)
 
-		num_fossils = length(f$edge) # # replaced f[,2]
-
-		tree = t
-		if(num_fossils > 0)
-		{
-			for(j in 1:num_fossils)
-			{
-				node.ages = n.ages(tree)
-
-				a = which(names(node.ages) == f$edge[j]) # replaced f[j,2]
-				lineage.end = node.ages[[a]]
-
-				h = f$hmin[j] - lineage.end # replaced f[j,1]
-
-				# replaced f[j,2]
-				tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
-
-				f$edge = map_nodes(f$edge,tree,tmp) # replaced f[,2]
-
-				tree = tmp
-			}
-		}
 		node.ages = n.ages(tree)
+		
 		if( complete == FALSE )
 		{
 			fossil.tips = is.extinct(tree,tol=0.000001)
@@ -210,32 +170,11 @@ sim.fbd.taxa <- function(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE
 		t = trees[[i]]
 		f <- sim.fossils.poisson(tree = t, rate = psi)
 
-		f <- f[order(f$hmin, decreasing = T),] # replaced f$h
+		tree = SAtree.from.fossils(t,f)
 
-		num_fossils = length(f$edge) # replaced f[,2]
-
-		tree = t
-		origin = max(n.ages(tree)) + tree$root.edge
-		if(num_fossils > 0)
-		{
-			for(j in 1:num_fossils)
-			{
-				node.ages = n.ages(tree)
-
-				a = which(names(node.ages) == f$edge[j]) # replaced f[j,2]
-				lineage.end = node.ages[[a]]
-
-				h = f$hmin[j] - lineage.end # replaced f[j,1]
-
-				# replaced f[j,2]
-				tmp = bind.tip(tree, paste("fossil",j), edge.length = 0.0, where = f$edge[j], position = h)
-
-				f$edge = map_nodes(f$edge,tree,tmp) # replaced f[,2]
-
-				tree = tmp
-			}
-		}
 		node.ages = n.ages(tree)
+
+		origin = max(node.ages) + tree$root.edge
 
 		if( complete == FALSE )
 		{
