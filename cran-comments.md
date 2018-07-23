@@ -1,3 +1,9 @@
+## Resubmission
+This is a resubmission. In this version I have:
+
+* Converted the DESCRIPTION title to title case.
+
+
 ## Test environments
 * local OS X install, R 3.5.1
 * win-builder (devel and release)
