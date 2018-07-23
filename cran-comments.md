@@ -2,7 +2,9 @@
 This is a resubmission. In this version I have:
 
 * Converted the DESCRIPTION title to title case.
+* Removed uncredited code
 
+There are no references associated with this package.
 
 ## Test environments
 * local OS X install, R 3.5.1
