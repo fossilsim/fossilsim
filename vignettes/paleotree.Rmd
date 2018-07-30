@@ -12,6 +12,7 @@ vignette: >
 ```{r setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 library(FossilSim)
+if(!require(paleotree)) knitr::opts_chunk$set(eval = FALSE)
 ```
 
 ## Compatibility with paleotree

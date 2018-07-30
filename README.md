@@ -34,7 +34,7 @@ plot(s, t, legend.position = "bottomright")
 ### For further information and examples see the package documentation
 
 ### Contributors
-Joëlle Barido-Sottani  
+Joelle Barido-Sottani  
 Walker Pett  
 Rachel Warnock 
 
