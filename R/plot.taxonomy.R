@@ -6,7 +6,7 @@
 #'
 #' @param x Taxonomy object.
 #' @param tree Phylo object.
-#' @param show.mode Indicate speciation mode. #TODO
+#' @param show.mode Indicate speciation mode.
 #' @param show.legend Add a legend for the symbols indicating different speciation modes.
 #' @param legend.position Position of the legend. Options include \code{"bottomleft"} (default), \code{"topleft"}, \code{"bottomright"}, \code{"topright"} or a vector of length 2 with x, y coordinates.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
