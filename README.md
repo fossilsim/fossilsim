@@ -40,7 +40,7 @@ The following vignettes are available via CRAN and provide detailed examples:
 * [Simulating fossils](https://cran.r-project.org/web/packages/FossilSim/vignettes/fossils.html)
 * [Simulating FBD trees](https://cran.r-project.org/web/packages/FossilSim/vignettes/simfbd.html)
 * [Exporting sampled ancestor trees](https://cran.r-project.org/web/packages/FossilSim/vignettes/SAtree.html)
-* [Conversion to paleotree format](https://cran.r-project.org/web/packages/FossilSim/vignettes/paleotree.html)
+* [Converting to paleotree format](https://cran.r-project.org/web/packages/FossilSim/vignettes/paleotree.html)
 
 ### For further information and examples see the package documentation
 

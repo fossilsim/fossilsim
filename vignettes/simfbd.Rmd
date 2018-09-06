@@ -4,7 +4,7 @@ author: "Walker Pett"
 date: "`r Sys.Date()`"
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{FossilSim}
+  %\VignetteIndexEntry{Simulating trees from the fossilized birth-death process}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

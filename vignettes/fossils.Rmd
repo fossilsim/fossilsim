@@ -6,7 +6,7 @@ output: rmarkdown::html_vignette
 bibliography: bibliography.bib
 csl: mee.csl
 vignette: >
-  %\VignetteIndexEntry{FossilSim}
+  %\VignetteIndexEntry{Simulating fossils}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
