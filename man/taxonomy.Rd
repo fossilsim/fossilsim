@@ -19,7 +19,7 @@ is.taxonomy(data)
 Create a taxonomy object relating species identity to a phylo object.
 }
 \details{
-The taxonomy object includes the following 7 fields for each edge in the corresponding phylo object:
+The taxonomy object includes the following 6 fields for each edge in the corresponding phylo object:
 \itemize{
 \item{\code{sp} true species identity label.
 If all species originated via budding or bifurcation this will always correspond to the terminal-most edge label (i.e. the youngest node) associated with each species.
@@ -36,7 +36,6 @@ If speciation mode is anagenetic the speciation time will be younger than the st
 If the corresponding edge is also the youngest edge associated with the species this value will equal the species end time.
 Unless the species end time coincides with an anagenetic speciation event, the species end time will match the end time of the corresponding edge.
 If the species end time coincides with an anagenetic speciation event, the speciation time will be older than the end time of the corresponding edge
-\item{\code{end} = end time of the corresponding \code{edge}} and/or end time of the species.
 \item{\code{mode} = speciation mode. "o" = origin or "r" = root (the edge/species that began the process).
 "b" = asymmetric or budding speciation. "s" = symmetric or bifurcating speciation. "a" = anagenetic speciation}
 }
