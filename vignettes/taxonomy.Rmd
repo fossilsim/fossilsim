@@ -6,7 +6,7 @@ output: rmarkdown::html_vignette
 bibliography: bibliography.bib
 csl: mee.csl
 vignette: >
-  %\VignetteIndexEntry{FossilSim}
+  %\VignetteIndexEntry{Simulating taxonomy}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 ```{r, echo = FALSE, results = "hide", message = FALSE}
-devtools::load_all()
+library(FossilSim)
 ```
 
 This vignette provides information about how the package stores and outputs information about species taxonomy via the `taxonomy` object and available options for simulating species taxonomy.

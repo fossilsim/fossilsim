@@ -1,10 +1,10 @@
 ---
-title: "Exporting to zero-edge format"
+title: "Exporting sampled ancestor trees"
 author: "Joelle Barido-Sottani"
 date: "`r Sys.Date()`"
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{FossilSim}
+  %\VignetteIndexEntry{Exporting sampled ancestor trees}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

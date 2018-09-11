@@ -14,7 +14,7 @@
 
 \item{tree}{Phylo object.}
 
-\item{show.mode}{Indicate speciation mode. #TODO}
+\item{show.mode}{Indicate speciation mode.}
 
 \item{show.legend}{Add a legend for the symbols indicating different speciation modes.}
 
