@@ -22,10 +22,10 @@ Objects produced by `FossilSim` contain all the information required by the `pal
 Converting from `paleotree` is done using the `paleotree.record.to.fossils` function, which returns a list of the corresponding `phylo`, `taxonomy` and `fossils` objects.
 
 ```{r}
-record = paleotree::simFossilRecord(p=0.1, q=0.1,r=0.1, nruns=1, nTotalTaxa=c(30,40),
-                                    nExtant=0, nSamp = c(5,25))
+record = paleotree::simFossilRecord(p = 0.1, q = 0.1, r = 0.1, nruns = 1, nTotalTaxa = c(30,40),
+                                    nExtant = 0, nSamp = c(5,25))
 
-converted_record = paleotree.record.to.fossils(record)
+converted_record = paleotree.record.to.fossils(record = record)
 converted_record
 ```
 
@@ -41,6 +41,6 @@ Similarly, converting from the `FossilSim` objects to `paleotree` format is done
 t = ape::rtree(6)
 f = sim.fossils.poisson(rate = 2, tree = t)
 
-converted_record = fossils.to.paleotree.record(f, tree = t)
+converted_record = fossils.to.paleotree.record(fossils = f, tree = t)
 converted_record
 ```
