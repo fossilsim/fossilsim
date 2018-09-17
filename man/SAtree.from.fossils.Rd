@@ -3,7 +3,8 @@
 \name{SAtree.from.fossils}
 \alias{SAtree.from.fossils}
 \title{Transforms a tree and fossils dataframe to a combined SA tree.
-Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.}
+Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
+Tip labels are set to "species id"_"index", where the most recent tip of a given species receives index 1 and indices increase towards the past.}
 \usage{
 SAtree.from.fossils(tree, fossils)
 }
@@ -18,6 +19,7 @@ A tree integrating the fossils.
 \description{
 Transforms a tree and fossils dataframe to a combined SA tree.
 Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
+Tip labels are set to "species id"_"index", where the most recent tip of a given species receives index 1 and indices increase towards the past.
 }
 \examples{
 # simulate tree

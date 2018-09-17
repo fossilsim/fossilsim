@@ -12,5 +12,5 @@ SAtree(tree, complete = TRUE)
 \item{complete}{Whether the tree is complete. Default TRUE. If the tree is not complete, then all fossil tips correspond to fossil samples, otherwise only sampled ancestors are considered samples.}
 }
 \description{
-Converts a phylo object to SAtree.
+Converts a phylo object to SAtree, without modification of tip labels.
 }
