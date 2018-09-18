@@ -127,7 +127,7 @@ This means even without setting the random number seed `sim.taxonomy` will alway
 `FossilSim` contains various options for plotting the package output.
 The `plot.taxonomy` function will produce a plot highlighting species taxonomy along with the corresponding bifurcating tree object.
 
-Note that R detects what type of object you are trying plot, in this case taxonomy, and will automatically call `plot.taxonomy` when you apply the function `plot` to an object of class `taxonomy`.
+Note that R detects what type of object you are trying to plot, in this case taxonomy, and will automatically call `plot.taxonomy` when you apply the function `plot` to an object of class `taxonomy`.
 Use `?plot.taxonomy` to view further options that can be used to change the appearance of the figure.
 
 ```{r}
