@@ -39,7 +39,6 @@ This vignette provides information about how the package stores and outputs info
 * [Lineage-dependent fossil recovery]
   * [The autocorrelated fossil recovery model]
   * [The independent fossil recovery model]
-  * [The innovative fossil recovery model]
   * [Environment and lineage-dependent fossil recovery]
 * [Extant species and tip sampling]
 
@@ -353,7 +352,7 @@ This is model is described in @Heath2014 and is equivalent to the autocorrelated
 # define the initial rate at the root or origin
 rate = 1 
 
-# simulate rates under the autocorrelated model (the default option)
+# simulate rates under the autocorrelated trait values model (the default option)
 rates = sim.trait.values(init = rate, tree = t, v = 0.01)
 # simulated rates
 rates
@@ -378,7 +377,7 @@ rate = 1
 # in this case an exponential with mean = 1
 dist = function() { rexp(1) }
 
-# simulate trait values under the independent model
+# simulate trait values under the independent trait values model
 rates = sim.trait.values(init = rate, tree = t, model = "independent", dist = dist)
 
 # simulate fossils
@@ -388,10 +387,9 @@ f = sim.fossils.poisson(tree = t, rate = rates)
 plot(f, tree = t)
 ```
 
-### The innovative fossil recovery model
-
-Under the `innovative` model changes in trait values are coincident with speciation events.
+The parameter `change.pr` is the probability that changes in trait values are coincident with speciation events.
 At each speciation event change occurs with probability `change.pr` and new values are drawn from any valid user-specified distribution `dist`.
+If `change.pr = 1` a change will occur at every speciation event and the model will be the same as above.
 
 ```{r}
 # define the initial value at the root or origin
@@ -404,8 +402,8 @@ dist = function() { rexp(1, 1/4) }
 # define the probability of the trait value changing at each speciation event
 change.pr = 0.5
 
-# simulate trait values under the innovative model
-rates = sim.trait.values(init = rate, tree = t, model = "innovative", dist = dist, change.pr = change.pr)
+# simulate trait values under the independent trait values model
+rates = sim.trait.values(init = rate, tree = t, model = "independent", dist = dist, change.pr = change.pr)
 
 # simulate fossils
 f = sim.fossils.poisson(tree = t, rate = rates)
