@@ -335,7 +335,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #'
 #' # simulate fossils with variable preservation across lineages
 #' dist = function() {runif(1)}
-#' PD = sim.trait.values(1, taxonomy = s, model = "innovative", dist = dist,
+#' PD = sim.trait.values(1, taxonomy = s, model = "independent", dist = dist,
 #'                      change.pr = 0.1)
 #' f = sim.fossils.environment(taxonomy = s, interval.ages = times,
 #'      proxy.data = wd, PD = PD, DT = 1, PA = 1)
