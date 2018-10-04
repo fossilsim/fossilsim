@@ -1,21 +1,24 @@
-#' Make a stratigraphic range plot from a tree object of class SAtree.
+#' Make an asymmetric stratigraphic range plot from a tree object of class phylo
 #'
-#' @param x SAtree to plot.
+#' @param x phylo object to plot.
 #' @param complete Plot unsampled species.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
 #'
 #' @examples
 #' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
-#' plot(tree, complete=TRUE)
+#' rangeplot.asymmetric(tree, complete=TRUE)
 #'
 #' @note
 #' This function assumes all speciation events are asymmetric.
 #' @export
-plot.SAtree <- function(x, complete = FALSE, ...){
-  if(!("SAtree" %in% class(x)) ){
-    if("phylo" %in% class(x)) x = SAtree(x)
-    else stop(paste('object "',class(x),'" is not of class "SAtree"',sep=""))
+rangeplot.asymmetric <- function(x, complete = FALSE, ...){
+  if("phylo" %in% class(x))
+  {
+    cc<-TRUE
+    if("SAtree" %in% class(x)) cc<-x$complete
+    x = SAtree(untangle(x), cc)
   }
+  else stop(paste('object "',class(x),'" is not of class "phylo"',sep=""))
 
   sa.labels <- x$tip.label[x$edge[which(x$edge.length == 0),2]]
 
@@ -122,16 +125,20 @@ plot.SAtree <- function(x, complete = FALSE, ...){
   # find the index distance between
   # each birth time and its parent
   anc_branch <- function(x) {
-    a <- which(bi > x)
-    i <- which(bi == x)
-    a <- a[a < i]
-    if( length(a) == 0 )
-      return(0)
-
-    i-max(a)
+    ret <- numeric(length(x))
+    for(i in 1:length(x))
+    {
+      a <- which(x > x[i])
+      a <- a[a < i]
+      if( length(a) == 0 )
+        ret[i]<-0
+      else
+        ret[i]<-i-max(a)
+    }
+    ret
   }
 
-  anc <- sapply(bi, anc_branch )
+  anc <- anc_branch(bi)
 
   y <- 1:num.species
 
@@ -155,7 +162,7 @@ plot.SAtree <- function(x, complete = FALSE, ...){
   if(complete == FALSE || length(i.u) == 0){
     bi <- bi.s
     di <- di.s
-    anc.s <- sapply(bi.s, anc_branch )
+    anc.s <- anc_branch(bi.s)
 
     y.s.new <- order(y.s)
 
@@ -170,7 +177,7 @@ plot.SAtree <- function(x, complete = FALSE, ...){
 
   # actually do the plotting
   # make empty plot
-  plot(x=NULL,y=NULL,type="n",xlim=c(max(bi),0),ylim=c(0,length(di)),axes=FALSE,xlab="",ylab="")
+  plot(x=NULL,y=NULL,type="n",xlim=c(max(bi),0),ylim=c(0,length(di)),axes=FALSE,xlab="",ylab="",...)
   par(lend=2)
 
   if( complete ){
@@ -179,7 +186,7 @@ plot.SAtree <- function(x, complete = FALSE, ...){
     # plot lineages with no sampled descendants
     segments(bi.u,y.u,di.u,y.u,lty=3)
   }
-   # plot bifurcations with sampled descendants
+  # plot bifurcations with sampled descendants
   segments(bi.s,y.s,bi.s,y.s-anc.s)
   # plot lineages with sampled descendants
   segments(bi.s,y.s,pdi.s,y.s)

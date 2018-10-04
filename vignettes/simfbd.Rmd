@@ -30,6 +30,12 @@ trees <- sim.fbd.taxa(n = 10, numbsim = 10, lambda = 3, mu = 2, psi = 2)
 plot(trees[[1]])
 ```
 
+A stratigraphic range representation of the tree and fossil samples can be plotted using the `rangeplot.asymmetric` function, which assumes that all speciation events are asymmetric.
+
+```{r}
+rangeplot.asymmetric(trees[[1]])
+```
+
 Note that when simulating a complete tree (`complete = TRUE`), tips in the resulting `SAtree` object represent extinction events, whereas they represent fossil sampling events in the tree without unsampled lineages (`complete = FALSE`).
 The `complete` field of resulting the `SAtree` object is set to the value of the `complete` function argument.
 
@@ -38,7 +44,7 @@ trees <- sim.fbd.taxa(n = 10, numbsim = 10, lambda = 3, mu = 2, psi = 2, complet
 
 print(trees[[1]]$complete)
 
-plot(trees[[1]])
+rangeplot.asymmetric(trees[[1]])
 ```
 
 ## Simulating trees from an episodic fossilized-birth death process
@@ -50,5 +56,5 @@ At the moment, this function assumes the sampling fraction of extant taxa (`frac
 ```{r}
 trees = sim.fbd.rateshift.taxa(n = 10, numbsim = 1, lambda = c(2,1), mu = c(0,0.3), psi = c(1,0.1), times = c(0.3))
 
-plot(trees[[1]])
+rangeplot.asymmetric(trees[[1]])
 ```

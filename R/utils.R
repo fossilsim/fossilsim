@@ -268,3 +268,14 @@ species.record.from.taxonomy = function(taxonomy) {
   spec$species.end = sapply(spec$sp, function(x) species.end(x, taxonomy))
   spec
 }
+
+# function 'untangles' (or attempts to untangle) a tree with crossing branches
+# adapted from phytools
+untangle<-function(tree){
+  if(!inherits(tree,"phylo")) stop("tree should be an object of class \"phylo\".")
+  obj<-attributes(tree)
+  tree<-if(length(tree$tip.label)>1) ape::read.tree(text=ape::write.tree(tree)) else tree
+  ii<-!names(obj)%in%names(attributes(tree))
+  attributes(tree)<-c(attributes(tree),obj[ii])
+  tree
+}

@@ -34,17 +34,6 @@ print(SAt)
 print(SAt$complete)
 ```
 
-Note that the default plotting function for `SAtree` objects is `plot.asymmetric.tree` which plots a stratigraphic range representation of the tree and fossil samples, while assuming that all speciation events are asymmetric.
-
-```{r}
-plot(SAt)
-```
-
-To use a different plotting function, not that `SAtree` objects are also `phylo` objects and can still be used with all the plotting compatible with that format.
-```{r}
-ape::plot.phylo(SAt)
-```
-
 ## Other useful functions
 
 Other functions are present in `FossilSim` to modify trees. 
@@ -52,14 +41,14 @@ Other functions are present in `FossilSim` to modify trees.
 
 ```{r}
 SAt_pruned = prune.fossils(tree = SAt)
-ape::plot.phylo(SAt_pruned)
+plot(SAt_pruned)
 ```
 
 `sampled.tree.from.combined` removes all unsampled lineages from the tree, and can optionally apply a sampling probability to extant samples, or keep only a specified list of extant samples.
 
 ```{r}
 SAt_sampled = sampled.tree.from.combined(tree = SAt)
-ape::plot.phylo(SAt_sampled)
+plot(SAt_sampled)
 ```
 
 These two functions can be applied to any object of type `phylo`, but are designed to work on trees which include fossil samples.
