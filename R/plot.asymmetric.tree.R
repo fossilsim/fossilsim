@@ -5,7 +5,7 @@
 #' @param ... Additional parameters to be passed to \code{plot.default}.
 #'
 #' @examples
-#' tree = sim.fbd.taxa(10,1,3,2,1,TRUE)[[1]]
+#' tree = sim.fbd.taxa(n = 10, numbsim = 1, lambda = 3, mu = 2, psi = 1, complete = TRUE)[[1]]
 #' rangeplot.asymmetric(tree, complete=TRUE)
 #'
 #' @note

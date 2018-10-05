@@ -225,12 +225,24 @@ count.fossils.binned = function(fossils, interval.ages){
 # Taxonomy functions
 ###########################################
 
-# find species start time in taxonomy obj
+#' Find a species' start (i.e speciation) time from a taxonomy object
+#'
+#' @param species Species id (as written in \code{taxonomy$sp}).
+#' @param taxonomy Taxonomy object.
+#' @return Start time.
+#'
+#' @export
 species.start = function(species, taxonomy){
   max(taxonomy$start[which(taxonomy$sp == species)])
 }
 
-# find species end time in taxonomy obj
+#' Find a species' end (i.e extinction) time from a taxonomy object
+#'
+#' @param species Species id (as written in \code{taxonomy$sp}).
+#' @param taxonomy Taxonomy object.
+#' @return End time.
+#'
+#' @export
 species.end = function(species, taxonomy){
   min(taxonomy$end[which(taxonomy$sp == species)])
 }

@@ -6,7 +6,8 @@
 \usage{
 sim.fossils.environment(tree = NULL, taxonomy = NULL,
   interval.ages = NULL, max.age = NULL, strata = NULL,
-  proxy.data = NULL, PD = 0.5, DT = 0.5, PA = 0.5, root.edge = TRUE)
+  proxy.data = NULL, PD = 0.5, DT = 0.5, PA = 0.5,
+  root.edge = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
