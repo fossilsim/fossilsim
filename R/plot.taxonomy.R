@@ -254,8 +254,11 @@ plot.taxonomy = function(x, tree, show.mode = TRUE, show.legend = TRUE, legend.p
       }
     }
     # legend
-    if(show.legend)
-      legend(legend.position, legend=c("Budding", "Bifurcation", "Anagenesis"), pch = c(15, 16, 17))
+    if(show.legend) {
+      x = legend.position[1]
+      y = if(length(legend.position) > 1) legend.position[2] else NULL
+      legend(x = x, y = y, legend=c("Budding", "Bifurcation", "Anagenesis"), pch = c(15, 16, 17))
+    }
   }
   par(old.par)
   L <- list(type = type, use.edge.length = TRUE,
