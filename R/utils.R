@@ -25,7 +25,7 @@ tree.max = function(tree, root.edge = TRUE){
   return(ba)
 }
 
-# Function to calculate node ages of a non-ultrametric tree using the TreeSim function getx
+# Function to calculate node ages of a non-ultrametric tree
 n.ages <- function(tree){
 
   depth = ape::node.depth.edgelength(tree)

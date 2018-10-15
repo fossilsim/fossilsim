@@ -5,9 +5,9 @@
 \title{Plot simulated taxonomy}
 \usage{
 \method{plot}{taxonomy}(x, tree, show.mode = TRUE, show.legend = TRUE,
-  legend.position = "bottomleft", root.edge = TRUE,
-  hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE,
-  align.tip.label = FALSE, cex = 1.2, ...)
+  legend.position = "bottomleft", root.edge = TRUE, hide.edge = FALSE,
+  edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
+  cex = 1.2, ...)
 }
 \arguments{
 \item{x}{Taxonomy object.}
