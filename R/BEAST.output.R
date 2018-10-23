@@ -7,10 +7,10 @@
 #' taxon constraint on the root, this means that all fossil taxa will be sampled in the crown group, and never
 #' in a position below the root.
 #'
-#' @param tree an object of class "Phylo", representing the tree upon which the
+#' @param tree an object of class "phylo", representing the tree upon which the
 #'   fossil occurrences were simulated.
 #' @param fossils an object of class "fossils" that corresponds to fossil
-#'   occurrences for the "tree" argument
+#'   occurrences for the "tree" argument.
 #' @param file the name of the file to which the constraints will be written,
 #'   defaults to "BEASTconstraints.xml".
 #' @param complete logical, if TRUE then taxon constraints are built for the
@@ -308,13 +308,13 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
 #' resulting in a DPPDIV style analysis in which the extant topology is fixed
 #' and fossils can float in the tree.
 #'
-#' @param tree an object of class "Phylo", representing the tree upon which the
+#' @param tree an object of class "phylo", representing the tree upon which the
 #'   fossil occurrences were simulated.
 #' @param fossils an object of class "fossils" that corresponds to fossil
-#'   occurrences for the "tree" argument
+#'   occurrences for the "tree" argument.
 #' @param complete logical, if TRUE then the tree are built for the complete
 #'   tree, if FALSE then the tree is built for the crown clades only.
-#' @return a string representing the starting tree in newick format
+#' @return a string representing the starting tree in newick format.
 #' @export
 fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
 
@@ -374,25 +374,20 @@ fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
       aug_tree$edge.length <-
         rep(1, length(aug_tree$edge.length)) # remove brLens
     } else {
-      # if it is the origin, add the fossil outside the crown
+      # if it is the origin, the fossil needs to be added outside the crown
+      # this is not possible
+      stop("fossil is not a member of the crown group")
 
-      # aug_tree <-
-      #   suppressWarnings(phytools::bind.tip(
-      #     aug_tree,
-      #     tip.label = paste0("fossil_", i),
-      #     where = root(tree)
-      #   )) # place fossil there
-
-      crown <- prune.fossil.tips(tree) # get taxa that are outside of the crown
-      crown <- crown$tip.label
-      crownNode <- ape::getMRCA(tree, crown)
-      crownTax <- fetch.descendants(crownNode, tree)
-      stemTax <- setdiff(fetch.descendants(min(tree$edge[,1]), tree), crownTax)
-      placement <- sample(x = stemTax, size = 1)
-      aug_tree <- bind.to.tip(aug_tree, placement, paste0("fossil_", i))
-
-      aug_tree$edge.length <-
-        rep(1, length(aug_tree$edge.length)) # remove brLens
+      # crown <- prune.fossil.tips(tree) # get taxa that are outside of the crown
+      # crown <- crown$tip.label
+      # crownNode <- ape::getMRCA(tree, crown)
+      # crownTax <- fetch.descendants(crownNode, tree)
+      # stemTax <- setdiff(fetch.descendants(min(tree$edge[,1]), tree), crownTax)
+      # placement <- sample(x = stemTax, size = 1)
+      # aug_tree <- bind.to.tip(aug_tree, placement, paste0("fossil_", i))
+      #
+      # aug_tree$edge.length <-
+      #   rep(1, length(aug_tree$edge.length)) # remove brLens
     }
   }
   aug_tree$edge.length <-

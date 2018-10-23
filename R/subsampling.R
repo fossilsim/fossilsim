@@ -1,6 +1,6 @@
 #' Remove fossil lineages from a tree
 #'
-#' @param tree an object of class "Phylo"
+#' @param tree an object of class "Phylo".
 #'
 #' @return an object of class "Phylo". If fossil lineages were found in the tree
 #'   these will be pruned, if not then the original tree is returned.
@@ -23,7 +23,7 @@ prune.fossil.tips <- function(tree){
 
 #' Obtain the tips that define each node in a tree
 #'
-#' @param tree an object of class "Phylo"
+#' @param tree an object of class "Phylo".
 #'
 #' @return A list of vectors, with one entry for each node consisting of the tip labels
 #'   that define that node.
@@ -50,8 +50,8 @@ get.all.descs <- function(tree) {
 #' Remove fossil samples that occur in the stem
 #'
 #' @param fossils an object of class "fossils" that corresponds to fossil
-#'   occurrences for "tree"
-#' @param tree an object of class "Phylo"
+#'   occurrences for "tree".
+#' @param tree an object of class "Phylo".
 #'
 #' @return an object of class "fossils", containing only the fossil samples that
 #'   occur in the crown.
@@ -79,9 +79,9 @@ remove.stem.fossils <- function(fossils, tree) {
   return(fossils)
 }
 
-#' Remove stem lineages from a tree
+#' Remove stem lineages from a tree.
 #'
-#' @param tree an object of class "Phylo"
+#' @param tree an object of class "Phylo".
 #'
 #' @return an object of class "Phylo", if stem lineages were found in the tree
 #'   these will be pruned; if not then the original tree is returned.
@@ -104,7 +104,7 @@ remove.stem.lineages <- function(tree){
 }
 
 #' Place fossil samples from one tree in another tree, or find the ancestral
-#' node for each fossil sample in one tree
+#' node for each fossil sample in one tree.
 #'
 #' If "ext.tree" is not supplied, this function will find the direct ancestral
 #' node for each of the supplied fossil samples. If "ext.tree" is supplied, this
@@ -115,9 +115,9 @@ remove.stem.lineages <- function(tree){
 #' simulated. When "ext.tree" is supplied, any fossil samples appearing before
 #' the MRCA of the crown group are discarded.
 #'
-#' @param tree an object of class "Phylo"
+#' @param tree an object of class "Phylo".
 #' @param fossils an object of class "fossils" that corresponds to fossil
-#'   occurrences for the "tree" argument
+#'   occurrences for the "tree" argument.
 #' @param ext.tree an object of class "Phylo" representing the extant
 #'   countepart to "tree", this can be obtained with prune.fossil.tips(tree).
 #' @return a vector of node numbers corresponding to the direct ancestor of each
@@ -181,7 +181,7 @@ place.fossils <- function(tree, fossils, ext.tree) {
 }
 
 
-#' Obtain a uniform random sample of fossil occurrences
+#' Obtain a uniform random sample of fossil occurrences.
 #'
 #' @param fossils an object of class "fossils" that corresponds to fossil
 #'   occurrences.
@@ -205,7 +205,7 @@ subsample.fossils.uniform <- function(fossils, proportion) {
 }
 
 #' Obtain a subsample of fossil occurrences containing the oldest fossil sample
-#' in each node of the tree
+#' in each node of the tree.
 #'
 #' @param fossils an object of class "fossils" that corresponds to fossil
 #'   occurrences.
@@ -239,7 +239,7 @@ subsample.fossils.oldest <- function(fossils, tree, complete = TRUE){
 }
 
 #' Obtain a subsample of fossil occurrences containing the youngest fossil
-#' sample in each node of the tree
+#' sample in each node of the tree.
 #'
 #' @param fossils an object of class "fossils" that corresponds to fossil
 #'   occurrences.
@@ -273,7 +273,7 @@ subsample.fossils.youngest <- function(fossils, tree, complete = TRUE){
 }
 
 #' Obtain a subsample of fossil occurrences containing the oldest and youngest
-#' fossil sample for each clade of the tree
+#' fossil sample for each clade of the tree.
 #'
 #' @param fossils an object of class "fossils" that corresponds to fossil
 #'   occurrences.
