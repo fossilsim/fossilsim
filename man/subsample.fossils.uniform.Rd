@@ -2,7 +2,7 @@
 % Please edit documentation in R/subsampling.R
 \name{subsample.fossils.uniform}
 \alias{subsample.fossils.uniform}
-\title{Obtain a uniform random sample of fossil occurrences}
+\title{Obtain a uniform random sample of fossil occurrences.}
 \usage{
 subsample.fossils.uniform(fossils, proportion)
 }
@@ -18,5 +18,5 @@ an object of class "fossils" containing the subsampled fossil
   occurrences.
 }
 \description{
-Obtain a uniform random sample of fossil occurrences
+Obtain a uniform random sample of fossil occurrences.
 }

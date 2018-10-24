@@ -11,7 +11,7 @@ fossils.to.BEAST.constraints(fossils, tree,
 }
 \arguments{
 \item{fossils}{an object of class "fossils" that corresponds to fossil
-occurrences for the "tree" argument}
+occurrences for the "tree" argument.}
 
 \item{tree}{an object of class "Phylo", representing the tree upon which the
 fossil occurrences were simulated.}

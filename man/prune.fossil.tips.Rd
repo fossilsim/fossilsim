@@ -7,7 +7,7 @@
 prune.fossil.tips(tree)
 }
 \arguments{
-\item{tree}{an object of class "Phylo"}
+\item{tree}{an object of class "Phylo".}
 }
 \value{
 an object of class "Phylo". If fossil lineages were found in the tree

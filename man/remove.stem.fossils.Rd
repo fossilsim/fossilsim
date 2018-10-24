@@ -8,9 +8,9 @@ remove.stem.fossils(fossils, tree)
 }
 \arguments{
 \item{fossils}{an object of class "fossils" that corresponds to fossil
-occurrences for "tree"}
+occurrences for "tree".}
 
-\item{tree}{an object of class "Phylo"}
+\item{tree}{an object of class "Phylo".}
 }
 \value{
 an object of class "fossils", containing only the fossil samples that

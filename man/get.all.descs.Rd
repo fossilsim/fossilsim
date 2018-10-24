@@ -7,7 +7,7 @@
 get.all.descs(tree)
 }
 \arguments{
-\item{tree}{an object of class "Phylo"}
+\item{tree}{an object of class "Phylo".}
 }
 \value{
 A list of vectors, with one entry for each node consisting of the tip labels

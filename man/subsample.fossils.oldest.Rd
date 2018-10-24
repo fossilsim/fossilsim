@@ -3,7 +3,7 @@
 \name{subsample.fossils.oldest}
 \alias{subsample.fossils.oldest}
 \title{Obtain a subsample of fossil occurrences containing the oldest fossil sample
-in each node of the tree}
+in each node of the tree.}
 \usage{
 subsample.fossils.oldest(fossils, tree, complete = TRUE)
 }
@@ -24,5 +24,5 @@ an object of class "fossils" containing the subsampled fossil
 }
 \description{
 Obtain a subsample of fossil occurrences containing the oldest fossil sample
-in each node of the tree
+in each node of the tree.
 }

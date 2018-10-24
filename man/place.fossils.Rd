@@ -3,15 +3,15 @@
 \name{place.fossils}
 \alias{place.fossils}
 \title{Place fossil samples from one tree in another tree, or find the ancestral
-node for each fossil sample in one tree}
+node for each fossil sample in one tree.}
 \usage{
 place.fossils(tree, fossils, ext.tree)
 }
 \arguments{
-\item{tree}{an object of class "Phylo"}
+\item{tree}{an object of class "Phylo".}
 
 \item{fossils}{an object of class "fossils" that corresponds to fossil
-occurrences for the "tree" argument}
+occurrences for the "tree" argument.}
 
 \item{ext.tree}{an object of class "Phylo" representing the extant
 countepart to "tree", this can be obtained with prune.fossil.tips(tree).}

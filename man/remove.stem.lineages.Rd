@@ -2,17 +2,17 @@
 % Please edit documentation in R/subsampling.R
 \name{remove.stem.lineages}
 \alias{remove.stem.lineages}
-\title{Remove stem lineages from a tree}
+\title{Remove stem lineages from a tree.}
 \usage{
 remove.stem.lineages(tree)
 }
 \arguments{
-\item{tree}{an object of class "Phylo"}
+\item{tree}{an object of class "Phylo".}
 }
 \value{
 an object of class "Phylo", if stem lineages were found in the tree
   these will be pruned; if not then the original tree is returned.
 }
 \description{
-Remove stem lineages from a tree
+Remove stem lineages from a tree.
 }

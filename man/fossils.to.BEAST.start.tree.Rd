@@ -11,13 +11,13 @@ fossils.to.BEAST.start.tree(tree, fossils, complete = FALSE)
 fossil occurrences were simulated.}
 
 \item{fossils}{an object of class "fossils" that corresponds to fossil
-occurrences for the "tree" argument}
+occurrences for the "tree" argument.}
 
 \item{complete}{logical, if TRUE then the tree are built for the complete
 tree, if FALSE then the tree is built for the crown clades only.}
 }
 \value{
-a string representing the starting tree in newick format
+a string representing the starting tree in newick format.
 }
 \description{
 If complete = FALSE, only the extant taxa are used to construct the tree,
