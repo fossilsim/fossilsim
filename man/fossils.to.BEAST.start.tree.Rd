@@ -7,7 +7,7 @@
 fossils.to.BEAST.start.tree(tree, fossils, complete = FALSE)
 }
 \arguments{
-\item{tree}{an object of class "Phylo", representing the tree upon which the
+\item{tree}{an object of class "phylo", representing the tree upon which the
 fossil occurrences were simulated.}
 
 \item{fossils}{an object of class "fossils" that corresponds to fossil
