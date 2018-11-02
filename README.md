@@ -5,7 +5,7 @@ R package for simulating fossil data on phylogenetic trees under mechanistic mod
 The latest version can be installed in R using the package devtools:
 
     library(devtools)
-    install_github("rachelwarnock/fossilsim")
+    install_github("fossilsim/fossilsim")
 
 ### Quick start
 
@@ -46,7 +46,8 @@ The following vignettes are available via CRAN and provide detailed examples:
 
 ### Contributors
 Joëlle Barido-Sottani  
-Walker Pett  
+Walker Pett
+Joseph O'Reilly  
 Rachel Warnock
 
 
