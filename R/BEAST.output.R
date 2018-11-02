@@ -37,8 +37,7 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
   if (complete) {
     anc <-
       place.fossils(tree = tree,
-                    fossils = fossils,
-                    ext.tree = tree)
+                    fossils = fossils)
   } else {
     # if the extant only tree is required
     ext.tree <- prune.fossil.tips(tree)
@@ -299,6 +298,7 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
       }
     }
   }
+  close(zz)
 
 }
 
@@ -320,6 +320,10 @@ fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
 
   if (any(fossils$sp == min(tree$edge[,1]))) {
     stop("Can't handle fossil samples on the root.edge")
+  }
+
+  if("root.edge" %in% names(tree)){ # if a root edge exists, remove its length
+    tree$root.edge <- NULL
   }
 
   # test for the branch lengths

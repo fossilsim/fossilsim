@@ -13,7 +13,7 @@ fossils.to.BEAST.constraints(fossils, tree,
 \item{fossils}{an object of class "fossils" that corresponds to fossil
 occurrences for the "tree" argument.}
 
-\item{tree}{an object of class "Phylo", representing the tree upon which the
+\item{tree}{an object of class "phylo", representing the tree upon which the
 fossil occurrences were simulated.}
 
 \item{file}{the name of the file to which the constraints will be written,

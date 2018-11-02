@@ -273,7 +273,7 @@ subsample.fossils.youngest <- function(fossils, tree, complete = TRUE){
 }
 
 #' Obtain a subsample of fossil occurrences containing the oldest and youngest
-#' fossil sample for each clade of the tree.
+#' fossil sample found at each node of the tree.
 #'
 #' @param fossils an object of class "fossils" that corresponds to fossil
 #'   occurrences.
