@@ -119,7 +119,7 @@ remove.stem.lineages <- function(tree){
 #' @param fossils an object of class "fossils" that corresponds to fossil
 #'   occurrences for the "tree" argument.
 #' @param ext.tree an object of class "Phylo" representing the extant
-#'   countepart to "tree", this can be obtained with prune.fossil.tips(tree).
+#'   counterpart to "tree", this can be obtained with prune.fossil.tips(tree).
 #' @return a vector of node numbers corresponding to the direct ancestor of each
 #'   fossil sample in "fossils".
 #' @export

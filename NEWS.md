@@ -6,7 +6,7 @@
 * The new functions ``subsample.fossils.oldest``, ``subsample.fossils.oldest.and.youngest``, ``subsample.fossils.uniform`` and ``subsample.fossils.youngest`` can be used to subsample fossil occurrences.
 
 #### Function changes
-* The innovative rates models has been integrated into the independent model in the function ``sim.trait.values``. Parameters are unchanged.
+* The innovative rates model has been integrated into the independent model in the function ``sim.trait.values``. Parameters are unchanged.
 * The asymmetric plot function has been renamed ``rangeplot.asymmetric`` and separated from the ``SAtree`` objects.
 
 #### Bugfixes
