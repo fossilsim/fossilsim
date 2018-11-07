@@ -14,7 +14,7 @@ place.fossils(tree, fossils, ext.tree)
 occurrences for the "tree" argument.}
 
 \item{ext.tree}{an object of class "Phylo" representing the extant
-countepart to "tree", this can be obtained with prune.fossil.tips(tree).}
+counterpart to "tree", this can be obtained with prune.fossil.tips(tree).}
 }
 \value{
 a vector of node numbers corresponding to the direct ancestor of each

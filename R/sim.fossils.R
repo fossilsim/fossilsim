@@ -284,6 +284,11 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' \emph{PA} is the probability of sampling an occurrence at this depth.
 #' \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation.
 #' Although here fossil recovery is described with respect to water depth, the model could be applied in the context of any environmental gradient. \cr \cr
+#' The model returns a probability of collecting a fossil within a given interval, rather than a rate.
+#' To simulate discrete fossil sampling evernts and times within each interval we need to convert the probability into a rate
+#' (\code{use.rates = TRUE}). This is done using the formula \deqn{rate = -ln(1 - P(collection)/t) } where \emph{t} is inteval length.
+#' One caveat of this approach is that the model can return a return a probability of 1, which will result in a rate = infinity.
+#' In this instance we use an approximation for probabilities = 1 (e.g. \code{pr.1.approx = 0.999}). \cr \cr
 #' Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
 #' maximum interval age (\code{max.age}) and the number of intervals (\code{strata}), where interval length \eqn{= max.age/strata}. \cr \cr
 #' A vector of values can be specified for the model parameters \emph{PA}, \emph{PD} and \emph{DT} to allow for variation across lineages.
@@ -293,6 +298,8 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' Fossils can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 #' If both are specified, the function uses taxonomy.
 #' If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
+#'
+#' The model returns
 #'
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
@@ -304,6 +311,8 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 #' @param DT Depth tolerance parameter value or a vector of values.
 #' @param PA Peak abundance parameter value or a vector of values.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
+#' @param use.rates If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.
+#' @param pr.1.approx Value used to approximate sampling probabilities = 1 when use.rates = TRUE.
 #'
 #' @return An object of class fossils, where \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval.
 #'
@@ -347,7 +356,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 sim.fossils.environment = function(tree = NULL, taxonomy = NULL,
                                       interval.ages = NULL, max.age = NULL, strata = NULL,
                                       proxy.data = NULL, PD = 0.5, DT = 0.5, PA = 0.5,
-                                      root.edge = TRUE){
+                                      root.edge = TRUE, use.rates = FALSE, pr.1.approx = 0.999){
 
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
@@ -417,6 +426,15 @@ sim.fossils.environment = function(tree = NULL, taxonomy = NULL,
   # calculate per interval per species probabilities
   probabilities = sapply(proxy.data, function(x) {PA * exp( (-(x-PD)**2) / (2 * (DT ** 2)) )})
 
+  # calculate per interval per species rates
+  if(use.rates){
+    s = sapply(1:length(interval.ages[-1]), function(x) { interval.ages[x+1] - interval.ages[x] })
+    if(any(probabilities >= 1)){
+      probabilities[which(probabilities >= 1)] = pr.1.approx
+    }
+    rates = -log(1-probabilities)/s
+  }
+
   fdf = fossils()
 
   lineages = unique(taxonomy$sp)
@@ -438,17 +456,27 @@ sim.fossils.environment = function(tree = NULL, taxonomy = NULL,
       min.time = max(end, interval.ages[j])
       max.time = min(start, interval.ages[j+1])
 
-      # scale the probability
-      pr = probabilities[i, j] * (max.time - min.time)/(interval.ages[j+1] - interval.ages[j])
-      # assign fossils to edges
-      ages = runif(1, min.time, max.time)
-      edge = sapply(ages, function(x) edges$edge[which(edges$start > x & edges$end < x)])
-      # if random.number < pr { record fossil as collected during interval }
-      if (runif(1) <= pr) {
-        # use interval ages
-        min.time = interval.ages[j]
-        max.time = interval.ages[j+1]
-        fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+      if(use.rates) {
+        # generate k fossils from a poisson distribution
+        k = rpois(1, rates[i, j]*(max.time - min.time))
+        ages = runif(k, min.time, max.time)
+        edge = sapply(ages, function(x) edges$edge[which(edges$start > x & edges$end < x)])
+        if(k > 0)
+            fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, hmin = ages, hmax = ages, stringsAsFactors = F))
+      }
+      else{
+        # scale the probability
+        pr = probabilities[i, j] * (max.time - min.time)/(interval.ages[j+1] - interval.ages[j])
+        # assign fossils to edges
+        ages = runif(1, min.time, max.time)
+        edge = sapply(ages, function(x) edges$edge[which(edges$start > x & edges$end < x)])
+        # if random.number < pr { record fossil as collected during interval }
+        if (runif(1) <= pr) {
+            # use interval ages
+            min.time = interval.ages[j]
+            max.time = interval.ages[j+1]
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+        }
       }
     }
   }
