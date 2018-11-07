@@ -46,11 +46,13 @@ where \emph{PA} is species peak abundance, \emph{PD} is preferred depth, \emph{D
 \emph{PA} is the probability of sampling an occurrence at this depth.
 \emph{DT} is the potential of a species to be found at a range of depths and is equivalent to the standard deviation.
 Although here fossil recovery is described with respect to water depth, the model could be applied in the context of any environmental gradient. \cr \cr
-The model returns a probability of collecting a fossil within a given interval, rather than a rate.
-To simulate discrete fossil sampling evernts and times within each interval we need to convert the probability into a rate
-(\code{use.rates = TRUE}). This is done using the formula \deqn{rate = -ln(1 - P(collection)/t) } where \emph{t} is inteval length.
-One caveat of this approach is that the model can return a return a probability of 1, which will result in a rate = infinity.
+The model uses a probability of collecting a fossil within a given interval, rather than a rate.
+
+To simulate discrete fossil sampling events and times within each interval we need to convert the probability into a rate
+(\code{use.rates = TRUE}). This is done using the formula \deqn{rate = -ln(1 - P(collection)/t) } where \emph{t} is the interval length.
+One caveat of this approach is that the model cannot use a probability of 1, as it would correspond to rate = infinity.
 In this instance we use an approximation for probabilities = 1 (e.g. \code{pr.1.approx = 0.999}). \cr \cr
+
 Non-uniform interval ages can be specified as a vector (\code{interval.ages}) or a uniform set of interval ages can be specified using
 maximum interval age (\code{max.age}) and the number of intervals (\code{strata}), where interval length \eqn{= max.age/strata}. \cr \cr
 A vector of values can be specified for the model parameters \emph{PA}, \emph{PD} and \emph{DT} to allow for variation across lineages.
@@ -60,8 +62,6 @@ If the tree object has a root edge (\code{root.edge}), the first entry in the ve
 Fossils can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 If both are specified, the function uses taxonomy.
 If no taxonomic information is provided, the function assumes all speciation is symmetric (i.e. bifurcating, \code{beta = 1}).
-
-The model returns
 }
 \examples{
 # simulate tree
