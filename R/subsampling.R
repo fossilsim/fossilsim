@@ -29,21 +29,25 @@ prune.fossil.tips <- function(tree){
 #'   that define that node.
 #' @export
 #'
-get.all.descs <- function(tree) {
-  descs <-
-    function(tree, node) {
-      # function to get descendents from single node
-      return(fetch.descendants(edge = node, tree = tree))
-      # return(tree$tip.label[phangorn::Descendants(tree, node = node, "tips")[[1]]])
+get.tip.descs <- function(tree) {
+  ntips = length(tree$tip.label)
+  all_descs <- vector("list", ntips + tree$Nnode)
+  
+  descs <- function(tree, node, all_descs) {
+      descendants = tree$edge[which(tree$edge[,1]==node),2]
+      if(length(descendants) == 0) all_descs[[node]] = tree$tip.label[node]
+      
+      for(d in descendants) {
+        all_descs = descs(tree, d, all_descs)
+        all_descs[[node]] = c(all_descs[[node]], all_descs[[d]])
+      }
+      
+      all_descs
     }
-
-  nodes <- unique(tree$edge[, 1])
-  all_descs <- list()
-  for (i in 1:length(nodes)) {
-    all_descs[[i]] <- descs(tree, nodes[i])
-  }
-
-  names(all_descs) <- nodes
+  
+  all_descs = descs(tree, ntips + 1, all_descs)
+  all_descs = all_descs[(ntips + 1):(ntips + tree$Nnode)]
+  names(all_descs) <- (ntips + 1):(ntips + tree$Nnode)
   return(all_descs)
 }
 
@@ -73,7 +77,7 @@ remove.stem.fossils <- function(fossils, tree) {
   remove <- which(fossils$sp %in% stem)
   if (length(remove > 0)) {
     fossils <- fossils[-remove, ]
-    row.names(fossils) <- as.character(c(1:length(fossils$sp)))
+    if(length(fossils$sp) > 0) row.names(fossils) <- as.character(c(1:length(fossils$sp)))
   }
 
   return(fossils)
@@ -148,7 +152,7 @@ place.fossils <- function(tree, fossils, ext.tree) {
   }
 
   # Get the nodes that are suitable to fit fossils to
-  d <- get.all.descs(ext.tree)
+  d <- get.tip.descs(ext.tree)
   nodes <- c()
   for (i in 1:length(d)) {
     nodes[i] <- ape::getMRCA(tree, d[[i]])
@@ -167,13 +171,15 @@ place.fossils <- function(tree, fossils, ext.tree) {
     hit <- min(which(a %in% nodes))
     output_nodes[i] <- a[hit]
   }
+  
   # Now find the comparable node in the second tree
+  descs = get.tip.descs(tree)
   for (i in 1:length(output_nodes)) {
     #tmp <- tree$tip.label[phangorn::Descendants(tree,
     #        output_nodes[i])[[1]]][tree$tip.label[phangorn::Descendants(tree,
     #          output_nodes[i])[[1]]] %in% ext.tree$tip.label]
-    tmp <-
-      tree$tip.label[which(tree$tip.label %in% fetch.descendants(edge = output_nodes[i], tree = tree))][tree$tip.label[which(tree$tip.label %in% fetch.descendants(edge = output_nodes[i], tree = tree))] %in% ext.tree$tip.label]
+    tmp_tips = which(tree$tip.label %in% descs[[as.character(output_nodes[i])]])
+    tmp <- tree$tip.label[tmp_tips][tree$tip.label[tmp_tips] %in% ext.tree$tip.label]
 
     output_nodes[i] <- ape::getMRCA(ext.tree, tmp)
   }
