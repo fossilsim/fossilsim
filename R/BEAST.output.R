@@ -18,6 +18,10 @@
 #'   only. Default value is FALSE.
 #' @param tree.name the name of the tree as used in the BEAST2 xml format.
 #' @return NULL.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+#' fossils.to.BEAST.constraints(f, t, complete = TRUE)
 #' @export
 fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints.xml", complete = FALSE, tree.name = "beastTree"){
 
@@ -315,6 +319,10 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
 #' @param complete logical, if TRUE then the tree are built for the complete
 #'   tree, if FALSE then the tree is built for the crown clades only.
 #' @return a string representing the starting tree in newick format.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+#' fossils.to.BEAST.start.tree(t,f, complete = FALSE)
 #' @export
 fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
 

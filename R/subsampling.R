@@ -4,6 +4,9 @@
 #'
 #' @return an object of class "Phylo". If fossil lineages were found in the tree
 #'   these will be pruned, if not then the original tree is returned.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' prune.fossil.tips(t)
 #' @export
 #'
 prune.fossil.tips <- function(tree){
@@ -27,24 +30,27 @@ prune.fossil.tips <- function(tree){
 #'
 #' @return A list of vectors, with one entry for each node consisting of the tip labels
 #'   that define that node.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' get.tip.descs(t)
 #' @export
 #'
 get.tip.descs <- function(tree) {
   ntips = length(tree$tip.label)
   all_descs <- vector("list", ntips + tree$Nnode)
-  
+
   descs <- function(tree, node, all_descs) {
       descendants = tree$edge[which(tree$edge[,1]==node),2]
       if(length(descendants) == 0) all_descs[[node]] = tree$tip.label[node]
-      
+
       for(d in descendants) {
         all_descs = descs(tree, d, all_descs)
         all_descs[[node]] = c(all_descs[[node]], all_descs[[d]])
       }
-      
+
       all_descs
     }
-  
+
   all_descs = descs(tree, ntips + 1, all_descs)
   all_descs = all_descs[(ntips + 1):(ntips + tree$Nnode)]
   names(all_descs) <- (ntips + 1):(ntips + tree$Nnode)
@@ -59,6 +65,10 @@ get.tip.descs <- function(tree) {
 #'
 #' @return an object of class "fossils", containing only the fossil samples that
 #'   occur in the crown.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+#' remove.stem.fossils(f, t)
 #' @export
 #'
 remove.stem.fossils <- function(fossils, tree) {
@@ -89,6 +99,9 @@ remove.stem.fossils <- function(fossils, tree) {
 #'
 #' @return an object of class "Phylo", if stem lineages were found in the tree
 #'   these will be pruned; if not then the original tree is returned.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' remove.stem.lineages(t)
 #' @export
 #'
 remove.stem.lineages <- function(tree){
@@ -126,6 +139,10 @@ remove.stem.lineages <- function(tree){
 #'   counterpart to "tree", this can be obtained with prune.fossil.tips(tree).
 #' @return a vector of node numbers corresponding to the direct ancestor of each
 #'   fossil sample in "fossils".
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+#' place.fossils(t,f)
 #' @export
 #'
 place.fossils <- function(tree, fossils, ext.tree) {
@@ -171,7 +188,7 @@ place.fossils <- function(tree, fossils, ext.tree) {
     hit <- min(which(a %in% nodes))
     output_nodes[i] <- a[hit]
   }
-  
+
   # Now find the comparable node in the second tree
   descs = get.tip.descs(tree)
   for (i in 1:length(output_nodes)) {
@@ -195,6 +212,10 @@ place.fossils <- function(tree, fossils, ext.tree) {
 #'   subsample.
 #' @return an object of class "fossils" containing the subsampled fossil
 #'   occurrences.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+#' subsample.fossils.uniform(f, 0.5)
 #' @export
 #'
 subsample.fossils.uniform <- function(fossils, proportion) {
@@ -222,6 +243,10 @@ subsample.fossils.uniform <- function(fossils, proportion) {
 #'   the extant only counterpart tree is returned.
 #' @return an object of class "fossils" containing the subsampled fossil
 #'   occurrences.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+#' subsample.fossils.oldest(f, t, complete = FALSE)
 #' @export
 #'
 subsample.fossils.oldest <- function(fossils, tree, complete = TRUE){
@@ -256,6 +281,10 @@ subsample.fossils.oldest <- function(fossils, tree, complete = TRUE){
 #'   the extant only counterpart tree is returned.
 #' @return an object of class "fossils" containing the subsampled fossil
 #'   occurrences.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+#' subsample.fossils.youngest(f, t, complete = FALSE)
 #' @export
 #'
 subsample.fossils.youngest <- function(fossils, tree, complete = TRUE){
@@ -290,6 +319,10 @@ subsample.fossils.youngest <- function(fossils, tree, complete = TRUE){
 #'   sample from each clade in the extant only counterpart tree is returned.
 #' @return an object of class "fossils" containing the subsampled fossil
 #'   occurrences.
+#' @examples
+#' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+#' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+#' subsample.fossils.oldest.and.youngest(f, t, complete = FALSE)
 #' @export
 subsample.fossils.oldest.and.youngest <- function(fossils, tree, complete = TRUE){
   if (!complete) {
