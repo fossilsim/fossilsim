@@ -16,3 +16,7 @@ A list of vectors, with one entry for each node consisting of the tip labels
 \description{
 Obtain the tips that define each node in a tree
 }
+\examples{
+t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+get.tip.descs(t)
+}

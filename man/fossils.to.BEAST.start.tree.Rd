@@ -24,3 +24,8 @@ If complete = FALSE, only the extant taxa are used to construct the tree,
 resulting in a DPPDIV style analysis in which the extant topology is fixed
 and fossils can float in the tree.
 }
+\examples{
+t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+fossils.to.BEAST.start.tree(t,f, complete = FALSE)
+}

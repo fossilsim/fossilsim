@@ -19,3 +19,8 @@ an object of class "fossils", containing only the fossil samples that
 \description{
 Remove fossil samples that occur in the stem
 }
+\examples{
+t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+remove.stem.fossils(f, t)
+}

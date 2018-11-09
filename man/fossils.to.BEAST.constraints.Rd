@@ -35,3 +35,8 @@ topology is fixed and fossils can float in the tree. The resulting output uses t
 taxon constraint on the root, this means that all fossil taxa will be sampled in the crown group, and never
 in a position below the root.
 }
+\examples{
+t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+fossils.to.BEAST.constraints(f, t, complete = TRUE)
+}

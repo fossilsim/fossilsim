@@ -26,3 +26,8 @@ an object of class "fossils" containing the subsampled fossil
 Obtain a subsample of fossil occurrences containing the youngest fossil
 sample in each node of the tree.
 }
+\examples{
+t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+subsample.fossils.youngest(f, t, complete = FALSE)
+}

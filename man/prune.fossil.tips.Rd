@@ -16,3 +16,7 @@ an object of class "Phylo". If fossil lineages were found in the tree
 \description{
 Remove fossil lineages from a tree
 }
+\examples{
+t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+prune.fossil.tips(t)
+}

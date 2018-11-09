@@ -35,12 +35,12 @@ plot(s, t, legend.position = "bottomright")
 
 The following vignettes are available via CRAN and provide detailed examples:
 
-* [General introduction to the package](https://cran.r-project.org/web/packages/FossilSim/vignettes/intro.html)
-* [Simulating taxonomy](https://cran.r-project.org/web/packages/FossilSim/vignettes/taxonomy.html)
-* [Simulating fossils](https://cran.r-project.org/web/packages/FossilSim/vignettes/fossils.html)
-* [Simulating FBD trees](https://cran.r-project.org/web/packages/FossilSim/vignettes/simfbd.html)
-* [Exporting sampled ancestor trees](https://cran.r-project.org/web/packages/FossilSim/vignettes/SAtree.html)
-* [Converting to paleotree format](https://cran.r-project.org/web/packages/FossilSim/vignettes/paleotree.html)
+* [General introduction to the package](https://CRAN.R-project.org/package=FossilSim/vignettes/intro.html)
+* [Simulating taxonomy](https://CRAN.R-project.org/package=FossilSim/vignettes/taxonomy.html)
+* [Simulating fossils](https://CRAN.R-project.org/package=FossilSim/vignettes/fossils.html)
+* [Simulating FBD trees](https://CRAN.R-project.org/package=FossilSim/vignettes/simfbd.html)
+* [Exporting sampled ancestor trees](https://CRAN.R-project.org/package=FossilSim/vignettes/SAtree.html)
+* [Converting to paleotree format](https://CRAN.R-project.org/package=FossilSim/vignettes/paleotree.html)
 
 ### For further information and examples see the package documentation
 

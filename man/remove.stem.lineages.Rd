@@ -16,3 +16,7 @@ an object of class "Phylo", if stem lineages were found in the tree
 \description{
 Remove stem lineages from a tree.
 }
+\examples{
+t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+remove.stem.lineages(t)
+}

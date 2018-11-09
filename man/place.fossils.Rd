@@ -30,3 +30,8 @@ samples being placed in the crown clades of the tree upon which they were
 simulated. When "ext.tree" is supplied, any fossil samples appearing before
 the MRCA of the crown group are discarded.
 }
+\examples{
+t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
+f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
+place.fossils(t,f)
+}
