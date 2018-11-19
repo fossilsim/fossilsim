@@ -39,7 +39,7 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 		{
 			t = trees[[i]]
 			f <- sim.fossils.poisson(tree = t, rate = psi)
-			
+
 			tree = SAtree.from.fossils(t,f)
 
 			node.ages = n.ages(tree)
@@ -108,7 +108,7 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
 	if(length(psi) != (length(times) + 1 ))
     	stop("Length mismatch between interval ages and sampling rates")
 
-	trees = TreeSim::sim.rateshift.taxa(n, numbsim, lambda, mu, 1, times, complete = TRUE)
+	trees = TreeSim::sim.rateshift.taxa(n, numbsim, lambda, mu, rep(1, length(times)), times, complete = TRUE)
 
 	for(i in 1:length(trees))
 	{
@@ -122,7 +122,7 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
 		tree = SAtree.from.fossils(t,f)
 
 		node.ages = n.ages(tree)
-		
+
 		if( complete == FALSE )
 		{
 			fossil.tips = is.extinct(tree,tol=0.000001)
