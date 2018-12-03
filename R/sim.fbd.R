@@ -88,15 +88,11 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 #' is the fossil sampling rate prior (ancestral) to time times[i].
 #' @param times Vector of mass extinction and rate shift times.
 #' Time is 0 today and increasing going backwards in time. Specify the vector as times[i]
-#' @param complete If TRUE, the tree including the extinct lineages and
-#' non-sampled lineages is returned (so the tree has
-#' round(n/frac[1]) extant tips). If FALSE, the extinct lineages
-#' and non-sampled lineages are suppressed.
 #' @return List of numbsim simulated SAtrees with n extant sampled tips.
 #' @examples
 #' n = 10
 #' numbsim = 1
-#' sim.fbd.rateshift.taxa(n,numbsim, lambda = c(2,1), mu = c(0,0.3), psi = c(1,0.1), times = c(0.3))
+#' sim.fbd.rateshift.taxa(n, numbsim, lambda = c(2,1), mu = c(0,0.3), psi = c(1,0.1), times = c(0.3))
 #' @keywords fossilized birth death
 #' @export
 sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete = FALSE)
