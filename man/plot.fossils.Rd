@@ -5,14 +5,13 @@
 \title{Plot simulated fossils}
 \usage{
 \method{plot}{fossils}(x, tree, show.fossils = TRUE, show.tree = TRUE,
-  show.ranges = FALSE, show.strata = FALSE, strata = 1,
-  max.age = NULL, interval.ages = NULL, binned = FALSE,
-  show.axis = TRUE, show.proxy = FALSE, proxy.data = NULL,
-  show.preferred.environ = FALSE, preferred.environ = NULL,
-  show.taxonomy = FALSE, taxonomy = NULL, root.edge = TRUE,
-  hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE,
-  align.tip.label = FALSE, fossil.col = 1, range.col = rgb(0, 0, 1),
-  extant.col = NULL, cex = 1.2, pch = 18, ...)
+  show.ranges = FALSE, show.strata = FALSE, strata = 1, max.age = NULL,
+  interval.ages = NULL, binned = FALSE, show.axis = TRUE,
+  show.proxy = FALSE, proxy.data = NULL, show.preferred.environ = FALSE,
+  preferred.environ = NULL, show.taxonomy = FALSE, taxonomy = NULL,
+  root.edge = TRUE, hide.edge = FALSE, edge.width = 1,
+  show.tip.label = FALSE, align.tip.label = FALSE, fossil.col = 1,
+  range.col = rgb(0, 0, 1), extant.col = NULL, cex = 1.2, pch = 18, ...)
 }
 \arguments{
 \item{x}{Fossils object.}
