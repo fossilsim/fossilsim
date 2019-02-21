@@ -1,3 +1,7 @@
+## Version 2.1.1
+
+* Fixed a bug in ``sim.fbd.rateshift.taxa`` which led to trees being simulated with the wrong rates. NB: Any dataset simulated with this function before the fix is invalid and needs to be rerun.
+
 ## Version 2.1.0
 
 #### New functionality

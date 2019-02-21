@@ -1,7 +1,7 @@
 Package: FossilSim
 Type: Package
 Title: Simulation of Fossil and Taxonomy Data
-Version: 2.1.0
+Version: 2.1.1
 Authors@R: c(person("Rachel", "Warnock", email="rachel.warnock@bsse.ethz.ch", role=c("aut","cph")), 
   person("Joelle", "Barido-Sottani", email="joelle.barido-sottani@m4x.org",role=c("aut","cre","cph")), 
   person("Walker", "Pett",role=c("aut","cph")), person("O'Reilly", "Joseph",role=c("aut","cph")))
@@ -9,7 +9,7 @@ Description: Simulating taxonomy and fossil data on phylogenetic trees under mec
     models of speciation, preservation and sampling.
 License: GPL-3
 LazyData: TRUE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Imports:
     ape,
     TreeSim,

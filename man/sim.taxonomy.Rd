@@ -4,7 +4,8 @@
 \alias{sim.taxonomy}
 \title{Simulate taxonomy}
 \usage{
-sim.taxonomy(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRUE)
+sim.taxonomy(tree, beta = 0, lambda.a = 0, kappa = 0,
+  root.edge = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}

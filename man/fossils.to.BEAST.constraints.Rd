@@ -5,8 +5,9 @@
 \title{Create a set of BEAST2 constraints to construct a DPPDIV style fixed extant
 topology FBD analysis}
 \usage{
-fossils.to.BEAST.constraints(fossils, tree, file = "BEASTconstraints.xml",
-  complete = FALSE, tree.name = "beastTree")
+fossils.to.BEAST.constraints(fossils, tree,
+  file = "BEASTconstraints.xml", complete = FALSE,
+  tree.name = "beastTree")
 }
 \arguments{
 \item{fossils}{an object of class "fossils" that corresponds to fossil

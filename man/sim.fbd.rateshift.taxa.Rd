@@ -4,7 +4,8 @@
 \alias{sim.fbd.rateshift.taxa}
 \title{sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating rate shifts.}
 \usage{
-sim.fbd.rateshift.taxa(n, numbsim, lambda, mu, psi, times, complete = FALSE)
+sim.fbd.rateshift.taxa(n, numbsim, lambda, mu, psi, times,
+  complete = FALSE)
 }
 \arguments{
 \item{n}{Number of extant sampled tips.}
