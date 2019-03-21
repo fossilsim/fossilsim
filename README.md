@@ -50,4 +50,7 @@ Walker Pett
 Joseph O'Reilly  
 Rachel Warnock
 
+### Citation
+
+Joëlle Barido-Sottani et al. 2019. *Methods Evolution & Ecology*. [FossilSim: an R package for simulating fossil occurrence data under mechanistic models of preservation and recovery](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.13170)
 
