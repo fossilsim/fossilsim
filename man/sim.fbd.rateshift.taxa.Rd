@@ -21,8 +21,13 @@ is the extinction rate prior (ancestral) to time times[i].}
 \item{psi}{Vector of fossil sampling rates, the rate in entry i
 is the fossil sampling rate prior (ancestral) to time times[i].}
 
-\item{times}{Vector of mass extinction and rate shift times.
-Time is 0 today and increasing going backwards in time. Specify the vector as times[i]}
+\item{times}{Vector of mass extinction and rate shift times. Time is 0
+today and increasing going backwards in time. Specify the
+vector as times[i]<times[i+1]. times[1]=0 (today).}
+
+\item{complete}{If TRUE, the tree including the extinct lineages and
+non-sampled lineages is returned. If FALSE, the extinct lineages
+and non-sampled lineages are suppressed.}
 }
 \value{
 List of numbsim simulated SAtrees with n extant sampled tips.
@@ -33,7 +38,7 @@ sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating ra
 \examples{
 n = 10
 numbsim = 1
-sim.fbd.rateshift.taxa(n, numbsim, lambda = c(2,1), mu = c(0,0.3), psi = c(1,0.1), times = c(0.3))
+sim.fbd.rateshift.taxa(n, numbsim, lambda = c(2,1), mu = c(0,0.3), psi = c(1,0.1), times = c(0,0.3))
 }
 \keyword{birth}
 \keyword{death}
