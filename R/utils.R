@@ -191,7 +191,8 @@ fetch.descendants = function(edge, tree, return.edge.labels = F) {
 #'
 #' @export
 count.fossils = function(fossils){
-  k = length(fossils$sp[which(fossils$h > 0)])
+  tol = 1e-8
+  k = length(fossils$sp[which(fossils$hmax > tol)])
   return(k)
 }
 
@@ -204,16 +205,18 @@ count.fossils = function(fossils){
 #'
 #' @export
 count.fossils.binned = function(fossils, interval.ages){
-  intervals<-interval.ages
 
-  k = rep(0, length(intervals))
+  if(any(fossils$hmin != fossils$hmax)) stop("Function only works for fossils with exact ages i.e. hmin = hmax");
+
+  tol = 1e-8
+  k = rep(0, length(interval.ages))
 
   if(length(fossils$sp) == 0)
     return(k)
 
-  for(i in 1:length(fossils$h)){
-    if(fossils$h[i] != 0){
-      j = assign.interval(intervals, fossils$h[i])
+  for(i in 1:length(fossils$hmax)){
+    if(fossils$hmax[i] > tol){
+      j = assign.interval(interval.ages, fossils$hmax[i])
       k[j] = k[j] + 1
     }
   }
