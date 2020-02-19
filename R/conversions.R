@@ -495,7 +495,7 @@ fossils.to.pyrate = function(fossils, python = TRUE, traits = NULL, cutoff = NUL
     # print fossil ages
     cat(paste(data_1, collapse = ",\n"), "]\n", sep = "\n", file = file, append = TRUE)
 
-    cat("d=[data_1]", "names=['example_1']", "def get_data(i): return d[i]", "def get_out_name(i): return  names[i]",
+    cat("d=[data_1]", paste0("names=['", file ,"']"), "def get_data(i): return d[i]", "def get_out_name(i): return  names[i]",
         sep = "\n", file = file, append = TRUE)
 
     # print species names
