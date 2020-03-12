@@ -9,10 +9,11 @@
   max.age = NULL, interval.ages = NULL, binned = FALSE,
   show.axis = TRUE, show.proxy = FALSE, proxy.data = NULL,
   show.preferred.environ = FALSE, preferred.environ = NULL,
-  show.taxonomy = FALSE, taxonomy = NULL, root.edge = TRUE,
-  hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE,
-  align.tip.label = FALSE, fossil.col = 1, range.col = rgb(0, 0, 1),
-  extant.col = NULL, cex = 1.2, pch = 18, ...)
+  show.taxonomy = FALSE, taxonomy = NULL, show.unknown = TRUE,
+  root.edge = TRUE, hide.edge = FALSE, edge.width = 1,
+  show.tip.label = FALSE, align.tip.label = FALSE, fossil.col = 1,
+  range.col = rgb(0, 0, 1), extant.col = NULL, cex = 1.2, pch = 18,
+  ...)
 }
 \arguments{
 \item{x}{Fossils object.}
@@ -37,7 +38,7 @@
 
 \item{show.axis}{If TRUE plot x-axis (default = TRUE).}
 
-\item{show.proxy}{If TRUE add profile of sampling data to plot (e.g rates in time-dependent rates model) (default = FALSE).}
+\item{show.proxy}{If TRUE add profile of sampling data to plot (e.g. rates in time-dependent rates model) (default = FALSE).}
 
 \item{proxy.data}{Vector of sampling proxy data (default = NULL). Should be as long as the number of stratigraphic intervals.}
 
@@ -48,6 +49,8 @@
 \item{show.taxonomy}{If TRUE highlight species taxonomy.}
 
 \item{taxonomy}{Taxonomy object.}
+
+\item{show.unknown}{If TRUE plot fossils with unknown taxonomic affiliation (i.e. sp = NA) (default = TRUE).}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 

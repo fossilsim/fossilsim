@@ -20,12 +20,13 @@
 #' @param max.age Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.
 #' @param show.axis If TRUE plot x-axis (default = TRUE).
 #' @param binned If TRUE fossils are plotted at the mid point of each interval.
-#' @param show.proxy If TRUE add profile of sampling data to plot (e.g rates in time-dependent rates model) (default = FALSE).
+#' @param show.proxy If TRUE add profile of sampling data to plot (e.g. rates in time-dependent rates model) (default = FALSE).
 #' @param proxy.data Vector of sampling proxy data (default = NULL). Should be as long as the number of stratigraphic intervals.
 #' @param show.preferred.environ If TRUE add species preferred environmental value (e.g. water depth) (default = FALSE). Only works if combined with \code{show.proxy = TRUE}.
 #' @param preferred.environ Preferred environmental value (e.g. water depth). Currently only one value can be shown.
 #' @param show.taxonomy If TRUE highlight species taxonomy.
 #' @param taxonomy Taxonomy object.
+#' @param show.unknown If TRUE plot fossils with unknown taxonomic affiliation (i.e. sp = NA) (default = TRUE).
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
@@ -78,7 +79,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         show.proxy = FALSE, proxy.data = NULL,
                         show.preferred.environ = FALSE, preferred.environ = NULL,
                         # taxonomy
-                        show.taxonomy = FALSE, taxonomy = NULL,
+                        show.taxonomy = FALSE, taxonomy = NULL, show.unknown = TRUE,
                         # tree appearance
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                         # fossil appearance
@@ -109,11 +110,14 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   if(!"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
 
-  if(!all(fossils$edge %in% tree$edge))
+  if(!all( as.vector(na.omit(fossils$edge)) %in% tree$edge))
     stop("Mismatch between fossils and tree objects")
 
   # tolerance for extant tips and interval/ fossil age comparisons
   tol = min((min(tree$edge.length)/100), 1e-8)
+
+  #if(!any(is.na(fossils$sp)))
+  #  show.unknown = FALSE
 
   if(is.null(tree$root.edge))
     root.edge = FALSE
@@ -217,7 +221,9 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     tmp = tmp + label.offset
   x.lim[2] = tmp
 
-  y.lim = c(1, Ntip)
+  if(show.unknown)
+    y.lim = c(0, Ntip)
+  else y.lim = c(1, Ntip)
 
   # define interval ages
   if(show.strata || show.axis || binned || show.proxy){
@@ -383,7 +389,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
         fossils$col[which(fossils$h < tol)] = extant.col
       }
 
-      if(show.fossils || show.ranges) {
+      if(show.fossils || show.ranges){
         if(binned) {
           fossils$r = sapply(fossils$h - offset, function(x) {
             if(x < tol) return(max(xx) - x)
@@ -392,6 +398,14 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
         } else {
           fossils$r = max(xx) - fossils$h + offset
         }
+      }
+
+      # fossils unaffiliated with taxonomy
+      if( show.unknown && any(is.na(fossils$sp)) ){
+        unknownx = fossils[ which(is.na(fossils$sp)), ]$r
+        unknowny = rep(0, length(unknownx))
+        points(unknownx, unknowny, cex = cex, pch = pch, col = fossil.col)
+        fossils = na.omit(fossils)
       }
 
       # fossils
