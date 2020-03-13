@@ -13,6 +13,7 @@
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param fossils Append fossils to to an existing fossils object.
+#' @param ignore.taxonomy Ignore species taxonomy (returns sp = NA).
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #'
 #' @return An object of class fossils.
@@ -43,13 +44,16 @@
 #' rate = 2
 #' f2 = sim.fossils.poisson(rate, tree = t, fossils = f1)
 #' plot(f2, t)
+#' f3 = sim.fossils.poisson(rate, tree = t, fossils = f2, ignore.taxonomy = TRUE)
+#' plot(f3, t, show.unknown = TRUE)
 #'
 #' @keywords Poisson sampling
 #' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.environment}}, \code{\link{sim.trait.values}}
 #' @export
 #'
 #' @importFrom stats rpois runif rlnorm
-sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, fossils = NULL, root.edge = TRUE) {
+sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, fossils = NULL, ignore.taxonomy = FALSE,
+                               root.edge = TRUE) {
 
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
@@ -118,6 +122,7 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, fossils = NUL
     rand = rpois(1, blength*rate[i])
 
     if(rand > 0) {
+      if(ignore.taxonomy) sp = NA
       h = runif(rand, min = end, max = start)
       edge = sapply(h, function(x) edges$edge[which(edges$start > x & edges$end < x)])
       if(use.exact.times) {
