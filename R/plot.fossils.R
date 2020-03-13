@@ -26,7 +26,7 @@
 #' @param preferred.environ Preferred environmental value (e.g. water depth). Currently only one value can be shown.
 #' @param show.taxonomy If TRUE highlight species taxonomy.
 #' @param taxonomy Taxonomy object.
-#' @param show.unknown If TRUE plot fossils with unknown taxonomic affiliation (i.e. sp = NA) (default = TRUE).
+#' @param show.unknown If TRUE plot fossils with unknown taxonomic affiliation (i.e. sp = NA) (default = FALSE).
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
@@ -79,7 +79,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         show.proxy = FALSE, proxy.data = NULL,
                         show.preferred.environ = FALSE, preferred.environ = NULL,
                         # taxonomy
-                        show.taxonomy = FALSE, taxonomy = NULL, show.unknown = TRUE,
+                        show.taxonomy = FALSE, taxonomy = NULL, show.unknown = FALSE,
                         # tree appearance
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE,
                         # fossil appearance
@@ -115,9 +115,6 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
 
   # tolerance for extant tips and interval/ fossil age comparisons
   tol = min((min(tree$edge.length)/100), 1e-8)
-
-  #if(!any(is.na(fossils$sp)))
-  #  show.unknown = FALSE
 
   if(is.null(tree$root.edge))
     root.edge = FALSE
