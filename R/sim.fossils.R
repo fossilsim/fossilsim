@@ -149,11 +149,13 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, fossils = NUL
 #'
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
+#' @param fossils Append fossils to to an existing fossils object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param max.age Maximum age of the oldest stratigraphic interval.
 #' @param strata Number of stratigraphic intervals.
 #' @param rates Poisson sampling rate for each interval. The number of rates should match the number of intervals and the first entry should correspond to youngest interval.
 #' @param probabilities Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals and the first entry should correspond to youngest interval.
+#' @param ignore.taxonomy Ignore species taxonomy (returns sp = NA). Default = FALSE.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #' @param use.exact.times If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.
 #' @return An object of class fossils.
@@ -182,13 +184,17 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, fossils = NUL
 #' f = sim.fossils.intervals(taxonomy = s, interval.ages = times, rates = rates)
 #' plot(f, t, interval.ages = times, show.strata = TRUE)
 #'
+#' # append fossils to an existing fossils object
+#' new.rates = rates * 2
+#' f2 = sim.fossils.intervals(taxonomy = s, fossils = f, interval.ages = times, rates = new.rates)
+#'
 #' @keywords uniform fossil preservation
 #' @keywords non-uniform fossil preservation
 #' @seealso \code{\link{sim.fossils.poisson}}, \code{\link{sim.fossils.environment}}
 #' @export
-sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
+sim.fossils.intervals = function(tree = NULL, taxonomy = NULL, fossils = NULL,
                                  interval.ages = NULL, max.age = NULL, strata = NULL,
-                                 probabilities = NULL, rates = NULL,
+                                 probabilities = NULL, rates = NULL, ignore.taxonomy = FALSE,
                                  root.edge = TRUE, use.exact.times = TRUE){
 
   if(is.null(tree) && is.null(taxonomy))
@@ -199,6 +205,9 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
 
   if(!is.null(taxonomy) && !"taxonomy" %in% class(taxonomy))
     stop("taxonomy must be an object of class \"taxonomy\"")
+
+  if(!is.null(fossils) && !"fossils" %in% class(fossils))
+    stop("fossils must be an object of class \"fossils\"")
 
   if(!is.null(tree) && !is.null(taxonomy))
     warning("tree and taxonomy both defined, using taxonomy")
@@ -224,6 +233,9 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
   } else
     from.taxonomy = TRUE
 
+  if(!all( as.vector(na.omit(fossils$edge)) %in% taxonomy$edge))
+    stop("Mismatch between fossils and taxonomy objects")
+
   use.rates = FALSE
   if(!is.null(probabilities) && !is.null(rates)) {
     rates = NULL
@@ -240,7 +252,9 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
   if(is.null(taxonomy))
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
 
-  fdf = fossils()
+  if(is.null(fossils))
+    fdf = fossils()
+  else fdf = fossils
 
   lineages = unique(taxonomy$sp)
 
@@ -261,6 +275,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL,
       max.time = min(start, interval.ages[i+1])
 
       if(use.rates) {
+        if(ignore.taxonomy) sp = NA
         # generate k fossils from a poisson distribution
         k = rpois(1, rates[i]*(max.time - min.time))
         ages = runif(k, min.time, max.time)

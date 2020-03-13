@@ -4,15 +4,17 @@
 \alias{sim.fossils.intervals}
 \title{Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals}
 \usage{
-sim.fossils.intervals(tree = NULL, taxonomy = NULL,
+sim.fossils.intervals(tree = NULL, taxonomy = NULL, fossils = NULL,
   interval.ages = NULL, max.age = NULL, strata = NULL,
-  probabilities = NULL, rates = NULL, root.edge = TRUE,
-  use.exact.times = TRUE)
+  probabilities = NULL, rates = NULL, ignore.taxonomy = FALSE,
+  root.edge = TRUE, use.exact.times = TRUE)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
 \item{taxonomy}{Taxonomy object.}
+
+\item{fossils}{Append fossils to to an existing fossils object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -23,6 +25,8 @@ sim.fossils.intervals(tree = NULL, taxonomy = NULL,
 \item{probabilities}{Probability of sampling/preservation in each interval. The number of probabilities should match the number of intervals and the first entry should correspond to youngest interval.}
 
 \item{rates}{Poisson sampling rate for each interval. The number of rates should match the number of intervals and the first entry should correspond to youngest interval.}
+
+\item{ignore.taxonomy}{Ignore species taxonomy (returns sp = NA). Default = FALSE.}
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
@@ -64,6 +68,10 @@ plot(f, t, interval.ages = times, show.strata = TRUE)
 s = sim.taxonomy(t, 0.1, 0.1, 1)
 f = sim.fossils.intervals(taxonomy = s, interval.ages = times, rates = rates)
 plot(f, t, interval.ages = times, show.strata = TRUE)
+
+# append fossils to an existing fossils object
+new.rates = rates * 2
+f2 = sim.fossils.intervals(taxonomy = s, fossils = f, interval.ages = times, rates = new.rates)
 
 }
 \seealso{
