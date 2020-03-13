@@ -13,7 +13,7 @@
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param fossils Append fossils to to an existing fossils object.
-#' @param ignore.taxonomy Ignore species taxonomy (returns sp = NA).
+#' @param ignore.taxonomy Ignore species taxonomy (returns sp = NA). Default = FALSE.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #'
 #' @return An object of class fossils.
@@ -51,7 +51,7 @@
 #' @seealso \code{\link{sim.fossils.intervals}}, \code{\link{sim.fossils.environment}}, \code{\link{sim.trait.values}}
 #' @export
 #'
-#' @importFrom stats rpois runif rlnorm
+#' @importFrom stats rpois runif rlnorm na.omit
 sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, fossils = NULL, ignore.taxonomy = FALSE,
                                root.edge = TRUE) {
 

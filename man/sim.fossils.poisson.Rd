@@ -16,7 +16,7 @@ sim.fossils.poisson(rate, tree = NULL, taxonomy = NULL,
 
 \item{fossils}{Append fossils to to an existing fossils object.}
 
-\item{ignore.taxonomy}{Ignore species taxonomy (returns sp = NA).}
+\item{ignore.taxonomy}{Ignore species taxonomy (returns sp = NA). Default = FALSE.}
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 }

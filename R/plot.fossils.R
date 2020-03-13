@@ -72,6 +72,7 @@
 #' @export
 #' @importFrom graphics par points lines text axis mtext segments rect plot
 #' @importFrom grDevices colors rgb adjustcolor
+#' @importFrom stats na.omit
 plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ranges = FALSE,
                         # age info/options
                         show.strata = FALSE, strata = 1, max.age = NULL, interval.ages = NULL, binned = FALSE, show.axis = TRUE,
