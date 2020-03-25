@@ -459,7 +459,8 @@ fossils.to.pyrate = function(fossils, python = TRUE, traits = NULL, cutoff = NUL
       fossils$hmin = round(unlist(lapply(1:dim(fossils)[1], function(x) { mean( c(fossils$hmin[x], fossils$hmax[x])) })), digits = 6)
       fossils$hmax = fossils$hmin
     } else {
-      fossils = round(fossils, digits = 6)
+      fossils$hmin = round(fossils$hmin, digits = 6)
+      fossils$hmax = round(fossils$hmax, digits = 6)
     }
   }
 
