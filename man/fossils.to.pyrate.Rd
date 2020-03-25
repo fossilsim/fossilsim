@@ -6,7 +6,7 @@
 \usage{
 fossils.to.pyrate(fossils, python = TRUE, traits = NULL,
   cutoff = NULL, random = FALSE, min = NULL,
-  exclude.extant.singletons = TRUE, file = "")
+  exclude.extant.singletons = TRUE, file = "", use.sp.names = FALSE)
 }
 \arguments{
 \item{fossils}{Fossils object.}
@@ -27,6 +27,8 @@ otherwise use the midpoint of this interval (default). Applicable only when \cod
 \item{exclude.extant.singletons}{If TRUE exclude species that have extant samples only (default = TRUE).}
 
 \item{file}{Output file name.}
+
+\item{use.sp.names}{If TRUE use the value in fossils$sp as the complete taxon name, otherwise the function adds the prefix "taxa" (default = FALSE).}
 }
 \description{
 Generate output in the format used by the program PyRate

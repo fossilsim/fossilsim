@@ -388,6 +388,7 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
 #' @param min Value used to represent the minimum possible interval age of extinct specimens with \code{hmin = 0}. By default \code{min = NULL} and the function will use the sampling times in the fossils dataframe.
 #' @param exclude.extant.singletons If TRUE exclude species that have extant samples only (default = TRUE).
 #' @param file Output file name.
+#' @param use.sp.names If TRUE use the value in fossils$sp as the complete taxon name, otherwise the function adds the prefix "taxa" (default = FALSE).
 #'
 #' @examples
 #'
@@ -423,7 +424,7 @@ fossils.to.paleotree.record = function(fossils, tree = NULL, taxonomy = NULL) {
 #'
 #' @export
 fossils.to.pyrate = function(fossils, python = TRUE, traits = NULL, cutoff = NULL, random = FALSE, min = NULL,
-                             exclude.extant.singletons = TRUE, file = ""){
+                             exclude.extant.singletons = TRUE, file = "", use.sp.names = FALSE){
 
   if(length(fossils$sp) < 1) stop("Number of specimens must be > 0")
 
@@ -488,7 +489,10 @@ fossils.to.pyrate = function(fossils, python = TRUE, traits = NULL, cutoff = NUL
 
       if(length(times) > 0){
         data_1 = c(data_1, paste0("array([", paste(times, collapse = ","), "])"))
-        taxa_names = c(taxa_names, paste0("'taxa", sp, "'"))
+        if(use.sp.names)
+          taxa_names = c(taxa_names, paste0("'", sp, "'"))
+        else
+          taxa_names = c(taxa_names, paste0("'taxa", sp, "'"))
         if(!is.null(traits)) trait1 = c(trait1, paste0("array([", paste(values, collapse = ","), "])"))
       }
     }
