@@ -520,12 +520,13 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   invisible(L)
 }
 
-add.depth.profile = function(depth, axis.strata, strata, show.axis, add.depth.axis, show.preferred.depth = TRUE, PD = NULL, x.labs = FALSE){
+add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.depth.axis, show.preferred.depth = TRUE, PD = NULL, x.labs = FALSE){
   par(fig = c(0,1,0,0.4), new = T)
   # change the y-axis scale for depth
   u = par("usr") # current scale
-  tol = max(depth, PD) * 0.1
-  par(usr = c(u[1], u[2], min(depth, PD) - tol, max(depth, PD) + tol))
+  depth.profile = rev(depth.profile)
+  tol = max(depth.profile, PD) * 0.1
+  par(usr = c(u[1], u[2], min(depth.profile, PD) - tol, max(depth.profile, PD) + tol))
   time = c()
   depth = c()
   for(i in 1:length(depth.profile)){
