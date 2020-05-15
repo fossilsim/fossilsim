@@ -2,7 +2,7 @@
 
 #### New functionality
 
-* Added option to plot the reconstructed tree for a set of fossils and tree objects.
+* Added option to plot the reconstructed tree for a set of fossils and tree objects. This can be done by passing `reconstructed = TRUE` to `plot.fossils` or the objects can be generated separately using the function `reconstructed.tree.fossils.objects`.
 
 ##### Functions associated with the occurrence birth-death model
 * Added `fossils` as a function argument to the fossil simulation functions so that exisiting fossil objects can be appended.
