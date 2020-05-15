@@ -131,27 +131,31 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
 
   # create new fossils object based on the reconstructed tree
   # & deal with sampled ancestors
-  f.new = data.frame()
-  nages = n.ages(samp.tree)
-  for(i in sa){
-    anc = ancestor(which(samp.tree$tip.label==i), samp.tree)
+  if(length(fossils$sp) > 0){
+    f.new = data.frame()
+    nages = n.ages(samp.tree)
+    for(i in sa){
+      anc = ancestor(which(samp.tree$tip.label==i), samp.tree)
 
-    s1 = ape::extract.clade(samp.tree,anc)$tip.label
-    s2 = no.sa.tree$tip.label[which(no.sa.tree$tip.label %in% s1)]
+      s1 = ape::extract.clade(samp.tree,anc)$tip.label
+      s2 = no.sa.tree$tip.label[which(no.sa.tree$tip.label %in% s1)]
 
-    # assign fossils to nearest descendent node in the tree
-    if(length(s2) > 1){
-      j = ape::getMRCA(no.sa.tree,s2)
-    } else { # i is SA on terminal branch
-      j = which(no.sa.tree$tip.label==s2)
+      # assign fossils to nearest descendent node in the tree
+      if(length(s2) > 1){
+        j = ape::getMRCA(no.sa.tree,s2)
+      } else { # i is SA on terminal branch
+        j = which(no.sa.tree$tip.label==s2)
+      }
+      h = nages[[which(samp.tree$tip.label==i)]]
+      f.new = rbind(f.new, data.frame(sp = j,
+                                      edge = j,
+                                      hmin = h,
+                                      hmax = h))
     }
-    h = nages[[which(samp.tree$tip.label==i)]]
-    f.new = rbind(f.new, data.frame(sp = j,
-                                    edge = j,
-                                    hmin = h,
-                                    hmax = h))
+    f.new = fossils(f.new)
+  } else {
+    f.new = fossils()
   }
-  f.new = fossils(f.new)
 
   # deal with non SA samples
   f.new = FossilSim::sim.tip.samples(f.new, no.sa.tree)
