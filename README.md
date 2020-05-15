@@ -18,8 +18,10 @@ t = ape::rtree(tips)
 # simulate fossils using fossilsim
 rate = 2
 f = sim.fossils.poisson(rate, t)  
-# plot the output
+# plot the complete output
 plot(f, t)
+# plot the reconstructed output
+plot(f, t, reconstructed = TRUE)
 ```
 
 ```{r}
