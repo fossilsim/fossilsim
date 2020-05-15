@@ -4,9 +4,17 @@
 \alias{fossils.to.pyrate}
 \title{Generate output in the format used by the program PyRate}
 \usage{
-fossils.to.pyrate(fossils, python = TRUE, traits = NULL,
-  cutoff = NULL, random = FALSE, min = NULL,
-  exclude.extant.singletons = TRUE, file = "", use.sp.names = FALSE)
+fossils.to.pyrate(
+  fossils,
+  python = TRUE,
+  traits = NULL,
+  cutoff = NULL,
+  random = FALSE,
+  min = NULL,
+  exclude.extant.singletons = TRUE,
+  file = "",
+  use.sp.names = FALSE
+)
 }
 \arguments{
 \item{fossils}{Fossils object.}

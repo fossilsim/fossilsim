@@ -51,6 +51,121 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
   tree
 }
 
+#' Returns tree and fossil objects that you can use to plot the reconstructed tree.
+#'
+#' Note that for datasets containing extinct only samples (& rho = 0) the ages output are scaled so that the youngest sample = 0.
+#'
+#' @param tree Tree object.
+#' @param fossils Fossils object.
+#' @param rho Extant species sampling probability. Default = 1, will be disregarded if fossils object already contains extant samples.
+#'
+#' @return A list containing the tree and fossil objects.
+#'
+#' @examples
+#' # simulate tree
+#' birth = 0.1
+#' death = 0.05
+#' tips = 10
+#' t = TreeSim::sim.bd.taxa(tips, 1, birth, death)[[1]]
+#'
+#' # simulate fossils
+#' f = sim.fossils.poisson(rate = 0.3, tree = t)
+#'
+#' # simulate extant samples
+#' f = sim.extant.samples(f, tree = t, rho = 0.5)
+#'
+#' # plot the complete tree
+#' plot(f,t)
+#'
+#' # generate tree & fossil objects corresponding to the reconstructed tree
+#' out = reconstructed.tree.fossils.objects(f, t)
+#' f.reconst = out$fossils
+#' t.reconst = out$tree
+#'
+#' # plot the reconstructed tree
+#' plot(f.reconst, t.reconst)
+#'
+#' @export
+# function to generate tree and corresponding fossil object for the reconstructed tree
+reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
+
+  if(!is.null(tree) && !"phylo" %in% class(tree))
+    stop("tree must be an object of class \"phylo\"")
+
+  if(!is.null(fossils) && !"fossils" %in% class(fossils))
+    stop("fossils must be an object of class \"fossils\"")
+
+  if(!(rho >= 0 && rho <= 1))
+    stop("rho must be a probability between 0 and 1")
+
+  tol = min((min(tree$edge.length)/100),1e-8)
+  samp_tips = NULL
+
+  if(any( abs(fossils$hmax) < tol )){
+    # identify extant sampled tips
+    samp_tips = tree$tip.label[fossils$edge[which(abs(fossils$hmax) < tol)]]
+    # eliminate them from the dataframe (required for SAtree.from.fossils)
+    fossils = fossils[-c(which(abs(fossils$hmax) < tol)),]
+  }
+
+  # create SAtree object
+  sa.tree = SAtree.from.fossils(tree, fossils)
+
+  # match samp_tips and sa.tree tip labels
+  if(!is.null(samp_tips)){
+    for(i in 1:length(samp_tips)){
+      samp_tips[i] = sa.tree$tip.label [ grep(paste0(samp_tips[i],"_"), sa.tree$tip.label)[1] ]
+    }
+  }
+
+  # removes all unsampled lineages
+  samp.tree = sampled.tree.from.combined(sa.tree, rho = rho, sampled_tips = samp_tips)
+
+  # identify sampled ancestors and drop from the sampled tree
+  sa = c()
+  for(i in 1:length(samp.tree$tip.label)){
+    blength = samp.tree$edge.length[which(samp.tree$edge[,2]==i)]
+    if(abs(blength) < tol) sa = c(sa, samp.tree$tip.label[i])
+  }
+  no.sa.tree = ape::drop.tip(samp.tree, sa)
+
+  # create new fossils object based on the reconstructed tree
+  # & deal with sampled ancestors
+  f.new = data.frame()
+  nages = n.ages(samp.tree)
+  for(i in sa){
+    anc = ancestor(which(samp.tree$tip.label==i), samp.tree)
+
+    s1 = ape::extract.clade(samp.tree,anc)$tip.label
+    s2 = no.sa.tree$tip.label[which(no.sa.tree$tip.label %in% s1)]
+
+    # assign fossils to nearest descendent node in the tree
+    if(length(s2) > 1){
+      j = ape::getMRCA(no.sa.tree,s2)
+    } else { # i is SA on terminal branch
+      j = which(no.sa.tree$tip.label==s2)
+    }
+    h = nages[[which(samp.tree$tip.label==i)]]
+    f.new = rbind(f.new, data.frame(sp = j,
+                                    edge = j,
+                                    hmin = h,
+                                    hmax = h))
+  }
+  f.new = fossils(f.new)
+
+  # deal with non SA samples
+  f.new = FossilSim::sim.tip.samples(f.new, no.sa.tree)
+
+  # add a root edge for any stem fossils
+  if( any(f.new$edge == (length(no.sa.tree$tip.label)+1) )){
+    h = f.new$hmin[which(f.new$edge == (length(no.sa.tree$tip.label)+1))]
+    no.sa.tree$root.edge = max(h) - max(n.ages(no.sa.tree))
+  }
+
+  return(list(tree = no.sa.tree, fossils = f.new))
+
+}
+
 #' Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
 #' Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
 #'

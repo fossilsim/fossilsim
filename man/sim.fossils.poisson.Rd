@@ -4,8 +4,14 @@
 \alias{sim.fossils.poisson}
 \title{Simulate fossils under a Poisson sampling model}
 \usage{
-sim.fossils.poisson(rate, tree = NULL, taxonomy = NULL,
-  fossils = NULL, ignore.taxonomy = FALSE, root.edge = TRUE)
+sim.fossils.poisson(
+  rate,
+  tree = NULL,
+  taxonomy = NULL,
+  fossils = NULL,
+  ignore.taxonomy = FALSE,
+  root.edge = TRUE
+)
 }
 \arguments{
 \item{rate}{A single Poisson sampling rate or a vector of rates.}

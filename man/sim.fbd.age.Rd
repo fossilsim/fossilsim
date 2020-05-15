@@ -4,8 +4,17 @@
 \alias{sim.fbd.age}
 \title{sim.fbd.age: Simulating fossilized birth-death trees of a fixed age.}
 \usage{
-sim.fbd.age(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE,
-  complete = FALSE, K = 0)
+sim.fbd.age(
+  age,
+  numbsim,
+  lambda,
+  mu,
+  psi,
+  frac = 1,
+  mrca = FALSE,
+  complete = FALSE,
+  K = 0
+)
 }
 \arguments{
 \item{age}{Time since origin / most recent common ancestor.}

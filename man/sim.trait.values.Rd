@@ -4,9 +4,16 @@
 \alias{sim.trait.values}
 \title{Simulate trait values with variation across lineages}
 \usage{
-sim.trait.values(init = 1, tree = NULL, taxonomy = NULL,
-  root.edge = TRUE, model = "autocorrelated", v = 0.01,
-  dist = function() {     runif(1, 0, 2) }, change.pr = 1)
+sim.trait.values(
+  init = 1,
+  tree = NULL,
+  taxonomy = NULL,
+  root.edge = TRUE,
+  model = "autocorrelated",
+  v = 0.01,
+  dist = function() {     runif(1, 0, 2) },
+  change.pr = 1
+)
 }
 \arguments{
 \item{init}{Initial value at the origin or root of the phylo or taxonomy object. Default = 1.}

@@ -4,8 +4,7 @@
 \alias{summary.taxonomy}
 \title{Display taxonomy object}
 \usage{
-\method{summary}{taxonomy}(object, max.length = 50, round.x = 12,
-  details = TRUE, ...)
+\method{summary}{taxonomy}(object, max.length = 50, round.x = 12, details = TRUE, ...)
 }
 \arguments{
 \item{object}{Taxonomy object.}

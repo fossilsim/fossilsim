@@ -4,9 +4,17 @@
 \alias{sim.interval.ages}
 \title{Reassign fossil ages to user-specified stratigraphic intervals}
 \usage{
-sim.interval.ages(fossils, tree = NULL, taxonomy = NULL,
-  interval.ages = NULL, max.age = NULL, strata = NULL,
-  use.species.ages = FALSE, root.edge = TRUE, sim.extant = FALSE)
+sim.interval.ages(
+  fossils,
+  tree = NULL,
+  taxonomy = NULL,
+  interval.ages = NULL,
+  max.age = NULL,
+  strata = NULL,
+  use.species.ages = FALSE,
+  root.edge = TRUE,
+  sim.extant = FALSE
+)
 }
 \arguments{
 \item{fossils}{Fossil object.}

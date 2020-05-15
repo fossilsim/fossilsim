@@ -4,8 +4,7 @@
 \alias{sim.extant.samples}
 \title{Include extant samples in the fossil object, with optional rho sampling.}
 \usage{
-sim.extant.samples(fossils, tree = NULL, taxonomy = NULL, rho = 1,
-  tol = NULL)
+sim.extant.samples(fossils, tree = NULL, taxonomy = NULL, rho = 1, tol = NULL)
 }
 \arguments{
 \item{fossils}{Fossils object.}

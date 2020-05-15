@@ -1,3 +1,17 @@
+## Version 2.X.X
+
+#### New functionality
+
+* Added option to plot the reconstructed tree for a set of fossils and tree objects.
+
+##### Functions associated with the occurrence birth-death model
+* Added `fossils` as a function argument to the fossil simulation functions so that exisiting fossil objects can be appended.
+* Added `ignore.taxonomy` as a function argument to the fossil simulation functions. If `true` function will not return species or edge info.
+* Added `show.unknown` to plotting function. If species or edge info is unknown these fossils will appear next to the tree.
+
+#### Bug fixes
+* Fixed bug in `plot.fossils` which led to proxy data being plotted the wrong way round on the x-axis.
+
 ## Version 2.1.1
 
 * Fixed a bug in ``sim.fbd.rateshift.taxa`` which led to trees being simulated with the wrong rates. NB: Any dataset simulated with this function before the fix is invalid and needs to be rerun.

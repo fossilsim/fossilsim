@@ -9,7 +9,7 @@ Description: Simulating taxonomy and fossil data on phylogenetic trees under mec
     models of speciation, preservation and sampling.
 License: GPL-3
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Imports:
     ape,
     TreeSim,

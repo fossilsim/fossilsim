@@ -4,10 +4,19 @@
 \alias{sim.fossils.intervals}
 \title{Simulate fossils under a non-uniform model of preservation for a given set of consecutive time intervals}
 \usage{
-sim.fossils.intervals(tree = NULL, taxonomy = NULL, fossils = NULL,
-  interval.ages = NULL, max.age = NULL, strata = NULL,
-  probabilities = NULL, rates = NULL, ignore.taxonomy = FALSE,
-  root.edge = TRUE, use.exact.times = TRUE)
+sim.fossils.intervals(
+  tree = NULL,
+  taxonomy = NULL,
+  fossils = NULL,
+  interval.ages = NULL,
+  max.age = NULL,
+  strata = NULL,
+  probabilities = NULL,
+  rates = NULL,
+  ignore.taxonomy = FALSE,
+  root.edge = TRUE,
+  use.exact.times = TRUE
+)
 }
 \arguments{
 \item{tree}{Phylo object.}

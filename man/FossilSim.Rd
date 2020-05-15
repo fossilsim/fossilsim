@@ -3,7 +3,6 @@
 \docType{package}
 \name{FossilSim}
 \alias{FossilSim}
-\alias{FossilSim-package}
 \title{FossilSim: A package for simulating and plotting fossil and taxonomy data}
 \description{
 This package provides functions for simulating both taxonomy and fossil data from an existing phylogeny.
