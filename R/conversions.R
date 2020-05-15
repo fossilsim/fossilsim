@@ -164,7 +164,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
   if( any(f.new$edge == (length(no.sa.tree$tip.label)+1) )){
     h = f.new$hmin[which(f.new$edge == (length(no.sa.tree$tip.label)+1))]
     no.sa.tree$root.edge = max(h) - max(n.ages(no.sa.tree))
-  }
+  } else { no.sa.tree$root.edge = NULL }
 
   return(list(tree = no.sa.tree, fossils = f.new))
 
