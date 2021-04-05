@@ -32,13 +32,13 @@ This vignette provides a [Quick start] and a brief introduction to the package i
 
 `FossilSim` is an R package for simulating species taxonomy and fossil occurrence data in a phylogenetic framework.
 Simulations can be used to address many questions in phylogenetics and palaeobiology, and are especially useful for assessing the performance of different methods, since the true underlying parameters (e.g. diversification and fossil recovery rates) are known.
-Tara Smiley provides an excellent demonstration of the value of simulations in palaeobiology in this [blog post](http://blog.journals.cambridge.org/2018/03/19/testing-the-fossil-record-how-simulations-help-us-understand-the-relative-roles-of-diversification-and-preservation-underlying-diversity-gradients-in-deep-time/).
-`FossilSim` output can be easily parsed for downstream analysis using R, or other software packages including [BEAST2](http://beast2.org/) and [RevBayes](https://revbayes.github.io).
+Tara Smiley provides an excellent demonstration of the value of simulations in palaeobiology in this [blog post](https://www.cambridge.org/core/blog/2018/03/19/testing-the-fossil-record-how-simulations-help-us-understand-the-relative-roles-of-diversification-and-preservation-underlying-diversity-gradients-in-deep-time/).
+`FossilSim` output can be easily parsed for downstream analysis using R, or other software packages including [BEAST2](http://www.beast2.org/) and [RevBayes](https://revbayes.github.io).
 The package provides a wide range of flexible models, including models of interval-, lineage- and environment-dependent fossil recovery, in addition to plotting functions that can be used to visualise the output and produce publication quality figures.
 
 ## Installing the package
 
-`FossilSim` is available on CRAN or the latest development version can be installed from [GitHub](http://github.com/) using the package `devtools`.
+`FossilSim` is available on CRAN or the latest development version can be installed from [GitHub](https://github.com/) using the package `devtools`.
 
 ```{r, eval = FALSE, purl = FALSE}
 # to install the package via CRAN
