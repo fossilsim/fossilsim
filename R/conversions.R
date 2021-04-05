@@ -234,7 +234,9 @@ prune.fossils = function(tree) {
 #'
 #' # output for BEAST
 #' beast.fbd.format(t, f) # output on the console
+#' \dontrun{
 #' beast.fbd.format(t, f, file="example.tre") # output in file
+#' }
 #' @export
 beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
   proc_tree = prune.fossils(sampled.tree.from.combined(SAtree.from.fossils(tree,fossils), rho = rho, sampled_tips = sampled_tips))

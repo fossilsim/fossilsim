@@ -21,7 +21,7 @@
 #' @examples
 #' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
 #' f = sim.fossils.poisson(0.1, t, root.edge = FALSE)
-#' fossils.to.BEAST.constraints(f, t, complete = TRUE)
+#' fossils.to.BEAST.constraints(f, t, file = tempfile(), complete = TRUE)
 #' @export
 fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints.xml", complete = FALSE, tree.name = "beastTree"){
 

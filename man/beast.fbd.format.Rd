@@ -34,5 +34,7 @@ f = sim.fossils.poisson(rate = 2, tree = t)
 
 # output for BEAST
 beast.fbd.format(t, f) # output on the console
+\dontrun{
 beast.fbd.format(t, f, file="example.tre") # output in file
+}
 }
