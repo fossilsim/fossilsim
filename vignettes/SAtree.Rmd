@@ -16,7 +16,7 @@ library(FossilSim)
 
 ## Zero-edge format
 
-Many phylogenetic inference software packages, such as [BEAST2](http://beast2.org/) and [RevBayes](https://revbayes.github.io), can handle trees containing fossil samples. In the zero-edge format, tip samples are represented normally in the tree, but sampled ancestors, i.e fossil samples which have sampled descendants, are represented as tips at the end of edges with length 0.
+Many phylogenetic inference software packages, such as [BEAST2](http://www.beast2.org/) and [RevBayes](https://revbayes.github.io), can handle trees containing fossil samples. In the zero-edge format, tip samples are represented normally in the tree, but sampled ancestors, i.e fossil samples which have sampled descendants, are represented as tips at the end of edges with length 0.
 
 This format is included in `FossilSim` as the `SAtree` objects.
 
