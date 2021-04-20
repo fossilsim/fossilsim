@@ -20,7 +20,7 @@ SAtree = function(tree, complete = TRUE) {
 #'
 #' @param tree Phylo object.
 #' @param fossils Fossils object.
-#' @return A tree integrating the fossils.
+#' @return A list of `tree`, the SA tree integrating the fossils, and `fossils`, the fossils object updated with the tip label of each sample.
 #' @examples
 #' # simulate tree
 #' t = ape::rtree(6)
@@ -30,12 +30,12 @@ SAtree = function(tree, complete = TRUE) {
 #'
 #' # transform format
 #' t2 = SAtree.from.fossils(t,f)
-#' plot(t2)
+#' plot(t2$tree)
 #' @export
 SAtree.from.fossils = function(tree, fossils) {
   if(length(fossils[,1])==0) {
     tree$tip.label = paste0(tree$tip.label, "_", 1)
-    return(SAtree(tree, TRUE))
+    return(list(tree = SAtree(tree, TRUE), fossils = fossils))
   }
   
   fossils$h = (fossils$hmin + fossils$hmax)/2
@@ -85,6 +85,7 @@ SAtree.from.fossils = function(tree, fossils) {
     tree$edge.length = c(tree$edge.length,0)
     if(current_spec <= ntips) tree$tip.label = c(tree$tip.label, paste0(tree$tip.label[current_spec], "_", count_spec))
     else tree$tip.label = c(tree$tip.label, paste0("t", current_spec, "_", count_spec))
+    fossils$tip.label[i] = tree$tip.label[length(tree$tip.label)]
     count_spec = count_spec +1
   }
   if(current_spec <= ntips) tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
@@ -115,5 +116,5 @@ SAtree.from.fossils = function(tree, fossils) {
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
   
-  SAtree(tree, TRUE)
+  list(tree = SAtree(tree, TRUE), fossils = fossils)
 }

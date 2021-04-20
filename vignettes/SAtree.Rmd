@@ -30,8 +30,9 @@ t = ape::rtree(6)
 f = sim.fossils.poisson(rate = 2, tree = t)
 
 SAt = SAtree.from.fossils(tree = t, fossils = f)
-print(SAt)
-print(SAt$complete)
+print(SAt$tree)
+print(SAt$fossils)
+print(SAt$tree$complete)
 ```
 
 ## Other useful functions
@@ -40,14 +41,14 @@ Other functions are present in `FossilSim` to modify trees.
 `prune.fossils` will remove all intermediate fossil samples and keep only the first and last occurrences of any species.
 
 ```{r}
-SAt_pruned = prune.fossils(tree = SAt)
+SAt_pruned = prune.fossils(tree = SAt$tree)
 plot(SAt_pruned)
 ```
 
 `sampled.tree.from.combined` removes all unsampled lineages from the tree, and can optionally apply a sampling probability to extant samples, or keep only a specified list of extant samples.
 
 ```{r}
-SAt_sampled = sampled.tree.from.combined(tree = SAt)
+SAt_sampled = sampled.tree.from.combined(tree = SAt$tree)
 plot(SAt_sampled)
 ```
 

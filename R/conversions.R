@@ -13,7 +13,7 @@
 #' f = sim.fossils.poisson(rate = 2, tree = t)
 #'
 #' # transform format
-#' t2 = SAtree.from.fossils(t,f)
+#' t2 = SAtree.from.fossils(t,f)$tree
 #'
 #' # transform to sampled tree
 #' t3 = sampled.tree.from.combined(t2)
@@ -109,7 +109,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
   }
 
   # create SAtree object
-  sa.tree = SAtree.from.fossils(tree, fossils)
+  sa.tree = SAtree.from.fossils(tree, fossils)$tree
 
   # match samp_tips and sa.tree tip labels
   if(!is.null(samp_tips)){
@@ -183,7 +183,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
 #' f = sim.fossils.poisson(rate = 2, tree = t)
 #'
 #' # transform format
-#' t2 = SAtree.from.fossils(t,f)
+#' t2 = SAtree.from.fossils(t,f)$tree
 #'
 #' # prune fossils
 #' t4 = prune.fossils(t2)
@@ -239,7 +239,7 @@ prune.fossils = function(tree) {
 #' }
 #' @export
 beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
-  proc_tree = prune.fossils(sampled.tree.from.combined(SAtree.from.fossils(tree,fossils), rho = rho, sampled_tips = sampled_tips))
+  proc_tree = prune.fossils(sampled.tree.from.combined(SAtree.from.fossils(tree,fossils)$tree, rho = rho, sampled_tips = sampled_tips))
   ape::write.tree(proc_tree, ...)
 }
 

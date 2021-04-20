@@ -25,7 +25,7 @@ t = ape::rtree(6)
 f = sim.fossils.poisson(rate = 2, tree = t)
 
 # transform format
-t2 = SAtree.from.fossils(t,f)
+t2 = SAtree.from.fossils(t,f)$tree
 
 # prune fossils
 t4 = prune.fossils(t2)

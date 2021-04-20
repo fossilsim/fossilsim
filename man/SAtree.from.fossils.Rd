@@ -14,7 +14,7 @@ SAtree.from.fossils(tree, fossils)
 \item{fossils}{Fossils object.}
 }
 \value{
-A tree integrating the fossils.
+A list of `tree`, the SA tree integrating the fossils, and `fossils`, the fossils object updated with the tip label of each sample.
 }
 \description{
 Transforms a tree and fossils dataframe to a combined SA tree.
@@ -30,5 +30,5 @@ f = sim.fossils.poisson(rate = 2, tree = t)
 
 # transform format
 t2 = SAtree.from.fossils(t,f)
-plot(t2)
+plot(t2$tree)
 }

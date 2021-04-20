@@ -40,7 +40,7 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 			t = trees[[i]]
 			f <- sim.fossils.poisson(tree = t, rate = psi)
 
-			tree = SAtree.from.fossils(t,f)
+			tree = SAtree.from.fossils(t,f)$tree
 
 			node.ages = n.ages(tree)
 
@@ -119,7 +119,7 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
 
 		f <- sim.fossils.intervals(tree = t, interval.ages = horizons, rates = psi) # reordered
 
-		tree = SAtree.from.fossils(t,f)
+		tree = SAtree.from.fossils(t,f)$tree
 
 		node.ages = n.ages(tree)
 
@@ -174,7 +174,7 @@ sim.fbd.taxa <- function(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE
 		t = trees[[i]]
 		f <- sim.fossils.poisson(tree = t, rate = psi)
 
-		tree = SAtree.from.fossils(t,f)
+		tree = SAtree.from.fossils(t,f)$tree
 
 		node.ages = n.ages(tree)
 
