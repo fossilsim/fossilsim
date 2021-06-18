@@ -18,7 +18,7 @@
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
-#' @param model Model used to simulate rate variation across lineages. Options include "autocorrelated" (default) or "independent".
+#' @param model Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "BM" (Brownian motion) or "independent".
 #' @param v Brownian motion parameter \eqn{v} used in the autocorrelated model. Default = 0.01.
 #' @param dist Distribution of trait values used to draw new values under the "independent" model. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.
 #' @param change.pr Probability that trait values change at speciation events. Default = 1.
@@ -78,8 +78,8 @@ sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = 
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
 
-  if(model != "autocorrelated" && model != "independent")
-    stop("specify a valid model option = 'autocorrelated' or 'independent'")
+  if(model != "autocorrelated" && model != "independent" && model != "BM")
+    stop("specify a valid model option = 'autocorrelated', 'independent' or 'BM'")
 
   if(!(change.pr >= 0 & change.pr <= 1))
     stop("change.pr must be a probability between 0 and 1")
@@ -106,6 +106,9 @@ sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = 
       # this follows the molecular clock model of Kishino et al 2001
       # and the preservation model described in Heath et al 2014 (supplementary material)
       r = rlnorm(1, meanlog = log(r) - ((blength*v)/2), sdlog = sqrt(blength*v))
+    } else if (model == "BM"){
+      # regular Brownian motion
+      r = rnorm(1, mean = r, sd = sqrt(blength * v))
     } else if (change.pr < 1) {
       if(runif(1) < change.pr)
         r = dist()
