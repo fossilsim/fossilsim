@@ -51,6 +51,17 @@
 #' f = sim.fossils.poisson(rates, taxonomy = s)
 #' plot(f, t)
 #'
+#' # simulate traits under Brownian motion and convert into rates
+#' traits = sim.trait.values(0, taxonomy = s, model = "BM", v = 2)
+#' function for translating states into rates
+#' translate.states = function(traits, low, high) sapply(traits, function(t) if(t < 0) low else high)
+#' sampling rates
+#' low = 0.1
+#' high = 2
+#' rates = translate.states(traits, low, high)
+#' f = sim.fossils.poisson(rates, taxonomy = s)
+#' plot(f, tree = t)
+#'
 #' @references
 #' Heath et al. 2014. The fossilized birth-death process for coherent calibration of divergence-time estimates. PNAS 111:E2957-E2966.\cr
 #' Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352-361.

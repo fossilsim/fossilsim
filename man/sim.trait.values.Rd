@@ -24,7 +24,7 @@ sim.trait.values(
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
-\item{model}{Model used to simulate rate variation across lineages. Options include "autocorrelated" (default) or "independent".}
+\item{model}{Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "BM" (Brownian motion) or "independent".}
 
 \item{v}{Brownian motion parameter \eqn{v} used in the autocorrelated model. Default = 0.01.}
 
@@ -74,6 +74,17 @@ rates = sim.trait.values(rate, taxonomy = s, model = "independent",
                         dist = dist, change.pr = 0.1)
 f = sim.fossils.poisson(rates, taxonomy = s)
 plot(f, t)
+
+# simulate traits under Brownian motion and convert into rates
+traits = sim.trait.values(0, taxonomy = s, model = "BM", v = 2)
+function for translating states into rates
+translate.states = function(traits, low, high) sapply(traits, function(t) if(t < 0) low else high)
+sampling rates
+low = 0.1
+high = 2
+rates = translate.states(traits, low, high)
+f = sim.fossils.poisson(rates, taxonomy = s)
+plot(f, tree = t)
 
 }
 \references{
