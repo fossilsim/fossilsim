@@ -12,7 +12,8 @@ sim.trait.values(
   model = "autocorrelated",
   v = 0.01,
   dist = function() {     runif(1, 0, 2) },
-  change.pr = 1
+  change.pr = 1,
+  k = 2
 )
 }
 \arguments{
@@ -24,13 +25,15 @@ sim.trait.values(
 
 \item{root.edge}{If TRUE include the root edge. Default = TRUE.}
 
-\item{model}{Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "BM" (Brownian motion) or "independent".}
+\item{model}{Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "BM" (Brownian motion), "independent" or the Lewis "Mk" model.}
 
-\item{v}{Brownian motion parameter \eqn{v} used in the autocorrelated model. Default = 0.01.}
+\item{v}{Brownian motion parameter \eqn{v} used in the autocorrelated and BM models. Or rate change under the Mk model. Default = 0.01.}
 
 \item{dist}{Distribution of trait values used to draw new values under the "independent" model. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.}
 
 \item{change.pr}{Probability that trait values change at speciation events. Default = 1.}
+
+\item{k}{Number of states used for the Mk model. Default = 2.}
 }
 \value{
 A vector of parameter values.
@@ -38,17 +41,18 @@ Values are output for each species in the order in which they appear in the taxo
 If the tree object has a root edge (\code{root.edge}), the first entry in the vector will correspond to this edge.
 }
 \description{
-Fossil recovery rates or other parameter values can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object,
-under an "autocorrelated" or "independent" trait values model.
+Fossil recovery rates or other parameter values can be simulated for a phylo (\code{tree}) or taxonomy (\code{taxonomy}) object.
 Under the \code{autocorrelated} model, trait values evolve along lineages according to a Brownian motion process, where the strength of the relationship between ancestor and descendant values is determined by the parameter \eqn{\nu} (\code{v}).
 If \eqn{\nu} is small values will be more similar between ancestor and descendants, and if \eqn{\nu} is zero all trait values will be equal.
 For a given species \eqn{i} with ancestor \eqn{j}, a new trait value \eqn{\kappa_i} is drawn from a lognormal distribution with
 \deqn{\kappa_i ~ LN( ln([\kappa_j] - (\sigma^2/2), \sigma)}
 where \eqn{\sigma = \nu * t_i} and \eqn{t_i} is the lineage duration of the species.
 This fossil recovery model is described in Heath et al. (2014) and is equivalent to the autocorrelated relaxed clock model described in Kishino et al. (2001).
+Under the \code{BM} model traits are simulated under a standard Brownian motion process with rate parameter \eqn{\nu} (\code{v}).
 Under the \code{independent} model a new trait value is drawn for each species from any valid user-specified distribution (\code{dist}).
 \code{change.pr} is the probability that a trait value will change at each speciation event.
 If \code{change.pr = 1} trait values will be updated at every speciation events.
+Finally, traits can be simulated under the standard Lewis Mk model (\code{Mk}), with symmetric rates of change. The rate is specified using \code{v} and number of states using \code{k}.
 }
 \examples{
 # simulate tree
