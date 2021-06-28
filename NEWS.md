@@ -1,3 +1,8 @@
+## Version 2.2.1 (unpublished)
+
+### Functionality changes
+* `SAtree.from.fossils` now returns a list of `tree` (the resulting SA tree) and `fossils` (the original `fossils` data.frame updated to include the tip label of each fossil in the SA tree). NB: this change breaks compatibility with previous versions of the function.
+
 ## Version 2.2.0
 
 #### New functionality
