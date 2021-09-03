@@ -8,7 +8,8 @@
 #' \deqn{\kappa_i ~ LN( ln([\kappa_j] - (\sigma^2/2), \sigma)}
 #' where \eqn{\sigma = \nu * t_i} and \eqn{t_i} is the lineage duration of the species.
 #' This fossil recovery model is described in Heath et al. (2014) and is equivalent to the autocorrelated relaxed clock model described in Kishino et al. (2001).
-#' Under the \code{BM} model traits are simulated under a standard Brownian motion process with rate parameter \eqn{\nu} (\code{v}).
+#' Under the \code{BM} and \code{OU} models traits are simulated under a standard Brownian motion or Ornstein-Uhlenbeck process with rate parameter \eqn{\nu} (\code{v}).
+#' The OU model has the additional parameter \code{alpha}, which determines the strength with which trait values are attracted to the mean. Note the \code{init} argument will specify both the value at the root and the mean of the process under the OU model.
 #' Under the \code{independent} model a new trait value is drawn for each species from any valid user-specified distribution (\code{dist}).
 #' \code{change.pr} is the probability that a trait value will change at each speciation event.
 #' If \code{change.pr = 1} trait values will be updated at every speciation events.
@@ -18,8 +19,9 @@
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
-#' @param model Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "BM" (Brownian motion), "independent" or the Lewis "Mk" model.
-#' @param v Brownian motion parameter \eqn{v} used in the autocorrelated and BM models. Or rate change under the Mk model. Default = 0.01.
+#' @param model Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "BM" (Brownian motion), "OU" (Ornstein-Uhlenbeck), "independent" or the Lewis "Mk" model.
+#' @param v Brownian motion parameter \eqn{v} used in the autocorrelated, BM and OU models. Or rate change under the Mk model. Default = 0.01.
+#' @param alpha Ornstein-Uhlenbeck parameter \eqn{alpha}. Determines the strength with which trait values are pulled back towards the mean.
 #' @param dist Distribution of trait values used to draw new values under the "independent" model. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.
 #' @param change.pr Probability that trait values change at speciation events. Default = 1.
 #' @param k Number of states used for the Mk model. Default = 2.
@@ -69,7 +71,7 @@
 #'
 #' @export
 sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
-                             model = "autocorrelated", v = 0.01,
+                             model = "autocorrelated", v = 0.01, alpha = 0.1,
                              dist = function(){runif(1,0,2)}, change.pr = 1, k = 2){
 
   if(is.null(tree) && is.null(taxonomy))
@@ -90,7 +92,7 @@ sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = 
   if(is.null(taxonomy) && !ape::is.rooted(tree))
     stop("tree must be rooted")
 
-  if(model != "autocorrelated" && model != "independent" && model != "BM" && model != "Mk")
+  if(model != "autocorrelated" && model != "independent" && model != "BM" && model != "OU" && model != "Mk" )
     stop("specify a valid model option = 'autocorrelated', 'BM', 'independent' or 'Mk'")
 
   if(!(change.pr >= 0 & change.pr <= 1))
@@ -124,6 +126,10 @@ sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = 
     } else if (model == "BM"){
       # regular Brownian motion
       r = rnorm(1, mean = r, sd = sqrt(blength * v))
+    } else if (model == "OU") {
+      mean = r * exp(-alpha)
+      sd = sqrt(v/(2 * alpha) * (1 - exp(-2 * alpha)))
+      r = rnorm(1, mean = mean, sd = sqrt(blength * v))
     } else if (model == "Mk") {
       # Pr of difference under symmetric Mk model
       if ( runif(1) < (( (k - 1) / k ) * (1 - exp(-( k / (k - 1) ) * v * blength) ) ) )
