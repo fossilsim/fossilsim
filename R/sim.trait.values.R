@@ -22,6 +22,8 @@
 #' @param model Model used to simulate rate variation across lineages. Options include "autocorrelated" (default), "BM" (Brownian motion), "OU" (Ornstein-Uhlenbeck), "independent" or the Lewis "Mk" model.
 #' @param v Brownian motion parameter \eqn{v} used in the autocorrelated, BM and OU models. Or rate change under the Mk model. Default = 0.01.
 #' @param alpha Ornstein-Uhlenbeck parameter \eqn{alpha}. Determines the strength with which trait values are pulled back towards the mean.
+#' @param min.value Min trait value allowed under the BM and OU models. Default = -Inf.
+#' @param min.value Max trait value allowed under the BM and OU models. Default = Inf.
 #' @param dist Distribution of trait values used to draw new values under the "independent" model. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.
 #' @param change.pr Probability that trait values change at speciation events. Default = 1.
 #' @param k Number of states used for the Mk model. Default = 2.
@@ -71,7 +73,7 @@
 #'
 #' @export
 sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
-                             model = "autocorrelated", v = 0.01, alpha = 0.1,
+                             model = "autocorrelated", v = 0.01, alpha = 0.1, min.value = -Inf, max.value = Inf,
                              dist = function(){runif(1,0,2)}, change.pr = 1, k = 2){
 
   if(is.null(tree) && is.null(taxonomy))
@@ -104,6 +106,12 @@ sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = 
   if((model == "Mk") & ( init > k ))
     stop("Initial value incompatible with number of states k")
 
+  if(init <= min.value)
+    stop("Initial value must be > min.value")
+
+  if(init >= max.value)
+    stop("Initial value must be < max.value")
+
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1, root.edge = root.edge)
     from.taxonomy = FALSE
@@ -124,12 +132,12 @@ sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = 
       # and the preservation model described in Heath et al 2014 (supplementary material)
       r = rlnorm(1, meanlog = log(r) - ((blength*v)/2), sdlog = sqrt(blength*v))
     } else if (model == "BM"){
-      # regular Brownian motion
-      r = rnorm(1, mean = r, sd = sqrt(blength * v))
+      # truncated normal - if a = -Inf and b = Inf this is regular BM
+      r = rtnorm(1, mean = r, sd = sqrt(blength * v), a = min.value, b = max.value)
     } else if (model == "OU") {
       mean = r * exp(-alpha)
       sd = sqrt(v/(2 * alpha) * (1 - exp(-2 * alpha)))
-      r = rnorm(1, mean = mean, sd = sqrt(blength * v))
+      r = rtnorm(1, mean = mean, sd = sqrt(blength * v), a = min.value, b = max.value)
     } else if (model == "Mk") {
       # Pr of difference under symmetric Mk model
       if ( runif(1) < (( (k - 1) / k ) * (1 - exp(-( k / (k - 1) ) * v * blength) ) ) )

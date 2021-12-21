@@ -12,6 +12,8 @@ sim.trait.values(
   model = "autocorrelated",
   v = 0.01,
   alpha = 0.1,
+  min.value = -Inf,
+  max.value = Inf,
   dist = function() {     runif(1, 0, 2) },
   change.pr = 1,
   k = 2
@@ -31,6 +33,8 @@ sim.trait.values(
 \item{v}{Brownian motion parameter \eqn{v} used in the autocorrelated, BM and OU models. Or rate change under the Mk model. Default = 0.01.}
 
 \item{alpha}{Ornstein-Uhlenbeck parameter \eqn{alpha}. Determines the strength with which trait values are pulled back towards the mean.}
+
+\item{min.value}{Max trait value allowed under the BM and OU models. Default = Inf.}
 
 \item{dist}{Distribution of trait values used to draw new values under the "independent" model. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.}
 
