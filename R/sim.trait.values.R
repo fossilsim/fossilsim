@@ -141,7 +141,7 @@ sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = 
     } else if (model == "Mk") {
       # Pr of difference under symmetric Mk model
       if ( runif(1) < (( (k - 1) / k ) * (1 - exp(-( k / (k - 1) ) * v * blength) ) ) )
-        r = sample(c(0:k-1)[-r], 1)
+        r = sample(c(0:(k-1))[-(r+1)], 1)
       # slow alternative for cross checking: x = rpois(1, blength * v); if(x > 0) for (i in 1:x) { r = sample(c(1:k)[-r], 1) }
     } else if (change.pr < 1) {
       if(runif(1) < change.pr)
