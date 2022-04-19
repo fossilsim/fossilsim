@@ -23,7 +23,7 @@
 #' @param v Brownian motion parameter \eqn{v} used in the autocorrelated, BM and OU models. Or rate change under the Mk model. Default = 0.01.
 #' @param alpha Ornstein-Uhlenbeck parameter \eqn{alpha}. Determines the strength with which trait values are pulled back towards the mean.
 #' @param min.value Min trait value allowed under the BM and OU models. Default = -Inf.
-#' @param min.value Max trait value allowed under the BM and OU models. Default = Inf.
+#' @param max.value Max trait value allowed under the BM and OU models. Default = Inf.
 #' @param dist Distribution of trait values used to draw new values under the "independent" model. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.
 #' @param change.pr Probability that trait values change at speciation events. Default = 1.
 #' @param k Number of states used for the Mk model. Default = 2.
@@ -58,9 +58,9 @@
 #'
 #' # simulate traits under Brownian motion and convert into rates
 #' traits = sim.trait.values(0, taxonomy = s, model = "BM", v = 2)
-#' function for translating states into rates
+#' # function for translating states into rates
 #' translate.states = function(traits, low, high) sapply(traits, function(t) if(t < 0) low else high)
-#' sampling rates
+#' # sampling rates
 #' low = 0.1
 #' high = 2
 #' rates = translate.states(traits, low, high)
@@ -72,6 +72,7 @@
 #' Kishino et al. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution MBE 18:352-361.
 #'
 #' @export
+#' @importFrom stats pnorm qnorm
 sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = TRUE,
                              model = "autocorrelated", v = 0.01, alpha = 0.1, min.value = -Inf, max.value = Inf,
                              dist = function(){runif(1,0,2)}, change.pr = 1, k = 2){
