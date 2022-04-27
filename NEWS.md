@@ -1,3 +1,11 @@
+## Unreleased
+
+#### New functionality
+* `sim.fossils.environment` now takes an argument `use.exact.times` which determines if fossil sampling times are recorded exactly or based on interval bounds
+
+#### Bug fixes
+* Fixed a bug in `plot.fossils` which would not restore plotting parameters properly in some cases.
+
 ## Version 2.3.0
 
 #### New functionality
