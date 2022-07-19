@@ -1,5 +1,5 @@
 ## Test environments
-* local Ubuntu 20.04 install, R 4.1.3
+* local Windows install, R 4.2.0
 * R-hub
 * win-builder, devel
 
@@ -10,12 +10,16 @@
 There was 1 note on R-hub & win-builder:
  * Found the following (possibly) invalid URLs:
     URL: https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.13170
-      From: README.md
-      Status: 503
-      Message: Service Unavailable
-URL works fine in local check and in several browsers.
+    From: README.md
+    Status: 503
+    Message: Service Unavailable
+  URL: https://doi.org/10.1073/pnas.1319091111
+    From: inst/doc/fossils.html
+    Status: 503
+    Message: Service Unavailable
+URLs work fine in local check and in several browsers.
 
 ## Reverse dependencies
 
-There are no reverse dependencies, as verified using ``devtools::revdep()``.
+The reverse dependency "FossilSimShiny" has been checked with the new changes.
 
