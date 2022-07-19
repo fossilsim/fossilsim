@@ -1,10 +1,13 @@
-## Unreleased
+## Version 2.3.1
 
 #### New functionality
 * `sim.fossils.environment` now takes an argument `use.exact.times` which determines if fossil sampling times are recorded exactly or based on interval bounds
 
 #### Bug fixes
 * Fixed a bug in `plot.fossils` which would not restore plotting parameters properly in some cases.
+
+### Documentation changes
+ * Updated the documentation of FBD simulation functions (`sim.fbd.taxa`, `sim.fbd.age`) to clarify the sampling process when `complete = FALSE`
 
 ## Version 2.3.0
 

@@ -41,12 +41,7 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
     origin = max(n.ages(tree)) + tree$root.edge
     
     if( !complete ) {
-      
-      if( frac < 1 ) n = round(length(extant.tips) * frac)
-      else n = 0
-      
-      tree = drop.unsampled(tree, frac = frac, n = n)
-      
+      tree = drop.unsampled(tree, frac = frac)
       node.ages = n.ages(tree)
     }
     
@@ -163,7 +158,7 @@ sim.fbd.taxa <- function(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE
   return(trees)
 }
 
-drop.unsampled = function(tree, frac = 1, n = 0) {
+drop.unsampled = function(tree, frac = 1, n = -1) {
   fossil.tips = is.extinct(tree, tol = 0.000001)
   extant.tips = tree$tip.label[!(tree$tip.label %in% fossil.tips)]
   
@@ -171,7 +166,10 @@ drop.unsampled = function(tree, frac = 1, n = 0) {
   
   unsampled.tips = fossil.tips[!(fossil.tips %in% sa.tips)]
   
-  if( frac < 1 ) unsampled.tips <- c( unsampled.tips, extant.tips[!(extant.tips %in% sample(extant.tips, n))] )
+  if( frac < 1 ) {
+    if(n == -1) n = round(length(extant.tips) * frac)
+    unsampled.tips <- c( unsampled.tips, extant.tips[!(extant.tips %in% sample(extant.tips, n))] )
+  }
   
   tree = ape::drop.tip(tree, unsampled.tips)
   tree
