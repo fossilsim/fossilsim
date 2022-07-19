@@ -145,7 +145,7 @@ plot.taxonomy = function(x, tree, show.mode = TRUE, show.legend = TRUE, legend.p
   }
 
   # the order in which you use plot and par here is very important
-  old.par = par("xpd")
+  old.par = list(xpd = par("xpd"))
   par(xpd=NA)
   # open a new plot window
   graphics::plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)

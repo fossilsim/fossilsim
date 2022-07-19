@@ -16,7 +16,8 @@ sim.fossils.environment(
   PA = 0.5,
   root.edge = TRUE,
   use.rates = FALSE,
-  pr.1.approx = 0.999
+  pr.1.approx = 0.999,
+  use.exact.times = TRUE
 )
 }
 \arguments{
@@ -43,9 +44,11 @@ sim.fossils.environment(
 \item{use.rates}{If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.}
 
 \item{pr.1.approx}{Value used to approximate sampling probabilities = 1 when use.rates = TRUE.}
+
+\item{use.exact.times}{If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.}
 }
 \value{
-An object of class fossils, where \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval.
+An object of class fossils.
 }
 \description{
 This function uses a three parameter Gaussian model to simulate non-uniform fossil recovery along a specified phylogeny.

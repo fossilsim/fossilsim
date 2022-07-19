@@ -298,10 +298,8 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL, fossils = NULL,
         if (runif(1) <= pr) {
           if(use.exact.times) {
             fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = ages, hmax = ages, stringsAsFactors = F))
-          } else { # { use interval ages }
-            min.time = interval.ages[i]
-            max.time = interval.ages[i+1]
-            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+          } else { # use interval ages
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = interval.ages[i], hmax = interval.ages[i+1], stringsAsFactors = F))
           }
         }
       }
@@ -351,8 +349,9 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL, fossils = NULL,
 #' @param root.edge If TRUE include the root edge. Default = TRUE.
 #' @param use.rates If TRUE convert per interval sampling probability into a per interval Poisson rate. Default = FALSE.
 #' @param pr.1.approx Value used to approximate sampling probabilities = 1 when use.rates = TRUE.
+#' @param use.exact.times If TRUE use exact sampling times. If FALSE \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval. Default = TRUE.
 #'
-#' @return An object of class fossils, where \code{hmin} and \code{hmax} will equal the start and end times of the corresponding interval.
+#' @return An object of class fossils.
 #'
 #' @references
 #' Holland, S.M. 1995. The stratigraphic distribution of fossils. Paleobiology 21: 92-109.
@@ -394,7 +393,7 @@ sim.fossils.intervals = function(tree = NULL, taxonomy = NULL, fossils = NULL,
 sim.fossils.environment = function(tree = NULL, taxonomy = NULL,
                                       interval.ages = NULL, max.age = NULL, strata = NULL,
                                       proxy.data = NULL, PD = 0.5, DT = 0.5, PA = 0.5,
-                                      root.edge = TRUE, use.rates = FALSE, pr.1.approx = 0.999){
+                                      root.edge = TRUE, use.rates = FALSE, pr.1.approx = 0.999, use.exact.times = TRUE){
 
   if(is.null(tree) && is.null(taxonomy))
     stop("Specify phylo or taxonomy object")
@@ -499,8 +498,15 @@ sim.fossils.environment = function(tree = NULL, taxonomy = NULL,
         k = rpois(1, rates[i, j]*(max.time - min.time))
         ages = runif(k, min.time, max.time)
         edge = sapply(ages, function(x) edges$edge[which(edges$start > x & edges$end < x)])
-        if(k > 0)
+        if(k > 0) {
+          if(use.exact.times) {
             fdf <- rbind(fdf, data.frame(sp = sp, edge = edge, hmin = ages, hmax = ages, stringsAsFactors = F))
+          } else {
+            min.time = rep(interval.ages[j], k)
+            max.time = rep(interval.ages[j+1], k) # this is kind of redundant
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+          }
+        }
       }
       else{
         # scale the probability
@@ -510,10 +516,11 @@ sim.fossils.environment = function(tree = NULL, taxonomy = NULL,
         edge = sapply(ages, function(x) edges$edge[which(edges$start > x & edges$end < x)])
         # if random.number < pr { record fossil as collected during interval }
         if (runif(1) <= pr) {
-            # use interval ages
-            min.time = interval.ages[j]
-            max.time = interval.ages[j+1]
-            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = min.time, hmax = max.time, stringsAsFactors = F))
+          if(use.exact.times) {
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = ages, hmax = ages, stringsAsFactors = F))
+          } else { # use interval ages
+            fdf <- rbind(fdf,data.frame(sp = sp, edge = edge, hmin = interval.ages[j], hmax = interval.ages[j+1], stringsAsFactors = F))
+          }
         }
       }
     }
@@ -596,5 +603,4 @@ sim.fossils.exponential = function(tree,rate,root.edge=TRUE){
 
   fossils <- as.fossils(fossils, FALSE)
   return(fossils) # in this data frame h=fossil age and sp=lineage
-  # EOF
 }

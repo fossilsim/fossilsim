@@ -36,7 +36,9 @@ sim.trait.values(
 
 \item{alpha}{Ornstein-Uhlenbeck parameter \eqn{alpha}. Determines the strength with which trait values are pulled back towards the mean.}
 
-\item{min.value}{Max trait value allowed under the BM and OU models. Default = Inf.}
+\item{min.value}{Min trait value allowed under the BM and OU models. Default = -Inf.}
+
+\item{max.value}{Max trait value allowed under the BM and OU models. Default = Inf.}
 
 \item{dist}{Distribution of trait values used to draw new values under the "independent" model. This parameter is ignored if \code{model = "autocorrealted"}. The default is a uniform distribution with \emph{U(0, 2)}. The distribution function must return a single value.}
 
@@ -91,9 +93,9 @@ plot(f, t)
 
 # simulate traits under Brownian motion and convert into rates
 traits = sim.trait.values(0, taxonomy = s, model = "BM", v = 2)
-function for translating states into rates
+# function for translating states into rates
 translate.states = function(traits, low, high) sapply(traits, function(t) if(t < 0) low else high)
-sampling rates
+# sampling rates
 low = 0.1
 high = 2
 rates = translate.states(traits, low, high)
