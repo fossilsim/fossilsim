@@ -17,14 +17,10 @@ sim.fbd.taxa(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE)
 
 \item{psi}{Fossil sampling rate.}
 
-\item{frac}{When complete = FALSE: The actual
-number of extant tips is n/frac, but only n tips are included
-(incomplete sampling). When complete = TRUE: all extinct and
-non-sampled lineages are included, i.e. the tree has n/frac
-extant tips.}
+\item{frac}{Extant sampling fraction. When complete = FALSE, the actual (simulated) number of extant tips is n/frac, but only n tips are included
+in the result (incomplete sampling). When complete = TRUE: all unsampled lineages are included, i.e. the final tree has n/frac extant tips.}
 
-\item{complete}{If TRUE, the tree with the extinct and non-sampled lineages
-is returned. If FALSE, the extinct lineages are suppressed.}
+\item{complete}{whether to return the complete tree (with non-sampled lineages) or the reconstructed tree (with unsampled lineages removed).}
 }
 \value{
 List of numbsim simulated SAtrees with n extant sampled tips.

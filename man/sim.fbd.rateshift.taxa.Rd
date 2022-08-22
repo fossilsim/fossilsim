@@ -24,9 +24,7 @@ is the fossil sampling rate prior (ancestral) to time times[i].}
 today and increasing going backwards in time. Specify the
 vector as times[i]<times[i+1]. times[1]=0 (today).}
 
-\item{complete}{If TRUE, the tree including the extinct lineages and
-non-sampled lineages is returned. If FALSE, the extinct lineages
-and non-sampled lineages are suppressed.}
+\item{complete}{whether to return the complete tree (with non-sampled lineages) or the reconstructed tree (with unsampled lineages removed).}
 }
 \value{
 List of numbsim simulated SAtrees with n extant sampled tips.

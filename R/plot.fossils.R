@@ -269,7 +269,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     par(fig=c(0,1,0.4,1))
   }
   else{
-    old.par = par("xpd")
+    old.par = list(xpd = par("xpd"))
     par(xpd=NA)
     # open a new plot window
     graphics::plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)

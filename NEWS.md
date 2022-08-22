@@ -1,6 +1,20 @@
-## Version 2.2.1 (unpublished)
+## Version 2.3.1
 
-### Functionality changes
+#### New functionality
+* `sim.fossils.environment` now takes an argument `use.exact.times` which determines if fossil sampling times are recorded exactly or based on interval bounds
+
+#### Bug fixes
+* Fixed a bug in `plot.fossils` which would not restore plotting parameters properly in some cases.
+
+### Documentation changes
+ * Updated the documentation of FBD simulation functions (`sim.fbd.taxa`, `sim.fbd.age`) to clarify the sampling process when `complete = FALSE`
+
+## Version 2.3.0
+
+#### New functionality
+* Added Lewis Mk, BM (Brownian motion) and OU (Ornstein-Uhlenbeck) models as options to simulate traits in function `sim.trait.values`.
+
+#### Function changes
 * `SAtree.from.fossils` now returns a list of `tree` (the resulting SA tree) and `fossils` (the original `fossils` data.frame updated to include the tip label of each fossil in the SA tree). NB: this change breaks compatibility with previous versions of the function.
 
 ## Version 2.2.0
