@@ -31,7 +31,7 @@
   reconstructed = FALSE,
   fossil.col = 1,
   range.col = rgb(0, 0, 1),
-  extant.col = NULL,
+  extant.col = 1,
   cex = 1.2,
   pch = 18,
   ...

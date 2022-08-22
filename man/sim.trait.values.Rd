@@ -14,7 +14,9 @@ sim.trait.values(
   alpha = 0.1,
   min.value = -Inf,
   max.value = Inf,
-  dist = function() {     runif(1, 0, 2) },
+  dist = function() {
+     runif(1, 0, 2)
+ },
   change.pr = 1,
   k = 2
 )

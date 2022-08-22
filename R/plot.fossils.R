@@ -85,7 +85,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         # tree appearance
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, reconstructed = FALSE,
                         # fossil appearance
-                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = NULL, cex = 1.2, pch = 18, ...) {
+                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, cex = 1.2, pch = 18, ...) {
 
   fossils = x
 
@@ -103,7 +103,6 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   adj = NULL
   srt = 0
 
-  if(is.null(extant.col)) extant.col = fossil.col
   if(!show.tree) align.tip.label = TRUE
 
   if(!(is.fossils(fossils)))
@@ -392,9 +391,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
         }
       }
 
-      if (extant.col != fossil.col){
-        fossils$col[which(fossils$h < tol)] = extant.col
-      }
+      fossils$col[which(fossils$h < tol)] = extant.col
 
       if(show.fossils || show.ranges){
         if(binned) {
@@ -516,7 +513,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     }
   }
 
-  par(old.par)
+  if(!is.na(old.par)) par(old.par)
   L <- list(type = type, use.edge.length = TRUE,
             node.pos = NULL, node.depth = node.depth, show.tip.label = show.tip.label,
             show.node.label = FALSE, font = font, cex = cex,
