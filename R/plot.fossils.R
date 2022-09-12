@@ -33,7 +33,7 @@
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
 #' @param show.tip.label Whether to show the tip labels on the phylogeny (defaults to FALSE).
 #' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (following \code{lty}).
-#' @param fossil.col Colour of fossil occurrences.
+#' @param fossil.col Colour of fossil occurrences. A vector equal to the length of the fossils object can be used to assign different colours.
 #' @param range.col Colour of stratigraphic ranges.
 #' @param extant.col Colour of extant samples. If show.taxonomy = TRUE extant.col will be ignored.
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.

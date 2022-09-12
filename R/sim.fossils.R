@@ -70,6 +70,15 @@ sim.fossils.poisson = function(rate, tree = NULL, taxonomy = NULL, fossils = NUL
   if(!is.null(tree) && !is.null(taxonomy))
     warning("tree and taxonomy both defined, using taxonomy")
 
+  if(!is.null(attr(rate, "from.taxonomy"))){
+    if(attr(rate, "from.taxonomy") && is.null(taxonomy)){
+      stop("rates simulated from taxonomy, matching \"taxonomy\" object also required")
+    }
+    if(!attr(rate, "from.taxonomy") && is.null(tree)){
+      stop("rates simulated from tree, matching \"tree\" object also required")
+    }
+  }
+
   if(is.null(taxonomy) && is.null(tree$edge.length))
     stop("tree must have edge lengths")
 

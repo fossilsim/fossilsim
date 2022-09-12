@@ -181,6 +181,7 @@ sim.trait.values = function(init = 1, tree = NULL, taxonomy = NULL, root.edge = 
     else rates = rates[tree$edge[,2]]
   }
 
+  attr(rates, "from.taxonomy") <- from.taxonomy
   return(rates)
 }
 
