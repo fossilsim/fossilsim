@@ -8,7 +8,7 @@ Authors@R: c(person("Rachel", "Warnock", email="rachel.warnock@bsse.ethz.ch", ro
 Description: Simulating taxonomy and fossil data on phylogenetic trees under mechanistic
     models of speciation, preservation and sampling.
 License: GPL-3
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Imports:
     ape,
     TreeSim,

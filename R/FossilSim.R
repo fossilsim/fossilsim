@@ -48,4 +48,4 @@
 #'
 #' @docType package
 #' @name FossilSim
-NULL
+"_PACKAGE"

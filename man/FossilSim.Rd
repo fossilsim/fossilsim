@@ -3,6 +3,7 @@
 \docType{package}
 \name{FossilSim}
 \alias{FossilSim}
+\alias{FossilSim-package}
 \title{FossilSim: A package for simulating and plotting fossil and taxonomy data}
 \description{
 This package provides functions for simulating both taxonomy and fossil data from an existing phylogeny.
@@ -58,5 +59,16 @@ plot(f, tree = t, taxonomy = s, show.taxonomy = TRUE)
 f = sim.fossils.intervals(tree = t, rates = c(1, 0.1, 1, 0.1), max.age = tree.max(t), strata = 4)
 # plot the result, with the time intervals
 plot(f, tree = t, show.strata = TRUE, max.age = tree.max(t), strata = 4)
+
+}
+\author{
+\strong{Maintainer}: Joelle Barido-Sottani \email{joelle.barido-sottani@m4x.org} [copyright holder]
+
+Authors:
+\itemize{
+  \item Rachel Warnock \email{rachel.warnock@bsse.ethz.ch} [copyright holder]
+  \item Walker Pett [copyright holder]
+  \item O'Reilly Joseph [copyright holder]
+}
 
 }
