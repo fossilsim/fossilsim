@@ -3,7 +3,7 @@
 #' @param fossils Fossils object.
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
-#' @param rho Extant species sampling probability.
+#' @param rho Extant species sampling probability. Can be a single value or a vector. Vector entries will be applied to extant tips in the order in which they appear in the taxonomy object.
 #' @param tol Rounding error tolerance for tip ages.
 #'
 #' @return An object of class fossils containing extant tip samples equal to the age of the tips (i.e. 0.0).
@@ -46,7 +46,7 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
       stop("species taxonomy defined but fossils not based on taxonomy")
   }
 
-  if(!(rho >= 0 && rho <= 1))
+  if(any(rho < 0 | rho > 1))
     stop("rho must be a probability between 0 and 1")
 
   if(is.null(taxonomy)){
@@ -57,13 +57,24 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
   if(is.null(tol))
     tol = if(is.null(tree)) 1e-8 else min(min(tree$edge.length)/100, 1e-8)
 
-  for (i in unique(taxonomy$sp)){
+  nextant = length(which(taxonomy$end > (0 - tol) & taxonomy$end < (0 + tol)))
+  if(length(rho) > 1){
+    if(nextant != length(rho)){
+      stop("rho must be a single value or a vector with length equal to the number of extant tips")
+    }
+  } else{
+    rho = rep(rho, nextant)
+  }
+
+  j = 0
+  for(i in unique(taxonomy$sp)){
 
     end = min(taxonomy$end[which(taxonomy$sp == i)])
 
     if(!(end > (0 - tol) & end < (0 + tol))) next
+    j = j + 1
 
-    if(runif(1) < rho){
+    if(runif(1) < rho[j]){
       # identify the edge ending zero
       edge = taxonomy$edge[which(abs(taxonomy$end) < tol & taxonomy$sp == i)]
 
@@ -71,6 +82,7 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
     }
 
   }
+
   if(!is.fossils(fossils))
     fossils = as.fossils(fossils, from.taxonomy = from.taxonomy)
   return(fossils)

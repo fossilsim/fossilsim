@@ -13,7 +13,7 @@ sim.extant.samples(fossils, tree = NULL, taxonomy = NULL, rho = 1, tol = NULL)
 
 \item{taxonomy}{Taxonomy object.}
 
-\item{rho}{Extant species sampling probability.}
+\item{rho}{Extant species sampling probability. Can be a single value or a vector. Vector entries will be applied to extant tips in the order in which they appear in the taxonomy object.}
 
 \item{tol}{Rounding error tolerance for tip ages.}
 }
