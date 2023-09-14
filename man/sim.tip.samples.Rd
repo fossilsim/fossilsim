@@ -13,7 +13,7 @@ sim.tip.samples(fossils, tree, taxonomy = NULL, rho = 1)
 
 \item{taxonomy}{Taxonomy object.}
 
-\item{rho}{Tip sampling probability.}
+\item{rho}{Tip sampling probability. Can be a single value or a vector. Vector entries will be applied to extant tips in the order in which they appear in the taxonomy object.}
 }
 \value{
 An object of class fossils containing extant or extinct tip samples equal to the age of the tips.

@@ -94,7 +94,7 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
 #' @param fossils Fossils object.
 #' @param tree Phylo object.
 #' @param taxonomy Taxonomy object.
-#' @param rho Tip sampling probability.
+#' @param rho Tip sampling probability. Can be a single value or a vector. Vector entries will be applied to extant tips in the order in which they appear in the taxonomy object.
 #'
 #' @return An object of class fossils containing extant or extinct tip samples equal to the age of the tips.
 #'
@@ -131,14 +131,24 @@ sim.tip.samples<-function(fossils, tree, taxonomy = NULL, rho = 1){
       stop("species taxonomy defined but fossils not based on taxonomy")
   }
 
-  if(!(rho >= 0 && rho <= 1))
+  if(any(rho < 0 | rho > 1))
     stop("rho must be a probability between 0 and 1")
+
+  ntips = length(tree$tip.label)
+  if(length(rho) > 1){
+    if(ntips != length(rho)){
+      stop("rho must be a single value or a vector with length equal to the number of tips")
+    }
+  } else{
+    rho = rep(rho, ntips)
+  }
 
   if(is.null(taxonomy)){
     taxonomy = sim.taxonomy(tree, beta = 1)
     from.taxonomy = FALSE
   } else from.taxonomy = TRUE
 
+  j = 0
   for (i in unique(taxonomy$sp)){
 
     # identify the terminal most edge
@@ -147,7 +157,8 @@ sim.tip.samples<-function(fossils, tree, taxonomy = NULL, rho = 1){
 
     if(is.tip(edge,tree)){
 
-      if(runif(1) < rho){
+      j = j + 1
+      if(runif(1) < rho[j]){
         fossils<-rbind(fossils, data.frame(sp = i, edge = edge, hmin = end, hmax = end))
       }
     }
