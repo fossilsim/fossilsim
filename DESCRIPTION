@@ -11,12 +11,12 @@ License: GPL-3
 RoxygenNote: 7.2.3
 Imports:
     ape,
-    TreeSim,
 Suggests:
     paleotree,
     knitr,
     rmarkdown,
-    devtools
+    devtools,
+    TreeSim
 VignetteBuilder: knitr
 Language: en-GB
 Encoding: UTF-8

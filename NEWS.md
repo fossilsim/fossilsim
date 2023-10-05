@@ -1,10 +1,15 @@
+## Development
+
+#### Technical changes
+* package `TreeSim` was moved from dependencies to suggested packages. A separate installation of `TreeSim` is now required to run functions `sim.fbd.*`
+
 ## Version 2.3.1
 
 #### New functionality
 * `sim.fossils.environment` now takes an argument `use.exact.times` which determines if fossil sampling times are recorded exactly or based on interval bounds
 
 #### Bug fixes
-* Fixed a bug in `plot.fossils` which would not restore plotting parameters properly in some cases.
+* Fixed a bug in `plot.fossils` and `plot.taxonomy` which would not restore plotting parameters properly in some cases.
 
 ### Documentation changes
  * Updated the documentation of FBD simulation functions (`sim.fbd.taxa`, `sim.fbd.age`) to clarify the sampling process when `complete = FALSE`

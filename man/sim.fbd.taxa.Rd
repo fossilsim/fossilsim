@@ -34,7 +34,9 @@ lambda = 2.0
 mu = 0.5
 psi = 0.6
 numbsim = 2
+if (requireNamespace("TreeSim", quietly = TRUE)) {
 sim.fbd.taxa(n, numbsim, lambda, mu, psi)
+}
 }
 \keyword{birth}
 \keyword{death}

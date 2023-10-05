@@ -29,20 +29,15 @@ sim.fbd.age(
 
 \item{frac}{Extant sampling fraction: The actual (simulated) number of tips is n, but only n*frac tips are included in the sampled tree (incomplete sampling).}
 
-\item{mrca}{If mrca=FALSE: age is the time since origin. If mrca=TRUE:
-age is the time since the most recent common ancestor of all sampled tips.}
+\item{mrca}{If mrca=FALSE: age is the time since origin. If mrca=TRUE: age is the time since the most recent common ancestor of all sampled tips.}
 
 \item{complete}{whether to return the complete tree (with non-sampled lineages) or the reconstructed tree (with unsampled lineages removed).}
 
-\item{K}{If K = 0 (default), then lambda is constant. If K>0, density-dependent
-speciation is assumed, with speciation rate = lambda(1-m/K) when there are m living species.}
+\item{K}{If K = 0 (default), then lambda is constant. If K>0, density-dependent speciation is assumed, with speciation rate = lambda(1-m/K) when there are m living species.}
 }
 \value{
-Array of 'numbsim' SAtrees with the time since origin / most
-recent common ancestor being 'age'. If the tree goes extinct or
-no tips are sampled (only possible when mrca = FALSE), return
-value is '0'. If only one extant and no extinct tips are
-sampled, return value is '1'.
+Array of 'numbsim' SAtrees with the time since origin / most recent common ancestor being 'age'. If the tree goes extinct or
+no tips are sampled (only possible when mrca = FALSE), return value is '0'. If only one extant and no extinct tips are sampled, return value is '1'.
 }
 \description{
 sim.fbd.age: Simulating fossilized birth-death trees of a fixed age.
@@ -53,7 +48,9 @@ lambda = 2.0
 mu = 0.5
 psi = 0.6
 numbsim = 2
+if (requireNamespace("TreeSim", quietly = TRUE)) {
 sim.fbd.age(age, numbsim, lambda, mu, psi)
+}
 }
 \keyword{birth}
 \keyword{death}
