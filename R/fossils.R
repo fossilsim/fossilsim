@@ -66,15 +66,16 @@ summary.fossils <- function(object, max.length = 10, ...){
 }
 
 #' @export
-#' @rdname  fossils
+#' @rdname fossils
 as.fossils<-function(data, from.taxonomy = FALSE) UseMethod("as.fossils")
 
+#' @export
 as.fossils.default<-function(data, ...){
   fossils(data, ...)
 }
 
 #' @export
-#' @rdname  fossils
+#' @rdname fossils
 is.fossils<-function(data){
   inherits(data, "fossils")
 }

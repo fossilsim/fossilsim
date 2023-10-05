@@ -87,6 +87,7 @@ summary.taxonomy<-function(object, max.length = 50, round.x = 12, details = TRUE
 #' @rdname taxonomy
 as.taxonomy<-function(data) UseMethod("as.taxonomy")
 
+#' @export
 as.taxonomy.default<-function(data, ...){
   taxonomy(data, ...)
 }
