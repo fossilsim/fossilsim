@@ -513,7 +513,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     }
   }
 
-  if(!is.na(old.par)) par(old.par)
+  if(!is.na(old.par[1])) par(old.par)
   L <- list(type = type, use.edge.length = TRUE,
             node.pos = NULL, node.depth = node.depth, show.tip.label = show.tip.label,
             show.node.label = FALSE, font = font, cex = cex,
