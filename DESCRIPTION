@@ -1,7 +1,7 @@
 Package: FossilSim
 Type: Package
 Title: Simulation of Fossil and Taxonomy Data
-Version: 2.3.1
+Version: 2.3.2
 Authors@R: c(person("Rachel", "Warnock", email="rachel.warnock@bsse.ethz.ch", role=c("aut","cph")), 
   person("Joelle", "Barido-Sottani", email="joelle.barido-sottani@m4x.org",role=c("aut","cre","cph")), 
   person("Walker", "Pett",role=c("aut","cph")), person("O'Reilly", "Joseph",role=c("aut","cph")))

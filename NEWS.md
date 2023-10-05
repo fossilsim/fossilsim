@@ -1,4 +1,7 @@
-## Development
+## Version 2.3.2
+
+#### New functionality
+ * `sim.tip.samples` and `sim.extant.samples` can now use tip-specific sampling probabilities by setting argument `rho` to a vector of values instead of a single value.
 
 #### Technical changes
 * package `TreeSim` was moved from dependencies to suggested packages. A separate installation of `TreeSim` is now required to run functions `sim.fbd.*`
