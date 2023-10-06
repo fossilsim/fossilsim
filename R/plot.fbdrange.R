@@ -1,26 +1,30 @@
 # TODO add arguments to be passed to the labels
-# TODO conditional dependency on ggrepel
-#' Title
+#' Plot oriented tree with stratigraphic ranges
 #'
-#' @param x 
-#' @param smart.labels 
-#' @param ... 
+#' @param x object of type \code{fbdrange} containing orientation and range data
+#' @param smart.labels whether to label the ranges (requires package [ggrepel] to place labels)
+#' @param ... other arguments to be passed to the plot
 #'
-#' @return
+#' @return a ggtree plot which can be combined with any other commands from [ggplot2] or [ggtree]
 #' @export
 #'
 #' @examples
+#' @importFrom ggplot2 aes
 plot.fbdrange <- function(x, smart.labels = FALSE, ...) {
-  p1 <- ggplot2::ggplot(x, aes(color = range)) + geom_tree(linewidth=2) + geom_point(aes(color = range), size = 1.3) 
+  p1 <- ggplot2::ggplot(x, aes(color = range)) + ggtree::geom_tree(linewidth=2) + ggplot2::geom_point(aes(color = range), size = 1.3) 
   
   ## smartly spaced out tip/range labels
   if(smart.labels) {
+    if (!requireNamespace("ggrepel", quietly = TRUE)) {
+      stop("Package ggrepel is needed for smart labels. Please install it.", call. = FALSE)
+    }
+    
     labels <- x@phylo$tip.label
     species <- remove_last_substring(labels)
     species_count <- table(species)
     
     ## to avoid labeling the range twice, we make amty labels for first occurence
-    new_labels <- sapply(1:length(labels)), function(l) {
+    new_labels <- sapply(1:length(labels), function(l) {
       if (species_count[species[l]] == 1 | grepl("last", labels[l])) gsub("_", " ", species[l])
       else ""
     })
@@ -35,30 +39,14 @@ plot.fbdrange <- function(x, smart.labels = FALSE, ...) {
   p1
 }
 
-
-#' Title
-#'
-#' @param model 
-#' @param data 
-#' @param layout 
-#' @param ladderize 
-#' @param right 
-#' @param branch.length 
-#' @param mrsd 
-#' @param as.Date 
-#' @param yscale 
-#' @param root.position 
-#' @param ... 
-#'
-#' @return
 #' @export
-#'
-#' @examples
+#' @importFrom ggplot2 fortify
+#' @importFrom rlang .data
 fortify.fbdrange <- function (model, data, layout = "rectangular", ladderize = TRUE, 
                               right = FALSE, branch.length = "branch.length", mrsd = NULL, 
                               as.Date = FALSE, yscale = "none", root.position = 0, ...) {
   x <- ape::as.phylo(model)
-  label<-x$tip.label[x$edge[,2][x$edge[,2]<=length(x$tip.label)]]
+  label <- x$tip.label[x$edge[,2][x$edge[,2]<=length(x$tip.label)]]
   if (ladderize) {
     x <- ape::ladderize(x, right = right)
   }
@@ -71,19 +59,19 @@ fortify.fbdrange <- function (model, data, layout = "rectangular", ladderize = T
   }
   
   if (layout %in% c("equal_angle", "daylight", "ape")) {
-    res <- layout.unrooted(model, layout.method = layout, branch.length = branch.length, ...)
+    res <- ggtree:::layout.unrooted(model, layout.method = layout, branch.length = branch.length, ...)
   }
   else {
-    dd <- tidytree::get.data(model) %>% tidytree::arrange(node)
+    dd <- tidytree::arrange(tidytree::get.data(model), .data$node)
     
     ypos <- getYcoord.range(x, node.orientation=dd$orientation, match="ancestor",
                             tip.order=label)
     N <- ape::Nnode(x, internal.only = FALSE)
     if (is.null(x$edge.length) || branch.length == "none") {
       if (layout == "slanted") {
-        sbp <- ggtree:::.convert_tips2ancestors_sbp(x, include.root = TRUE)
-        xpos <- ggtree:::getXcoord_no_length_slanted(sbp)
-        ypos <- ggtree:::getYcoord_no_length_slanted(sbp)
+        sbp <- .convert_tips2ancestors_sbp(x, include.root = TRUE)
+        xpos <- getXcoord_no_length_slanted(sbp)
+        ypos <- getYcoord_no_length_slanted(sbp)
       }
       else {
         xpos <- ggtree:::getXcoord_no_length(x)
@@ -92,8 +80,8 @@ fortify.fbdrange <- function (model, data, layout = "rectangular", ladderize = T
     else {
       xpos <- ggtree:::getXcoord(x)
     }
-    xypos <- tibble::tibble(node = 1:N, x = xpos + root.position, y = ypos)
-    df <- tidytree::as_tibble(model) %>% tidytree::mutate(isTip = !.data$node %in% .data$parent)
+    xypos <- tidytree::tibble(node = 1:N, x = xpos + root.position, y = ypos)
+    df <- tidytree::mutate(tidytree::as_tibble(model), isTip = !.data$node %in% .data$parent)
     res <- tidytree::full_join(df, xypos, by = "node")
   }
   res <- ggtree:::calculate_branch_mid(res, layout = layout)
@@ -106,7 +94,7 @@ fortify.fbdrange <- function (model, data, layout = "rectangular", ladderize = T
   else {
     res <- ggtree:::calculate_angle(res)
   }
-  res <- ggtree:::scaleY(as.phylo(model), res, yscale, layout, ...)
+  res <- ggtree:::scaleY(ape::as.phylo(model), res, yscale, layout, ...)
   res <- adjust_hclust_tip.edge.len(res, x)
   class(res) <- c("tbl_tree", class(res))
   attr(res, "layout") <- layout
@@ -115,7 +103,7 @@ fortify.fbdrange <- function (model, data, layout = "rectangular", ladderize = T
 
 getYcoord.range <- function(tr, step=5, tip.order = NULL, node.orientation = NULL, match = NULL) {
   Ntip <- length(tr[["tip.label"]])
-  N <- treeio::getNodeNum(tr)
+  N <- ape::Nnode(tr, internal.only = FALSE)
   
   edge <- tr[["edge"]]
   edge_length <- tr[["edge.length"]]
@@ -210,7 +198,7 @@ remove_last_substring <- function(str) {
   gsub("_[^_]*$", "", str)
 }
 
-### Functions copied from ggtree
+### All functions below copied from ggtree
 ### Credit: Guangchuang Yu
 
 edge2vec <- function(tr) {
@@ -237,4 +225,62 @@ adjust_hclust_tip.edge.len <- function(df, phylo){
     attr(df, 'revts.done') = TRUE
   }                       
   return(df)
+}
+
+getXcoord_no_length_slanted <- function(x){
+  x <- -colSums(x)
+  x <- unname(x[order(as.numeric(names(x)))])
+  x <- x + max(abs(x))
+  return(x)
+}
+
+getYcoord_no_length_slanted <- function(y){
+  y <- seq_len(nrow(y)) * y
+  y[y==0] <- NA
+  y <- colMeans(y, na.rm = TRUE)
+  y <- unname(y[order(as.numeric(names(y)))])
+  return(y)
+}
+
+.convert_tips2ancestors_sbp <- function (tree, include.root = FALSE){
+  all.nodes <- unique(as.vector(tree@phylo$edge))
+  if (!include.root) {
+    all.nodes <- setdiff(all.nodes, tidytree::rootnode(tree))
+  }
+  
+  tip.nodes <- .nodeId(tree, type = "tips")
+  tn <- lapply(tip.nodes, 
+               .internal_ancestor, 
+               .data = tree, 
+               all.nodes = all.nodes)
+  sbp <- stats::setNames(tn, tip.nodes) 
+  sbp <- do.call(rbind, sbp) 
+  colnames(sbp) <- all.nodes
+  return(sbp)
+}
+
+.nodeId <- function (tree, type = "all"){
+  type <- match.arg(type, c("all", "tips", "internal"))
+  if (inherits(tree, "treedata")) {
+    tree <- tree@phylo
+  }
+  nodes <- unique(as.vector(tree$edge))
+  if (type == "all") {
+    return(nodes)
+  }
+  edge <- tree$edge
+  tips <- edge[!edge[, 2] %in% edge[, 1], 2]
+  if (type == "tips"){
+    return(tips)
+  }
+  else if (type == "internal") {
+    return(setdiff(nodes, tips))
+  }
+}
+
+.internal_ancestor <- function(.data, .node, all.nodes){
+  x <- tidytree::ancestor(.data=.data, .node=.node)
+  x <- c(x, .node)
+  x <- all.nodes %in% x
+  return (x)
 }

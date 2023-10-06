@@ -16,7 +16,7 @@
 #' @param from.taxonomy Boolean indicating whether the fossils were sampled using a taxonomy object, as opposed to a tree object. Default = FALSE.
 #'
 #' @export
-fossils<-function(data = NULL, from.taxonomy = FALSE){
+fossils <- function(data = NULL, from.taxonomy = FALSE){
   if(is.null(data)) {
     data = data.frame(sp = numeric(), edge = numeric(), hmin = numeric(), hmax = numeric(), stringsAsFactors = F)
   }

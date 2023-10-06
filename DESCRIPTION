@@ -12,12 +12,18 @@ RoxygenNote: 7.2.3
 Imports:
     ape,
     ggtree,
+    ggplot2,
+    tidytree,
+    methods,
+    rlang,
 Suggests:
     paleotree,
     knitr,
     rmarkdown,
     devtools,
-    TreeSim
+    TreeSim,
+    treeio,
+    ggrepel
 VignetteBuilder: knitr
 Language: en-GB
 Encoding: UTF-8
