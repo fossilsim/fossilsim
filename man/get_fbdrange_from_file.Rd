@@ -15,3 +15,7 @@ an fbdrange object
 \description{
 Import fbdrange object from file
 }
+\examples{
+tree_file = system.file("extdata", "fbdrange.trees", package = "FossilSim")
+fbdr = get_fbdrange_from_file(tree_file)
+}

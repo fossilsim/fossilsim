@@ -2,32 +2,26 @@
 setClass("fbdrange", contains = "treedata")
 setGeneric("as.fbdrange", function(data, ...) standardGeneric("as.fbdrange"))
 
-#' Title
+#' Creates an fbdrange object from provided tree and data
 #'
-#' @param data 
+#' @param tree \code{phylo} object to be included in the fbdrange object
+#' @param data associated data to be included in the fbdrange object. Needs to contain \code{range} and \code{orientation} fields.
 #'
-#' @return
+#' @return the new fbdrange object
 #' @export
 #'
 #' @examples
-fbdrange = function(data) {
-  if(inherits(data, "treedata")) return(as.fbdrange(data))
-  
-  #TODO checks that fbd range object contains elements "range" and "orientation" as part of data
-  
+fbdrange = function(tree, data) {
+  obj = tidytree::treedata(phylo = tree, data = data)
+  as.fbdrange.treedata(obj)
 }
 
 #' @importFrom methods new
 as.fbdrange.treedata = function(data, ...) {
   if(is.null(data@data$range) || is.null(data@data$orientation)) stop("Fbdrange objects require range and orientation data")
-  fbd = new("fbdrange", data)
+  new("fbdrange", data)
 }
 setMethod("as.fbdrange", "treedata", as.fbdrange.treedata)
-
-as.fbdrange.default = function(data, ...) {
-  fbdrange(data, ...)
-}
-setMethod("as.fbdrange", "ANY", as.fbdrange.default)
 
 #' Import fbdrange object from file
 #'
@@ -37,6 +31,8 @@ setMethod("as.fbdrange", "ANY", as.fbdrange.default)
 #' @export
 #'
 #' @examples
+#' tree_file = system.file("extdata", "fbdrange.trees", package = "FossilSim")
+#' fbdr = get_fbdrange_from_file(tree_file)
 get_fbdrange_from_file = function(input_file) {
   if (!requireNamespace("treeio", quietly = TRUE)) {
     stop("Package treeio is needed for this function to work. Please install it.", call. = FALSE)

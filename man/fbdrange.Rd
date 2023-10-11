@@ -2,13 +2,18 @@
 % Please edit documentation in R/fbdrange.R
 \name{fbdrange}
 \alias{fbdrange}
-\title{Title}
+\title{Creates an fbdrange object from provided tree and data}
 \usage{
-fbdrange(data)
+fbdrange(tree, data)
 }
 \arguments{
-\item{data}{}
+\item{tree}{\code{phylo} object to be included in the fbdrange object}
+
+\item{data}{associated data to be included in the fbdrange object. Needs to contain \code{range} and \code{orientation} fields.}
+}
+\value{
+the new fbdrange object
 }
 \description{
-Title
+Creates an fbdrange object from provided tree and data
 }

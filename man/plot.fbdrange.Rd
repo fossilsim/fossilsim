@@ -9,9 +9,9 @@
 \arguments{
 \item{x}{object of type \code{fbdrange} containing orientation and range data}
 
-\item{smart.labels}{whether to label the ranges (requires package [ggrepel] to place labels)}
+\item{smart.labels}{whether to label the ranges (default \code{FALSE}, requires package [ggrepel] to place labels)}
 
-\item{...}{other arguments to be passed to the plot}
+\item{...}{other arguments to be passed to the plot labels (does nothing if \code{smart.labels = FALSE})}
 }
 \value{
 a ggtree plot which can be combined with any other commands from [ggplot2] or [ggtree]

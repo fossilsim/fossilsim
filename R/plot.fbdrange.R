@@ -1,15 +1,15 @@
-# TODO add arguments to be passed to the labels
 #' Plot oriented tree with stratigraphic ranges
 #'
 #' @param x object of type \code{fbdrange} containing orientation and range data
-#' @param smart.labels whether to label the ranges (requires package [ggrepel] to place labels)
-#' @param ... other arguments to be passed to the plot
+#' @param smart.labels whether to label the ranges (default \code{FALSE}, requires package [ggrepel] to place labels)
+#' @param ... other arguments to be passed to the plot labels (does nothing if \code{smart.labels = FALSE})
 #'
 #' @return a ggtree plot which can be combined with any other commands from [ggplot2] or [ggtree]
 #' @export
 #'
 #' @examples
 #' @importFrom ggplot2 aes
+#' @importFrom utils modifyList
 plot.fbdrange <- function(x, smart.labels = FALSE, ...) {
   p1 <- ggplot2::ggplot(x, aes(color = range)) + ggtree::geom_tree(linewidth=2) + ggplot2::geom_point(aes(color = range), size = 1.3) 
   
@@ -32,8 +32,9 @@ plot.fbdrange <- function(x, smart.labels = FALSE, ...) {
     ## create a dataframe where each occurence label maps to newly created label
     labeldf <- data.frame(label = labels, new_labels = new_labels)
     
-    p1 <- p1 + ggrepel::geom_label_repel(labeldf, aes(label = new_labels, alpha = 0.7, fontface = 4), 
-                                         size=3, xlim = c(NA, Inf), min.segment.length = 0, force = 0.3, nudge_x = 0.5, direction = "both", hjust = 0, segment.size = 0.2)
+    default_args = list(size = 3, xlim = c(NA, Inf), min.segment.length = 0, force = 0.3, nudge_x = 0.5, direction = "both", hjust = 0, segment.size = 0.2)
+    label_args = modifyList(default_args, list(...))
+    p1 <- p1 + do.call(ggrepel::geom_label_repel, c(list(labeldf, aes(label = new_labels, alpha = 0.7, fontface = 4), label_args)))
   }
   
   p1
