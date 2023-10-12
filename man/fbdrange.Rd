@@ -9,11 +9,14 @@ fbdrange(tree, data)
 \arguments{
 \item{tree}{\code{phylo} object to be included in the fbdrange object}
 
-\item{data}{associated data to be included in the fbdrange object. Needs to contain \code{range} and \code{orientation} fields.}
+\item{data}{\code{data.frame} object with the data to be included in the fbdrange object. Needs to contain \code{range} and \code{orientation} fields.}
 }
 \value{
 the new fbdrange object
 }
 \description{
 Creates an fbdrange object from provided tree and data
+}
+\examples{
+fbd = fbdrange(FossilSim:::tree, FossilSim:::data)
 }

@@ -5,12 +5,13 @@ setGeneric("as.fbdrange", function(data, ...) standardGeneric("as.fbdrange"))
 #' Creates an fbdrange object from provided tree and data
 #'
 #' @param tree \code{phylo} object to be included in the fbdrange object
-#' @param data associated data to be included in the fbdrange object. Needs to contain \code{range} and \code{orientation} fields.
+#' @param data \code{data.frame} object with the data to be included in the fbdrange object. Needs to contain \code{range} and \code{orientation} fields.
 #'
 #' @return the new fbdrange object
 #' @export
 #'
 #' @examples
+#' fbd = fbdrange(FossilSim:::tree, FossilSim:::data)
 fbdrange = function(tree, data) {
   obj = tidytree::treedata(phylo = tree, data = data)
   as.fbdrange.treedata(obj)
