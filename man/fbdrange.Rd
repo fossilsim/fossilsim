@@ -18,5 +18,5 @@ the new fbdrange object
 Creates an fbdrange object from provided tree and data
 }
 \examples{
-fbd = fbdrange(FossilSim:::tree, FossilSim:::data)
+fbd = fbdrange(FossilSim:::example_tree, FossilSim:::example_data)
 }

@@ -11,7 +11,7 @@ setGeneric("as.fbdrange", function(data, ...) standardGeneric("as.fbdrange"))
 #' @export
 #'
 #' @examples
-#' fbd = fbdrange(FossilSim:::tree, FossilSim:::data)
+#' fbd = fbdrange(FossilSim:::example_tree, FossilSim:::example_data)
 fbdrange = function(tree, data) {
   obj = tidytree::treedata(phylo = tree, data = data)
   as.fbdrange.treedata(obj)
