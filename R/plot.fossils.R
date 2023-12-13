@@ -261,7 +261,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   if(show.proxy){
     old.par = par("usr", "mar", "oma", "xpd", "mgp","fig")
     par(mar=c(1, 3.5, 0, 0.5)) # to reduce the margins around each plot - bottom, left, top, right -- this is harder to manipulate
-    par(oma=c(2, 0, 2, 0)) # to add an outer margin to the top and bottom of the graph -- bottom, left, top, right
+    par(oma=par("oma") + c(2, 0, 2, 0)) # to add an outer margin to the top and bottom of the graph -- bottom, left, top, right
     par(xpd=NA) # allow content to protrude into outer margin (and beyond)
     par(mgp=c(1.5, .5, 0)) # to reduce the spacing between the figure plotting region and the axis labels -- axis label at 1.5 rows distance, tick labels at .5 row
     par(fig=c(0,1,0,0.4))
