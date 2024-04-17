@@ -383,7 +383,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       # taxonomy colours
       if(show.taxonomy){
         sps = unique(fossils$sp)
-        col = sample(grDevices::rainbow(length(sps)))
+        col = grDevices::rainbow(length(sps))
         j = 0
         for(i in sps){
           j = j + 1
