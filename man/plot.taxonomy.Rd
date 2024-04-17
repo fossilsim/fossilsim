@@ -15,6 +15,7 @@
   edge.width = 1,
   show.tip.label = FALSE,
   align.tip.label = FALSE,
+  taxa.palette = "viridis",
   cex = 1.2,
   ...
 )
@@ -39,6 +40,8 @@
 \item{show.tip.label}{Whether to show the tip labels on the phylogeny (defaults to FALSE).}
 
 \item{align.tip.label}{A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).}
+
+\item{taxa.palette}{Colour palette used for taxa. Colours are assigned to taxa using the function \code{grDevices::hcl.colors()} and the default palette is "viridis". Other colour blind friendly palettes include \code{"Blue-Red 3"} and \code{"Green-Brown"}.}
 
 \item{cex}{Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.}
 

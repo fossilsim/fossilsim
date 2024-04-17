@@ -14,6 +14,7 @@
 #' @param edge.width A numeric vector giving the width of the branches of the plotted phylogeny. These are taken to be in the same order as the component edge of \code{tree}. If fewer widths are given than the number of edges, then the values are recycled.
 #' @param show.tip.label Whether to show the tip labels on the phylogeny (defaults to FALSE).
 #' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (lty).
+#' @param taxa.palette Colour palette used for taxa. Colours are assigned to taxa using the function \code{grDevices::hcl.colors()} and the default palette is "viridis". Other colour blind friendly palettes include \code{"Blue-Red 3"} and \code{"Green-Brown"}.
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
 #'
@@ -31,7 +32,7 @@
 #'
 #' @export
 #' @importFrom graphics legend plot
-plot.taxonomy = function(x, tree, show.mode = TRUE, show.legend = TRUE, legend.position = "bottomleft", root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, cex = 1.2,...){
+plot.taxonomy = function(x, tree, show.mode = TRUE, show.legend = TRUE, legend.position = "bottomleft", root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, taxa.palette = "viridis", cex = 1.2,...){
 
   taxonomy = x
 
@@ -154,7 +155,7 @@ plot.taxonomy = function(x, tree, show.mode = TRUE, show.legend = TRUE, legend.p
 
   # taxonomy colours
   sps = unique(taxonomy$sp)
-  col = sample(grDevices::rainbow(length(sps)))
+  col = grDevices::hcl.colors(length(sps), palette = taxa.palette)
   j = 0
   for(i in sps){
     j = j + 1

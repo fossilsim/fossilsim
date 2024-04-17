@@ -36,7 +36,7 @@
 #' @param fossil.col Colour of fossil occurrences. A vector equal to the length of the fossils object can be used to assign different colours.
 #' @param range.col Colour of stratigraphic ranges.
 #' @param extant.col Colour of extant samples. If \code{show.taxonomy = TRUE}, \code{extant.col} will be ignored.
-#' @param t.palette Colour palette used if \code{show.fossils = TRUE}. Colours are assigned to taxa using the function \code{grDevices::hcl.colors()} and the default palette is "viridis". Other colour blind friendly palettes include \code{"Blue-Red 3"} and \code{"Green-Brown"}.
+#' @param taxa.palette Colour palette used if \code{show.fossils = TRUE}. Colours are assigned to taxa using the function \code{grDevices::hcl.colors()} and the default palette is "viridis". Other colour blind friendly palettes include \code{"Blue-Red 3"} and \code{"Green-Brown"}.
 #' @param col.axis Colour of the time scale axis (default = "gray35").
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
@@ -87,7 +87,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         # tree appearance
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, reconstructed = FALSE,
                         # fossil appearance
-                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, t.palette = "viridis",
+                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, taxa.palette = "viridis",
                         col.axis = "gray35", cex = 1.2, pch = 18, ...) {
 
   fossils = x
@@ -387,7 +387,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       # taxonomy colours
       if(show.taxonomy){
         sps = unique(fossils$sp)
-        col = grDevices::hcl.colors(length(sps), palette = t.palette)
+        col = grDevices::hcl.colors(length(sps), palette = taxa.palette)
         j = 0
         for(i in sps){
           j = j + 1
