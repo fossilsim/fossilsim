@@ -37,6 +37,7 @@
 #' @param range.col Colour of stratigraphic ranges.
 #' @param extant.col Colour of extant samples. If \code{show.taxonomy = TRUE}, \code{extant.col} will be ignored.
 #' @param t.palette Colour palette used if \code{show.fossils = TRUE}. Colours are assigned to taxa using the function \code{grDevices::hcl.colors()} and the default palette is "viridis". Other colour blind friendly palettes include \code{"Blue-Red 3"} and \code{"Green-Brown"}.
+#' @param col.axis Colour of the time scale axis (default = "gray35").
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
@@ -87,7 +88,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, reconstructed = FALSE,
                         # fossil appearance
                         fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, t.palette = "viridis",
-                        cex = 1.2, pch = 18, ...) {
+                        col.axis = "gray35", cex = 1.2, pch = 18, ...) {
 
   fossils = x
 
@@ -248,7 +249,6 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       strata = length(horizons.max)
     }
     # the following is to catch datasets with hmin != hmax combinations that differ from user specified interval bounds
-    use.species.ages = FALSE
     if(binned & any(fossils$hmax != fossils$hmin)){
       if(length( unlist( sapply(fossils$hmax, function(x){
         if(x < tol) return(1)
@@ -318,7 +318,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
         labs = x.labs
 
       if(show.axis)
-        axis(1, col = 'grey75', at = axis.strata, labels = labs, lwd = 2, line = 0.5, col.axis = 'grey75', cex.axis = .7)
+        axis(1, col = col.axis, at = axis.strata, labels = labs, lwd = 2, line = 0.5, col.axis = col.axis, cex.axis = .9)
     }
 
     # plot the tree
