@@ -13,11 +13,11 @@
 #' @param tree Phylo object.
 #' @param show.fossils If TRUE plot fossils (default = TRUE).
 #' @param show.tree If TRUE plot the tree  (default = TRUE).
-#' @param show.ranges If TRUE plot stratigraphic ranges (default = FALSE). If show.taxonomy = FALSE all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).
+#' @param show.ranges If TRUE plot stratigraphic ranges (default = FALSE). If \code{show.taxonomy = FALSE} all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).
 #' @param show.strata If TRUE plot strata  (default = FALSE).
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param strata Number of stratigraphic intervals (default = 1).
-#' @param max.age Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.
+#' @param max.age Maximum age of a set of equal length intervals. If no value is specified (\code{max = NULL}), the function uses a maximum age based on tree height.
 #' @param show.axis If TRUE plot x-axis (default = TRUE).
 #' @param binned If TRUE fossils are plotted at the mid point of each interval.
 #' @param show.proxy If TRUE add profile of sampling data to plot (e.g. rates in time-dependent rates model) (default = FALSE).
@@ -35,7 +35,8 @@
 #' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (following \code{lty}).
 #' @param fossil.col Colour of fossil occurrences. A vector equal to the length of the fossils object can be used to assign different colours.
 #' @param range.col Colour of stratigraphic ranges.
-#' @param extant.col Colour of extant samples. If show.taxonomy = TRUE extant.col will be ignored.
+#' @param extant.col Colour of extant samples. If \code{show.taxonomy = TRUE}, \code{extant.col} will be ignored.
+#' @param t.palette Colour palette used if \code{show.fossils = TRUE}. Colours are assigned to taxa using the function \code{grDevices::hcl.colors()} and the default palette is "viridis". Other colour blind friendly palettes include \code{"Blue-Red 3"} and \code{"Green-Brown"}.
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
@@ -85,7 +86,8 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         # tree appearance
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, reconstructed = FALSE,
                         # fossil appearance
-                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, cex = 1.2, pch = 18, ...) {
+                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, t.palette = "viridis",
+                        cex = 1.2, pch = 18, ...) {
 
   fossils = x
 
@@ -383,7 +385,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       # taxonomy colours
       if(show.taxonomy){
         sps = unique(fossils$sp)
-        col = grDevices::rainbow(length(sps))
+        col = grDevices::hcl.colors(length(sps), palette = t.palette)
         j = 0
         for(i in sps){
           j = j + 1

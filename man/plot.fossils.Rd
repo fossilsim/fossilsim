@@ -32,6 +32,7 @@
   fossil.col = 1,
   range.col = rgb(0, 0, 1),
   extant.col = 1,
+  t.palette = "viridis",
   cex = 1.2,
   pch = 18,
   ...
@@ -46,13 +47,13 @@
 
 \item{show.tree}{If TRUE plot the tree  (default = TRUE).}
 
-\item{show.ranges}{If TRUE plot stratigraphic ranges (default = FALSE). If show.taxonomy = FALSE all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).}
+\item{show.ranges}{If TRUE plot stratigraphic ranges (default = FALSE). If \code{show.taxonomy = FALSE} all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).}
 
 \item{show.strata}{If TRUE plot strata  (default = FALSE).}
 
 \item{strata}{Number of stratigraphic intervals (default = 1).}
 
-\item{max.age}{Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.}
+\item{max.age}{Maximum age of a set of equal length intervals. If no value is specified (\code{max = NULL}), the function uses a maximum age based on tree height.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
 
@@ -90,7 +91,9 @@
 
 \item{range.col}{Colour of stratigraphic ranges.}
 
-\item{extant.col}{Colour of extant samples. If show.taxonomy = TRUE extant.col will be ignored.}
+\item{extant.col}{Colour of extant samples. If \code{show.taxonomy = TRUE}, \code{extant.col} will be ignored.}
+
+\item{t.palette}{Colour palette used if \code{show.fossils = TRUE}. Colours are assigned to taxa using the function \code{grDevices::hcl.colors()} and the default palette is "viridis". Other colour blind friendly palettes include \code{"Blue-Red 3"} and \code{"Green-Brown"}.}
 
 \item{cex}{Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.}
 
