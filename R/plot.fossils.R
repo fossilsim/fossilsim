@@ -234,6 +234,8 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     y.lim = c(0, Ntip)
   else y.lim = c(1, Ntip)
 
+  use.species.ages = FALSE
+
   # define interval ages
   if(show.strata || show.axis || binned || show.proxy){
     if( (is.null(interval.ages)) ){
