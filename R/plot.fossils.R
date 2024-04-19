@@ -27,6 +27,7 @@
 #' @param show.taxonomy If TRUE highlight species taxonomy.
 #' @param taxonomy Taxonomy object.
 #' @param show.unknown If TRUE plot fossils with unknown taxonomic affiliation (i.e. sp = NA) (default = FALSE).
+#' @param rho Extant species sampling probability (default = 1). Will be disregarded if fossils object already contains extant samples.
 #' @param reconstructed If TRUE plot the reconstructed tree. If fossils object contains no extant samples, the function assumes rho = 1 and includes all species at the present.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
@@ -83,7 +84,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         show.proxy = FALSE, proxy.data = NULL,
                         show.preferred.environ = FALSE, preferred.environ = NULL,
                         # taxonomy
-                        show.taxonomy = FALSE, taxonomy = NULL, show.unknown = FALSE,
+                        show.taxonomy = FALSE, taxonomy = NULL, show.unknown = FALSE, rho = 1,
                         # tree appearance
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, reconstructed = FALSE,
                         # fossil appearance
@@ -117,8 +118,16 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   if(!all( as.vector(na.omit(fossils$edge)) %in% tree$edge))
     stop("Mismatch between fossils and tree objects")
 
+  if(!(rho >= 0 && rho <= 1))
+    stop("rho must be a probability between 0 and 1")
+
   # tolerance for extant tips and interval/ fossil age comparisons
   tol = min((min(tree$edge.length)/100), 1e-8)
+
+  # If there are no extant samples, simulate extant samples
+  if(!any( abs(fossils$hmax) < tol )){
+    fossils = sim.extant.samples(fossils, tree = tree, rho = rho)
+  }
 
   if(is.null(tree$root.edge))
     root.edge = FALSE

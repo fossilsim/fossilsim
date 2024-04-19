@@ -23,6 +23,7 @@
   show.taxonomy = FALSE,
   taxonomy = NULL,
   show.unknown = FALSE,
+  rho = 1,
   root.edge = TRUE,
   hide.edge = FALSE,
   edge.width = 1,
@@ -75,6 +76,8 @@
 \item{taxonomy}{Taxonomy object.}
 
 \item{show.unknown}{If TRUE plot fossils with unknown taxonomic affiliation (i.e. sp = NA) (default = FALSE).}
+
+\item{rho}{Extant species sampling probability (default = 1). Will be disregarded if fossils object already contains extant samples.}
 
 \item{root.edge}{If TRUE include the root edge (default = TRUE).}
 
