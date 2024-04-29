@@ -333,7 +333,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       if(show.axis){
         axis(1, col = col.axis, at = axis.strata, labels = labs, lwd = 2, line = 0.5, col.axis = col.axis, cex.axis = .9)
         if(!show.proxy)
-          mtext(1, col = 'grey35', text="Time before present", line = 2.5, cex = 1.2)
+          mtext(1, col = 'grey35', text="Time before present", line = 3, cex = 1.2)
       }
     }
 
