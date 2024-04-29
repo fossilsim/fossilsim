@@ -556,15 +556,15 @@ add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.
     depth = c(depth, depth.profile[i], depth.profile[i])
   }
   # plot proxy
-  lines(time,depth)
+  lines(time, depth, col = "gray35", lwd = 2)
   if(show.preferred.depth)
     lines(x = axis.strata, y = rep(PD, length(axis.strata)), col = "gray12", lwd = 2, lty = 3)
   if(show.axis){
-    axis(1, col = 'grey75', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey75', cex.axis = .7)
-    mtext(1, col = 'grey75', text="Time before present", line = 1.5)
+    axis(1, col = 'grey35', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey35', cex.axis = .7)
+    mtext(1, col = 'grey35', text="Time before present", line = 1.5)
   }
   if(add.depth.axis){
-    axis(2, col = 'grey75', labels = TRUE, lwd = 2, las = 2, col.axis = 'grey75', line = 0.5, cex.axis = .7)
-    mtext(2, col = 'grey75', text="Sampling proxy", line = 2)
+    axis(2, col = 'grey35', labels = TRUE, lwd = 2, las = 2, col.axis = 'grey35', line = 0.5, cex.axis = .7)
+    mtext(2, col = 'grey35', text="Sampling proxy", line = 2)
   }
 }
