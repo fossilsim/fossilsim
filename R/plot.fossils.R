@@ -282,10 +282,12 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     par(fig=c(0,1,0.4,1))
   }
   else{
-    old.par = list(xpd = par("xpd"))
+    old.par = par("xpd", "mar")
     par(xpd=NA)
+    par(mar=c(5,4,2.5,2) + 0.1) ## default is c(5,4,4,2) + 0.1
     # open a new plot window
     graphics::plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)
+
   }
 
   if (plot) {
@@ -328,8 +330,11 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       else
         labs = x.labs
 
-      if(show.axis)
+      if(show.axis){
         axis(1, col = col.axis, at = axis.strata, labels = labs, lwd = 2, line = 0.5, col.axis = col.axis, cex.axis = .9)
+        if(!show.proxy)
+          mtext(1, col = 'grey35', text="Time before present", line = 2.5, cex = 1.2)
+      }
     }
 
     # plot the tree
@@ -560,11 +565,11 @@ add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.
   if(show.preferred.depth)
     lines(x = axis.strata, y = rep(PD, length(axis.strata)), col = "gray12", lwd = 2, lty = 3)
   if(show.axis){
-    axis(1, col = 'grey35', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey35', cex.axis = .7)
-    mtext(1, col = 'grey35', text="Time before present", line = 1.5)
+    axis(1, col = 'grey35', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey35', cex.axis = .9)
+    mtext(1, col = 'grey35', text="Time before present", line = 1.5, cex = 1.2)
   }
   if(add.depth.axis){
-    axis(2, col = 'grey35', labels = TRUE, lwd = 2, las = 2, col.axis = 'grey35', line = 0.5, cex.axis = .7)
-    mtext(2, col = 'grey35', text="Sampling proxy", line = 2)
+    axis(2, col = 'grey35', labels = TRUE, lwd = 2, las = 2, col.axis = 'grey35', line = 0.5, cex.axis = .9)
+    mtext(2, col = 'grey35', text="Sampling proxy", line = 2, cex = 1.2)
   }
 }
