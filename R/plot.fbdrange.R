@@ -10,7 +10,7 @@
 #' @examples
 #' tree_file = system.file("extdata", "fbdrange.trees", package = "FossilSim")
 #' fbdr = get_fbdrange_from_file(tree_file)
-#' plot(fbdr, smart.labels = TRUE)
+#' plot(fbdr)
 #' 
 #' @importFrom ggplot2 aes
 #' @importFrom utils modifyList
