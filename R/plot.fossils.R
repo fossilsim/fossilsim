@@ -13,11 +13,11 @@
 #' @param tree Phylo object.
 #' @param show.fossils If TRUE plot fossils (default = TRUE).
 #' @param show.tree If TRUE plot the tree  (default = TRUE).
-#' @param show.ranges If TRUE plot stratigraphic ranges (default = FALSE). If show.taxonomy = FALSE all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).
+#' @param show.ranges If TRUE plot stratigraphic ranges (default = FALSE). If \code{show.taxonomy = FALSE} all occurrences along a single edge are grouped together (i.e. function assumes all speciation is symmetric).
 #' @param show.strata If TRUE plot strata  (default = FALSE).
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
 #' @param strata Number of stratigraphic intervals (default = 1).
-#' @param max.age Maximum age of a set of equal length intervals. If no value is specified (max = NULL), the function uses a maximum age based on tree height.
+#' @param max.age Maximum age of a set of equal length intervals. If no value is specified (\code{max = NULL}), the function uses a maximum age based on tree height.
 #' @param show.axis If TRUE plot x-axis (default = TRUE).
 #' @param binned If TRUE fossils are plotted at the mid point of each interval.
 #' @param show.proxy If TRUE add profile of sampling data to plot (e.g. rates in time-dependent rates model) (default = FALSE).
@@ -27,6 +27,7 @@
 #' @param show.taxonomy If TRUE highlight species taxonomy.
 #' @param taxonomy Taxonomy object.
 #' @param show.unknown If TRUE plot fossils with unknown taxonomic affiliation (i.e. sp = NA) (default = FALSE).
+#' @param rho Extant species sampling probability (default = 1). Will be disregarded if fossils object already contains extant samples.
 #' @param reconstructed If TRUE plot the reconstructed tree. If fossils object contains no extant samples, the function assumes rho = 1 and includes all species at the present.
 #' @param root.edge If TRUE include the root edge (default = TRUE).
 #' @param hide.edge If TRUE hide the root edge but still incorporate it into the automatic timescale (default = FALSE).
@@ -35,7 +36,9 @@
 #' @param align.tip.label A logical value or an integer. If TRUE, the tips are aligned and dotted lines are drawn between the tips of the tree and the labels. If an integer, the tips are aligned and this gives the type of the lines (following \code{lty}).
 #' @param fossil.col Colour of fossil occurrences. A vector equal to the length of the fossils object can be used to assign different colours.
 #' @param range.col Colour of stratigraphic ranges.
-#' @param extant.col Colour of extant samples. If show.taxonomy = TRUE extant.col will be ignored.
+#' @param extant.col Colour of extant samples. If \code{show.taxonomy = TRUE}, \code{extant.col} will be ignored.
+#' @param taxa.palette Colour palette used if \code{show.fossils = TRUE}. Colours are assigned to taxa using the function \code{grDevices::hcl.colors()} and the default palette is "viridis". Other colour blind friendly palettes include \code{"Blue-Red 3"} and \code{"Green-Brown"}.
+#' @param col.axis Colour of the time scale axis (default = "gray35").
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param ... Additional parameters to be passed to \code{plot.default}.
@@ -81,11 +84,12 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         show.proxy = FALSE, proxy.data = NULL,
                         show.preferred.environ = FALSE, preferred.environ = NULL,
                         # taxonomy
-                        show.taxonomy = FALSE, taxonomy = NULL, show.unknown = FALSE,
+                        show.taxonomy = FALSE, taxonomy = NULL, show.unknown = FALSE, rho = 1,
                         # tree appearance
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, reconstructed = FALSE,
                         # fossil appearance
-                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, cex = 1.2, pch = 18, ...) {
+                        fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, taxa.palette = "viridis",
+                        col.axis = "gray35", cex = 1.2, pch = 18, ...) {
 
   fossils = x
 
@@ -114,8 +118,16 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   if(!all( as.vector(na.omit(fossils$edge)) %in% tree$edge))
     stop("Mismatch between fossils and tree objects")
 
+  if(!(rho >= 0 && rho <= 1))
+    stop("rho must be a probability between 0 and 1")
+
   # tolerance for extant tips and interval/ fossil age comparisons
   tol = min((min(tree$edge.length)/100), 1e-8)
+
+  # If there are no extant samples, simulate extant samples
+  if(!any( abs(fossils$hmax) < tol )){
+    fossils = sim.extant.samples(fossils, tree = tree, rho = rho)
+  }
 
   if(is.null(tree$root.edge))
     root.edge = FALSE
@@ -231,6 +243,8 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     y.lim = c(0, Ntip)
   else y.lim = c(1, Ntip)
 
+  use.species.ages = FALSE
+
   # define interval ages
   if(show.strata || show.axis || binned || show.proxy){
     if( (is.null(interval.ages)) ){
@@ -246,7 +260,6 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       strata = length(horizons.max)
     }
     # the following is to catch datasets with hmin != hmax combinations that differ from user specified interval bounds
-    use.species.ages = FALSE
     if(binned & any(fossils$hmax != fossils$hmin)){
       if(length( unlist( sapply(fossils$hmax, function(x){
         if(x < tol) return(1)
@@ -261,7 +274,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   if(show.proxy){
     old.par = par("usr", "mar", "oma", "xpd", "mgp","fig")
     par(mar=c(1, 3.5, 0, 0.5)) # to reduce the margins around each plot - bottom, left, top, right -- this is harder to manipulate
-    par(oma=c(2, 0, 2, 0)) # to add an outer margin to the top and bottom of the graph -- bottom, left, top, right
+    par(oma=par("oma") + c(2, 0, 2, 0)) # to add an outer margin to the top and bottom of the graph -- bottom, left, top, right
     par(xpd=NA) # allow content to protrude into outer margin (and beyond)
     par(mgp=c(1.5, .5, 0)) # to reduce the spacing between the figure plotting region and the axis labels -- axis label at 1.5 rows distance, tick labels at .5 row
     par(fig=c(0,1,0,0.4))
@@ -269,10 +282,12 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     par(fig=c(0,1,0.4,1))
   }
   else{
-    old.par = list(xpd = par("xpd"))
+    old.par = par("xpd", "mar")
     par(xpd=NA)
+    par(mar=c(5,4,2.5,2) + 0.1) ## default is c(5,4,4,2) + 0.1
     # open a new plot window
     graphics::plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "", ylab = "", axes = FALSE, asp = NA, ...)
+
   }
 
   if (plot) {
@@ -315,8 +330,11 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       else
         labs = x.labs
 
-      if(show.axis)
-        axis(1, col = 'grey75', at = axis.strata, labels = labs, lwd = 2, line = 0.5, col.axis = 'grey75', cex.axis = .7)
+      if(show.axis){
+        axis(1, col = col.axis, at = axis.strata, labels = labs, lwd = 2, line = 0.5, col.axis = col.axis, cex.axis = .9)
+        if(!show.proxy)
+          mtext(1, col = 'grey35', text="Time before present", line = 3, cex = 1.2)
+      }
     }
 
     # plot the tree
@@ -383,7 +401,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
       # taxonomy colours
       if(show.taxonomy){
         sps = unique(fossils$sp)
-        col = sample(grDevices::rainbow(length(sps)))
+        col = grDevices::hcl.colors(length(sps), palette = taxa.palette)
         j = 0
         for(i in sps){
           j = j + 1
@@ -543,15 +561,15 @@ add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.
     depth = c(depth, depth.profile[i], depth.profile[i])
   }
   # plot proxy
-  lines(time,depth)
+  lines(time, depth, col = "gray35", lwd = 2)
   if(show.preferred.depth)
     lines(x = axis.strata, y = rep(PD, length(axis.strata)), col = "gray12", lwd = 2, lty = 3)
   if(show.axis){
-    axis(1, col = 'grey75', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey75', cex.axis = .7)
-    mtext(1, col = 'grey75', text="Time before present", line = 1.5)
+    axis(1, col = 'grey35', at = axis.strata, labels = x.labs, lwd = 2, col.axis = 'grey35', cex.axis = .9)
+    mtext(1, col = 'grey35', text="Time before present", line = 1.5, cex = 1.2)
   }
   if(add.depth.axis){
-    axis(2, col = 'grey75', labels = TRUE, lwd = 2, las = 2, col.axis = 'grey75', line = 0.5, cex.axis = .7)
-    mtext(2, col = 'grey75', text="Sampling proxy", line = 2)
+    axis(2, col = 'grey35', labels = TRUE, lwd = 2, las = 2, col.axis = 'grey35', line = 0.5, cex.axis = .9)
+    mtext(2, col = 'grey35', text="Sampling proxy", line = 2, cex = 1.2)
   }
 }

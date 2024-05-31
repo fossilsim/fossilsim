@@ -1,3 +1,12 @@
+## Version 2.3.3
+
+#### New functionality
+* `plot.fossils` now integrates an optional extant sampling probability (`rho`) when plotting the reconstructed tree
+
+#### Function changes
+* cosmetic changes to `plot.fossils` to make the axis more visible
+* colours used for the taxonomy in `plot.fossils` and `plot.taxonomy` are no longer random and can be customized
+
 ## Version 2.3.2
 
 #### New functionality
