@@ -92,7 +92,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
   if(!is.null(tree) && !"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
 
-  if(!is.null(fossils) && !"fossils" %in% class(fossils))
+  if(!is.null(fossils) && !is.fossils(fossils))
     stop("fossils must be an object of class \"fossils\"")
 
   if(!(rho >= 0 && rho <= 1))
@@ -140,7 +140,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
       s1 = ape::extract.clade(samp.tree,anc)$tip.label
       s2 = no.sa.tree$tip.label[which(no.sa.tree$tip.label %in% s1)]
 
-      # assign fossils to nearest descendent node in the tree
+      # assign fossils to nearest descendant node in the tree
       if(length(s2) > 1){
         j = ape::getMRCA(no.sa.tree,s2)
       } else { # i is SA on terminal branch

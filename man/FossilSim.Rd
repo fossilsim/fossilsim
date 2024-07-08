@@ -2,8 +2,8 @@
 % Please edit documentation in R/FossilSim.R
 \docType{package}
 \name{FossilSim}
-\alias{FossilSim}
 \alias{FossilSim-package}
+\alias{FossilSim}
 \title{FossilSim: A package for simulating and plotting fossil and taxonomy data}
 \description{
 This package provides functions for simulating both taxonomy and fossil data from an existing phylogeny.

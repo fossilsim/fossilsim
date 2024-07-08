@@ -33,6 +33,8 @@ SAtree = function(tree, complete = TRUE) {
 #' plot(t2$tree)
 #' @export
 SAtree.from.fossils = function(tree, fossils) {
+  if(!is.fossils(fossils)) stop("Argument fossils must be a valid fossils object")
+  
   if(length(fossils[,1])==0) {
     tree$tip.label = paste0(tree$tip.label, "_", 1)
     return(list(tree = SAtree(tree, TRUE), fossils = fossils))
