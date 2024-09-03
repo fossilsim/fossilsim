@@ -1,22 +1,32 @@
 Package: FossilSim
 Type: Package
-Title: Simulation of Fossil and Taxonomy Data
-Version: 2.3.3
+Title: Simulation and Plots for Fossil and Taxonomy Data
+Version: 2.4.0
 Authors@R: c(person("Rachel", "Warnock", email="rachel.warnock@bsse.ethz.ch", role=c("aut","cph")), 
   person("Joelle", "Barido-Sottani", email="joelle.barido-sottani@m4x.org",role=c("aut","cre","cph")), 
-  person("Walker", "Pett",role=c("aut","cph")), person("O'Reilly", "Joseph",role=c("aut","cph")))
-Description: Simulating taxonomy and fossil data on phylogenetic trees under mechanistic
+  person("Walker", "Pett",role=c("aut","cph")), person("O'Reilly", "Joseph",role=c("aut","cph"))),
+  person("Ugnė", "Stolz", role=c("aut","cph")))
+Description: Simulating and plotting taxonomy and fossil data on phylogenetic trees under mechanistic
     models of speciation, preservation and sampling.
 License: GPL-3
 RoxygenNote: 7.3.2
 Imports:
     ape,
+    ggtree,
+    ggplot2,
+    tidytree,
+    methods,
+    rlang,
 Suggests:
     paleotree,
     knitr,
     rmarkdown,
     devtools,
-    TreeSim
+    TreeSim,
+    treeio,
+    ggrepel
 VignetteBuilder: knitr
 Language: en-GB
 Encoding: UTF-8
+Depends: 
+    R (>= 2.10)
