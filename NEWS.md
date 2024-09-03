@@ -6,6 +6,7 @@
 
 #### Bug fixes
 * improved checks on `fossils` object so invalid data types are rejected instead of crashing
+* removed `alphanumeric` option from `paleotree.record.to.fossils` as it was incompatible with the fix to data types
 
 ## Version 2.3.3
 

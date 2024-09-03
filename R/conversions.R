@@ -250,7 +250,6 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' The label assigned to the parent of the origin or root will be zero.
 #'
 #' @param record fossilRecordSimulation object.
-#' @param alphanumeric If TRUE function will return alphanumeric species labels (i.e. species labels contain the "t" prefix) (default). If FALSE function will return numeric only species labels.
 #' @return A list containing the converted tree, taxonomy and fossils
 #' @examples
 #' if (requireNamespace("paleotree", quietly = TRUE)) {
@@ -367,18 +366,19 @@ paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
                                             hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
                                             stringsAsFactors = F))
   }
+  
+  tip_idxs = 1:length(tree$tip.label)
+  names(tip_idxs) = tree$tip.label
+  
+  fossildf$sp = tip_idxs[fossildf$sp]
+  taxonomy$sp = tip_idxs[taxonomy$sp]
+  taxonomy$cryptic.id = tip_idxs[taxonomy$cryptic.id]
+  taxonomy$parent = tip_idxs[taxonomy$parent]
 
   row.names(taxonomy) = NULL
   row.names(fossildf) = NULL
   fossildf = as.fossils(fossildf, TRUE)
   taxonomy = as.taxonomy(taxonomy)
-
-  if(!alphanumeric){
-    fossildf$sp = gsub("t", "", fossildf$sp)
-    taxonomy$sp = gsub("t", "", taxonomy$sp)
-    taxonomy$cryptic.id = gsub("t", "", taxonomy$cryptic.id)
-    taxonomy$parent = gsub("t", "", taxonomy$parent)
-  }
 
   tree$root.edge = root_time - tree$root.time
   tree$origin.time = root_time

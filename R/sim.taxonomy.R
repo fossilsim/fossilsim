@@ -82,7 +82,6 @@ sim.taxonomy = function(tree, beta = 0, lambda.a = 0, kappa = 0, root.edge = TRU
 
       # update all labels & ages associated with d1 since (d1 is younger now)
       p$sp[which(p$sp == node)] = d1
-      #p$end[which(p$sp == d1)] = node.ages[d1] #TODO delete
       p$parent[which(p$parent == node)] = d1
       p$cryptic.id[which(p$cryptic.id == node)] = d1
 
