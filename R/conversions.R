@@ -268,7 +268,7 @@ beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, ...) {
 #' @seealso \code{\link{taxonomy}}, \code{\link{fossils}}, \code{\link{fossils.to.paleotree.record}}
 # NB: modes not branch specific
 # NB: cryptic speciation: parent id is true parent, ie can be = cryptic id
-paleotree.record.to.fossils = function(record, alphanumeric = TRUE) {
+paleotree.record.to.fossils = function(record) {
   # check that paleotree is installed - should be but you never know
   if (!requireNamespace("paleotree", quietly = TRUE)) {
     stop("Paleotree needed for this function to work. Please install it.", call. = FALSE)

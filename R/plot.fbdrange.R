@@ -78,8 +78,8 @@ fortify.fbdrange <- function (model, data, layout = "rectangular", ladderize = T
     if (is.null(x$edge.length) || branch.length == "none") {
       if (layout == "slanted") {
         sbp <- .convert_tips2ancestors_sbp(x, include.root = TRUE)
-        xpos <- getXcoord_no_length_slanted(sbp)
-        ypos <- getYcoord_no_length_slanted(sbp)
+        xpos <- ggtree:::getXcoord_no_length_slanted(sbp)
+        ypos <- ggtree:::getYcoord_no_length_slanted(sbp)
       }
       else {
         xpos <- ggtree:::getXcoord_no_length(x)
@@ -235,28 +235,13 @@ adjust_hclust_tip.edge.len <- function(df, phylo){
   return(df)
 }
 
-getXcoord_no_length_slanted <- function(x){
-  x <- -colSums(x)
-  x <- unname(x[order(as.numeric(names(x)))])
-  x <- x + max(abs(x))
-  return(x)
-}
-
-getYcoord_no_length_slanted <- function(y){
-  y <- seq_len(nrow(y)) * y
-  y[y==0] <- NA
-  y <- colMeans(y, na.rm = TRUE)
-  y <- unname(y[order(as.numeric(names(y)))])
-  return(y)
-}
-
 .convert_tips2ancestors_sbp <- function (tree, include.root = FALSE){
   all.nodes <- unique(as.vector(tree@phylo$edge))
   if (!include.root) {
     all.nodes <- setdiff(all.nodes, tidytree::rootnode(tree))
   }
   
-  tip.nodes <- .nodeId(tree, type = "tips")
+  tip.nodes <- ggtree:::.nodeId(tree, type = "tips")
   tn <- lapply(tip.nodes, 
                .internal_ancestor, 
                .data = tree, 
@@ -265,25 +250,6 @@ getYcoord_no_length_slanted <- function(y){
   sbp <- do.call(rbind, sbp) 
   colnames(sbp) <- all.nodes
   return(sbp)
-}
-
-.nodeId <- function (tree, type = "all"){
-  type <- match.arg(type, c("all", "tips", "internal"))
-  if (inherits(tree, "treedata")) {
-    tree <- tree@phylo
-  }
-  nodes <- unique(as.vector(tree$edge))
-  if (type == "all") {
-    return(nodes)
-  }
-  edge <- tree$edge
-  tips <- edge[!edge[, 2] %in% edge[, 1], 2]
-  if (type == "tips"){
-    return(tips)
-  }
-  else if (type == "internal") {
-    return(setdiff(nodes, tips))
-  }
 }
 
 .internal_ancestor <- function(.data, .node, all.nodes){

@@ -4,12 +4,10 @@
 \alias{paleotree.record.to.fossils}
 \title{Transforms a fossilRecordSimulation object from package paleotree to a tree and taxonomy and fossils objects.}
 \usage{
-paleotree.record.to.fossils(record, alphanumeric = TRUE)
+paleotree.record.to.fossils(record)
 }
 \arguments{
 \item{record}{fossilRecordSimulation object.}
-
-\item{alphanumeric}{If TRUE function will return alphanumeric species labels (i.e. species labels contain the "t" prefix) (default). If FALSE function will return numeric only species labels.}
 }
 \value{
 A list containing the converted tree, taxonomy and fossils
