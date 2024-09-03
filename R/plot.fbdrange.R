@@ -1,3 +1,4 @@
+utils::globalVariables("y") # needed to avoid R CMD check failure on the aes(x,y) call l20
 #' Plot oriented tree with stratigraphic ranges
 #'
 #' @param x object of type \code{fbdrange} containing orientation and range data
@@ -10,12 +11,13 @@
 #' @examples
 #' tree_file <- system.file("extdata", "fbdrange.trees", package = "FossilSim")
 #' fbdr <- get_fbdrange_from_file(tree_file)
-#' plot(fbdr)
+#' p <- plot(fbdr, smart.labels = TRUE)
 #' 
 #' @importFrom ggplot2 aes
 #' @importFrom utils modifyList
+#' @importFrom ggtree %<+%
 plot.fbdrange <- function(x, smart.labels = FALSE, ...) {
-  p1 <- ggplot2::ggplot(x, aes(color = range)) + ggtree::geom_tree(linewidth=2) + ggplot2::geom_point(aes(color = range), size = 1.3) 
+  p1 <- ggplot2::ggplot(x, aes(x, y, color = range)) + ggtree::geom_tree(linewidth=2) + ggplot2::geom_point(aes(color = range), size = 1.3) 
   
   ## smartly spaced out tip/range labels
   if(smart.labels) {
@@ -38,7 +40,8 @@ plot.fbdrange <- function(x, smart.labels = FALSE, ...) {
     
     default_args = list(size = 3, xlim = c(NA, Inf), min.segment.length = 0, force = 0.3, nudge_x = 0.5, direction = "both", hjust = 0, segment.size = 0.2)
     label_args = modifyList(default_args, list(...))
-    p1 <- p1 + do.call(ggrepel::geom_label_repel, c(list(labeldf, aes(label = new_labels, alpha = 0.7, fontface = 4), label_args)))
+    p1 <- p1 %<+% labeldf
+    p1 <- p1 + do.call(ggrepel::geom_label_repel, c(list(mapping = aes(label = new_labels, alpha = 0.7, fontface = 4)), label_args))
   }
   
   p1
