@@ -69,6 +69,7 @@ Authors:
   \item Rachel Warnock \email{rachel.warnock@bsse.ethz.ch} [copyright holder]
   \item Walker Pett [copyright holder]
   \item O'Reilly Joseph [copyright holder]
+  \item Ugnė Stolz [copyright holder]
 }
 
 }

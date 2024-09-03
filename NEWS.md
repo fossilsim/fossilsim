@@ -1,3 +1,12 @@
+## Version 2.4.0
+
+#### New functionality
+* added a new structure, the `fbdrange` object, to store the results of FBD-range inferences with budding (e.g. the output of the `sRanges` package for BEAST2)
+* added plotting for `fbdrange` objects, showing the oriented tree with stratigraphic ranges
+
+#### Bug fixes
+* improved checks on `fossils` object so invalid data types are rejected instead of crashing
+
 ## Version 2.3.3
 
 #### New functionality

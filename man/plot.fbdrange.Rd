@@ -19,3 +19,9 @@ a ggtree plot which can be combined with any other commands from [ggplot2] or [g
 \description{
 Plot oriented tree with stratigraphic ranges
 }
+\examples{
+tree_file <- system.file("extdata", "fbdrange.trees", package = "FossilSim")
+fbdr <- get_fbdrange_from_file(tree_file)
+plot(fbdr)
+
+}
