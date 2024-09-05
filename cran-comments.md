@@ -4,11 +4,7 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-The checks identified one note concerning the use of ::: to access unexported functions of the ggtree package.
-Our code extends ggtree plotting to a new data structure and so is tightly linked to the internals of ggtree.
-This dependency cannot be removed other than by copying the functions to our own package, which would duplicate a large part of ggtree.
+0 errors | 0 warnings | 0 note
 
 ## Reverse dependencies
 
