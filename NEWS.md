@@ -1,3 +1,6 @@
+## Version 2.4.1
+* fixed dependency issues due to the new ggtree version
+
 ## Version 2.4.0
 
 #### New functionality

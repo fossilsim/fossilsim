@@ -15,9 +15,10 @@ utils::globalVariables("y") # needed to avoid R CMD check failure on the aes(x,y
 #' 
 #' @importFrom ggplot2 aes
 #' @importFrom utils modifyList
-#' @importFrom ggtree %<+%
+#' @importFrom ggfun %<+%
 plot.fbdrange <- function(x, smart.labels = FALSE, ...) {
-  p1 <- ggplot2::ggplot(x, aes(x, y, color = range)) + ggtree::geom_tree(linewidth=2) + ggplot2::geom_point(aes(color = range), size = 1.3) 
+  p1 <- ggplot2::ggplot(x, aes(x, y, color = range)) + ggtree::geom_tree(linewidth=2) + ggplot2::geom_point(aes(color = range), size = 1.3)
+  class(p1) <- c("ggtree", class(p1))
   
   ## smartly spaced out tip/range labels
   if(smart.labels) {
