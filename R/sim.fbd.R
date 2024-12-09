@@ -57,6 +57,63 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
   return(trees)
 }
 
+
+#
+
+#'sim.fbd.rateshift.age: Simulating fossilized birth death trees incorporating rate shifts.
+#' 
+#' @param age Time since origin / most recent common ancestor.
+#' @param numbsim Number of trees to simulate.
+#' @param lambda Vector of speciation rates, the rate in entry i is the speciation rate prior (ancestral) to time times[i].
+#' @param mu Vector of extinction rates, the rate in entry i is the extinction rate prior (ancestral) to time times[i].
+#' @param psi Vector of fossil sampling rates, the rate in entry i is the fossil sampling rate prior (ancestral) to time times[i].
+#' @param frac Extant sampling fraction: The actual (simulated) number of tips is n, but only n*frac tips are included in the sampled tree (incomplete sampling).
+#' #' @param times Vector of mass extinction and rate shift times. Time is 0 today and increasing going backwards in time. Specify the
+#' vector as times[i]<times[i+1]. times[1]=0 (today).
+#' @param mrca If mrca=FALSE: age is the time since origin. If mrca=TRUE: age is the time since the most recent common ancestor of all sampled tips.
+#' @param complete whether to return the complete tree (with non-sampled lineages) or the reconstructed tree (with unsampled lineages removed).
+#' @return Array of 'numbsim' SAtrees with the time since origin / most recent common ancestor being 'age'. If the tree goes extinct or
+#' no tips are sampled (only possible when mrca = FALSE), return value is '0'. If only one extant and no extinct tips are sampled, return value is '1'.
+#' @examples
+#' TODO: Add examples
+#' if (requireNamespace("TreeSim", quietly = TRUE)) {
+#' }
+#' @keywords fosilized birth death
+#' @export
+sim.fbd.rateshift.age <- function(age, numbsim, lambda, mu, psi, times, frac = 1, mrca = FALSE, complete = FALSE){
+  if(length(lambda) != length(times))
+    stop("Length mismatch between rate shift times and birth rates")
+  if(length(mu) != length(times))
+    stop("Length mismatch between rate shift times and death rates")
+  if(length(psi) != length(times))
+    stop("Length mismatch between rate shift times and sampling rates")
+    # check if TreeSim is installed
+  if (!requireNamespace("TreeSim", quietly = TRUE)) {
+    stop("TreeSim needed for this function to work. Please install it.", call. = FALSE)
+  }
+  trees = TreeSim::sim.rateshift.age(age, numbsim, lambda, mu, frac, mrca, complete, norm)
+  for (i in 1:length(trees)){
+    if(is.numeric(trees[[i]])) next
+    t = trees[i]
+    origin = max(n.ages(t)) + tree$root.edge
+    horizons = c(times, origin)
+    f <- sim.fossils.intervals(tree = t, interval.ages = horizons, rate = psi)
+
+    tree = SAtree.from.fossils(t,f)$tree
+
+    if (!complete){
+      tree = drop.unsampled(tree)
+    }
+    node.ages = n.ages(tree)
+    trees[[i]] = tree
+    if (!mrca){
+      trees[[i]]$root.edge = origin - max(node.ages)
+    }
+    trees[[i]] = SAtree(trees[[i]], complete)
+  }
+  return(trees)
+}
+
 #' sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating rate shifts.
 #'
 #' @param n Number of extant sampled tips.
