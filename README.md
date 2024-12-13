@@ -47,11 +47,11 @@ The following vignettes are available via CRAN and provide detailed examples:
 ### For further information and examples see the package documentation
 
 ### Contributors
-Joëlle Barido-Sottani  
-Walker Pett
-Joseph O'Reilly
-Ugnė Stolz
-Rachel Warnock
+* Joëlle Barido-Sottani  
+* Walker Pett
+* Joseph O'Reilly
+* Ugnė Stolz
+* Rachel Warnock
 
 ### Citation
 
