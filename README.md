@@ -4,6 +4,8 @@ R package for simulating fossil data on phylogenetic trees under mechanistic mod
 
 The latest version can be installed in R using the package devtools:
 
+    install.packages("BiocManager")
+    BiocManager::install("ggtree")
     library(devtools)
     install_github("fossilsim/fossilsim")
 
