@@ -58,6 +58,7 @@ SAtree.from.fossils = function(tree, fossils) {
   }
   
   #renaming all species not in fossils
+  extant_tips = tree$tip.label
   for(i in 1:ntips) {
     if(!i %in% fossils$sp) {
       tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
@@ -70,6 +71,10 @@ SAtree.from.fossils = function(tree, fossils) {
     if(fossils$sp[i] !=  current_spec) {
       if(current_spec <= ntips) tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
       current_spec = fossils$sp[i]
+      if(current_spec > ntips) { #avoiding duplicates with existing tip labels
+        edge_label = paste0("t", current_spec)
+        while(edge_label %in% extant_tips) edge_label = paste0(edge_label, "b")
+      }
       count_spec = 1
     }
     #adding new speciation node
@@ -86,7 +91,7 @@ SAtree.from.fossils = function(tree, fossils) {
     tree$edge = rbind(tree$edge,c(totalnodes,-i))
     tree$edge.length = c(tree$edge.length,0)
     if(current_spec <= ntips) tree$tip.label = c(tree$tip.label, paste0(tree$tip.label[current_spec], "_", count_spec))
-    else tree$tip.label = c(tree$tip.label, paste0("t", current_spec, "_", count_spec))
+    else tree$tip.label = c(tree$tip.label, paste0(edge_label, "_", count_spec))
     fossils$tip.label[i] = tree$tip.label[length(tree$tip.label)]
     count_spec = count_spec +1
   }
