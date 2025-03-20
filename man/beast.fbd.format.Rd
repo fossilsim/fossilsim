@@ -2,10 +2,16 @@
 % Please edit documentation in R/conversions.R
 \name{beast.fbd.format}
 \alias{beast.fbd.format}
-\title{Transforms a tree and fossils into a sampled tree in beast-usable format and writes it in Newick format.
-Designed to work with FBD.}
+\title{Transforms a tree and fossils into a sampled tree in BEAST-usable format and writes it in Newick format.}
 \usage{
-beast.fbd.format(tree, fossils, rho = 1, sampled_tips = NULL, ...)
+beast.fbd.format(
+  tree,
+  fossils,
+  rho = 1,
+  sampled_tips = NULL,
+  tip_order = "oldest_first",
+  ...
+)
 }
 \arguments{
 \item{tree}{Complete tree.}
@@ -16,14 +22,16 @@ beast.fbd.format(tree, fossils, rho = 1, sampled_tips = NULL, ...)
 
 \item{sampled_tips}{List of tip labels corresponding to sampled extant tips.}
 
+\item{tip_order}{Order of indexes to assign to the tips, either `oldest_first` (by default, first = oldest and last = youngest) or `youngest_first` (reversed).}
+
 \item{...}{Additional parameters will be passed to ape::write.tree}
 }
 \value{
 Output of write.tree.
 }
 \description{
-Transforms a tree and fossils into a sampled tree in beast-usable format and writes it in Newick format.
-Designed to work with FBD.
+For each species, removes all the intermediate fossils and leave only the youngest and oldest. The oldest and youngest of each species will be
+labelled according to the `tip_order` argument.
 }
 \examples{
 # simulate tree

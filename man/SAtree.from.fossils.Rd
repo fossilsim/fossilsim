@@ -2,24 +2,29 @@
 % Please edit documentation in R/SAtree.R
 \name{SAtree.from.fossils}
 \alias{SAtree.from.fossils}
-\title{Transforms a tree and fossils dataframe to a combined SA tree.
-Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
-Tip labels are set to "species id"_"index", where the most recent tip of a given species receives index 1 and indices increase towards the past.}
+\title{Transforms a tree and fossils dataframe to a combined SA tree.}
 \usage{
-SAtree.from.fossils(tree, fossils)
+SAtree.from.fossils(
+  tree,
+  fossils,
+  tip_order = c("oldest_first", "youngest_first")
+)
 }
 \arguments{
 \item{tree}{Phylo object.}
 
 \item{fossils}{Fossils object.}
+
+\item{tip_order}{Order of indexes to assign to the tips, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first` 
+(indexes increase towards the past).}
 }
 \value{
 A list of `tree`, the SA tree integrating the fossils, and `fossils`, the fossils object updated with the tip label of each sample.
 }
 \description{
-Transforms a tree and fossils dataframe to a combined SA tree.
 Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
-Tip labels are set to "species id"_"index", where the most recent tip of a given species receives index 1 and indices increase towards the past.
+Tip labels are set to "species id"_"index". The order of the indexes is given by `tip_order`: either the oldest tip of a given species 
+receives index 1 and indexes increase towards the present (default) or the reverse.
 }
 \examples{
 # simulate tree

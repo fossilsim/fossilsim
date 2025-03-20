@@ -2,8 +2,7 @@
 % Please edit documentation in R/conversions.R
 \name{prune.fossils}
 \alias{prune.fossils}
-\title{Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
-Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.}
+\title{Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.}
 \usage{
 prune.fossils(tree)
 }
@@ -14,7 +13,7 @@ prune.fossils(tree)
 Tree with pruned fossils.
 }
 \description{
-Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
+First and last are based on the order used in the `\link{SAtree.from.fossils}` function, i.e. youngest first or oldest first.
 Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
 }
 \examples{

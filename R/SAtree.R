@@ -15,11 +15,15 @@ SAtree = function(tree, complete = TRUE) {
 }
 
 #' Transforms a tree and fossils dataframe to a combined SA tree.
+#' 
 #' Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
-#' Tip labels are set to "species id"_"index", where the most recent tip of a given species receives index 1 and indices increase towards the past.
+#' Tip labels are set to "species id"_"index". The order of the indexes is given by `tip_order`: either the oldest tip of a given species 
+#' receives index 1 and indexes increase towards the present (default) or the reverse.
 #'
 #' @param tree Phylo object.
 #' @param fossils Fossils object.
+#' @param tip_order Order of indexes to assign to the tips, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first` 
+#' (indexes increase towards the past).
 #' @return A list of `tree`, the SA tree integrating the fossils, and `fossils`, the fossils object updated with the tip label of each sample.
 #' @examples
 #' # simulate tree
@@ -32,8 +36,10 @@ SAtree = function(tree, complete = TRUE) {
 #' t2 = SAtree.from.fossils(t,f)
 #' plot(t2$tree)
 #' @export
-SAtree.from.fossils = function(tree, fossils) {
+SAtree.from.fossils = function(tree, fossils, tip_order = c("oldest_first", "youngest_first")) {
   if(!is.fossils(fossils)) stop("Argument fossils must be a valid fossils object")
+  
+  if(length(tip_order) > 1) tip_order = tip_order[1]
   
   if(length(fossils[,1])==0) {
     tree$tip.label = paste0(tree$tip.label, "_", 1)
@@ -117,6 +123,23 @@ SAtree.from.fossils = function(tree, fossils) {
   }
   for(i in 1:length(fossils[,1])) {
     tree$edge[which(tree$edge==-i)] = ntips + i
+  }
+  
+  if(tip_order == "youngest_first") {
+    new_labels = tree$tip.label
+    split_tip_labels = strsplit(tree$tip.label, split = "_", fixed = T)
+    sp_labels = sapply(split_tip_labels, function(t) t[1])
+    idxs = sapply(split_tip_labels, function(t) t[2])
+    
+    for(sp in unique(sp_labels)) {
+      sp_positions = which(sp_labels == sp)
+      sp_idxes = as.numeric(idxs[sp_positions])
+      sp_idxes = max(sp_idxes) + 1 - sp_idxes
+      new_labels[sp_positions] = paste0(sp, "_", sp_idxes)
+    }
+    names(new_labels) = tree$tip.label
+    fossils$tip.label = new_labels[fossils$tip.label]
+    tree$tip.label = new_labels
   }
   
   #force reordering for nice plotting
