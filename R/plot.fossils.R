@@ -41,7 +41,7 @@
 #' @param col.axis Colour of the time scale axis (default = "gray35").
 #' @param cex Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.
 #' @param pch Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.
-#' @param t.axis.lab NULL or character. Axis label for the time (x) axis. If NULL (default), "Time before present" is used
+#' @param t.axis.lab Axis label for the time (x) axis
 #' @param ... Additional parameters to be passed to \code{plot.default}.
 #'
 #' @examples
@@ -90,7 +90,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
                         root.edge = TRUE, hide.edge = FALSE, edge.width = 1, show.tip.label = FALSE, align.tip.label = FALSE, reconstructed = FALSE,
                         # fossil appearance
                         fossil.col = 1, range.col = rgb(0,0,1), extant.col = 1, taxa.palette = "viridis",
-                        col.axis = "gray35", cex = 1.2, pch = 18, t.axis.lab = NULL, ...) {
+                        col.axis = "gray35", cex = 1.2, pch = 18, t.axis.lab = "Time before present", ...) {
 
   fossils = x
 
@@ -107,10 +107,6 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   no.margin = FALSE
   adj = NULL
   srt = 0
-
-  if (is.null(t.axis.lab)){
-    t.axis.lab = "Time before present"
-  }
 
   if(!show.tree) align.tip.label = TRUE
 
@@ -532,7 +528,8 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     add.depth.axis = TRUE
     if(show.proxy){
       add.depth.profile(proxy.data, axis.strata, strata, show.axis, add.depth.axis,
-                        show.preferred.depth = show.preferred.environ, PD = preferred.environ, x.labs = x.labs)
+                        show.preferred.depth = show.preferred.environ, PD = preferred.environ, x.labs = x.labs,
+                        t.axis.lab = t.axis.lab)
     }
   }
 
@@ -549,7 +546,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
   invisible(L)
 }
 
-add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.depth.axis, show.preferred.depth = TRUE, PD = NULL, x.labs = FALSE){
+add.depth.profile = function(depth.profile, axis.strata, strata, show.axis, add.depth.axis, show.preferred.depth = TRUE, PD = NULL, x.labs = FALSE, t.axis.lab){
   par(fig = c(0,1,0,0.4), new = T)
   # change the y-axis scale for depth
   u = par("usr") # current scale
