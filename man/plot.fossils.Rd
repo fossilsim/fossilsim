@@ -37,6 +37,7 @@
   col.axis = "gray35",
   cex = 1.2,
   pch = 18,
+  t.axis.lab = "Time before present",
   ...
 )
 }
@@ -104,6 +105,8 @@
 \item{cex}{Numeric value giving the factor used to scale the points representing the fossils when \code{show.fossils = TRUE}.}
 
 \item{pch}{Numeric value giving the symbol used for the points representing the fossils when \code{show.fossils = TRUE}.}
+
+\item{t.axis.lab}{Axis label for the time (x) axis}
 
 \item{...}{Additional parameters to be passed to \code{plot.default}.}
 }
