@@ -14,15 +14,16 @@
 #'
 #' @param data Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, the function creates an empty fossils object.
 #' @param from.taxonomy Boolean indicating whether the fossils were sampled using a taxonomy object, as opposed to a tree object. Default = FALSE.
+#' @param discard.added Whether to remove additional columns from the data frame. Default = FALSE.
 #'
 #' @export
-fossils <- function(data = NULL, from.taxonomy = FALSE){
+fossils <- function(data = NULL, from.taxonomy = FALSE, discard.added = FALSE){
   if(is.null(data)) {
     data = data.frame(sp = numeric(), edge = numeric(), hmin = numeric(), hmax = numeric(), stringsAsFactors = F)
   }
   else {
     if(is.list(data)) data <- as.data.frame(data)
-
+    
     # check for required fields
     required_fields = c("sp", "edge", "hmin", "hmax")
     missing = !required_fields %in% colnames(data)
@@ -31,18 +32,20 @@ fossils <- function(data = NULL, from.taxonomy = FALSE){
     # check for mistyped fields (e.g. species as string rather than index)
     mistyped = sapply(required_fields, function(f) mode(data[[f]]) != "numeric")
     if(any(mistyped)) stop(paste0("All required fields should be of numeric type. Mistyped fields: ", paste(colnames(data)[mistyped], collapse = ", ")))
-
+    
     # check for additional fields
-    additional = !colnames(data) %in% required_fields
-    if(any(additional)) {
-      warning(paste0("These fields will be discarded: ", paste(colnames(data)[additional], collapse = ", ")))
-      data[,additional] = NULL
+    if(discard.added) {
+      additional = !colnames(data) %in% required_fields
+      if(any(additional)) {
+        warning(paste0("These fields will be discarded: ", paste(colnames(data)[additional], collapse = ", ")))
+        data[,additional] = NULL
+      }
     }
   }
-
+  
   attr(data, "class") <- c("fossils", class(data))
   attr(data, "from.taxonomy") <- from.taxonomy
-
+  
   return(data)
 }
 
@@ -82,4 +85,13 @@ as.fossils.default<-function(data, ...){
 #' @rdname fossils
 is.fossils<-function(data){
   inherits(data, "fossils")
+}
+
+# allow rows to be added even if number of columns don't match 
+# necessary if using fossils objects with added columns
+rbind_fill = function(df1, df2) {
+  rbind(
+    data.frame(c(df1, sapply(setdiff(names(df2), names(df1)), function(x) NA))),
+    data.frame(c(df2, sapply(setdiff(names(df1), names(df2)), function(x) NA)))
+  )
 }

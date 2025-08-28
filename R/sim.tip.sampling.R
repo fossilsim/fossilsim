@@ -78,7 +78,7 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
       # identify the edge ending zero
       edge = taxonomy$edge[which(abs(taxonomy$end) < tol & taxonomy$sp == i)]
 
-      fossils<-rbind(fossils, data.frame(sp = i, edge = edge, hmin = 0, hmax = 0))
+      fossils<-rbind_fill(fossils, data.frame(sp = i, edge = edge, hmin = 0, hmax = 0))
     }
 
   }
@@ -159,7 +159,7 @@ sim.tip.samples<-function(fossils, tree, taxonomy = NULL, rho = 1){
 
       j = j + 1
       if(runif(1) < rho[j]){
-        fossils<-rbind(fossils, data.frame(sp = i, edge = edge, hmin = end, hmax = end))
+        fossils<-rbind_fill(fossils, data.frame(sp = i, edge = edge, hmin = end, hmax = end))
       }
     }
 
