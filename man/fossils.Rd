@@ -6,7 +6,7 @@
 \alias{is.fossils}
 \title{Fossils object}
 \usage{
-fossils(data = NULL, from.taxonomy = FALSE)
+fossils(data = NULL, from.taxonomy = FALSE, discard.added = FALSE)
 
 as.fossils(data, from.taxonomy = FALSE)
 
@@ -16,6 +16,8 @@ is.fossils(data)
 \item{data}{Dataframe or list of sampled fossils. See Details for the list of required fields. If NULL, the function creates an empty fossils object.}
 
 \item{from.taxonomy}{Boolean indicating whether the fossils were sampled using a taxonomy object, as opposed to a tree object. Default = FALSE.}
+
+\item{discard.added}{Whether to remove additional columns from the data frame. Default = FALSE.}
 }
 \description{
 Create a fossil record object. The input is taken to be a dataframe or list.
