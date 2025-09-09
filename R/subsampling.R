@@ -16,7 +16,7 @@ prune.fossil.tips <- function(tree){
   }
 
   # avoids geiger::is.extinct()
-  tol <- min(tree$edge.length)/100
+	tol <- max(tree$edge.length)/1e8
   tipHeight <- diag(ape::vcv.phylo(tree))
 
   foss <- names(which(tipHeight < max(tipHeight)-tol))
