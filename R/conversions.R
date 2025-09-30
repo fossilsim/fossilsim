@@ -109,7 +109,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
   }
 
   # create SAtree object
-  sa.tree = SAtree.from.fossils(tree, fossils)$tree
+  sa.tree = SAtree.from.fossils(tree, fossils, tip_order = "youngest_first")$tree
 
   # match samp_tips and sa.tree tip labels
   if(!is.null(samp_tips)){
