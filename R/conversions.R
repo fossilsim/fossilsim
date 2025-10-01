@@ -58,8 +58,10 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' @param tree Tree object.
 #' @param fossils Fossils object.
 #' @param rho Extant species sampling probability. Default = 1, will be disregarded if fossils object already contains extant samples.
+#' @param tip_order Order of indexes to assign to the tips in the SA tree, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first` 
+#' (indexes increase towards the past).
 #'
-#' @return A list containing the tree and fossil objects.
+#' @return A list containing the reconstructed SA tree and fossil objects.
 #'
 #' @examples
 #' # simulate tree
@@ -87,7 +89,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #'
 #' @export
 # function to generate tree and corresponding fossil object for the reconstructed tree
-reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
+reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order = c("oldest_first", "youngest_first")){
 
   if(!is.null(tree) && !"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -109,7 +111,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1){
   }
 
   # create SAtree object
-  sa.tree = SAtree.from.fossils(tree, fossils, tip_order = "youngest_first")$tree
+  sa.tree = SAtree.from.fossils(tree, fossils, tip_order = tip_order)$tree
 
   # match samp_tips and sa.tree tip labels
   if(!is.null(samp_tips)){
