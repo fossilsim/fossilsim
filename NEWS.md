@@ -1,3 +1,13 @@
+## Version 2.4.2
+
+#### Bug fixes
+* fixed an issue leading to duplicated tip IDs in `SAtree.from.fossils`
+* fixed a bug with the `prune.fossil.tips` function in trees with edges of length 0 
+
+#### New functionality
+* added ordering options to `SAtree.from.fossils` to choose whether fossils are ordered from the youngest or oldest
+* added option for custom X axis label in `plot.fossils`
+
 ## Version 2.4.1
 * fixed dependency issues due to the new ggtree version
 
