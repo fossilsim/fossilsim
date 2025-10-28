@@ -4,7 +4,12 @@
 \alias{reconstructed.tree.fossils.objects}
 \title{Returns tree and fossil objects that you can use to plot the reconstructed tree.}
 \usage{
-reconstructed.tree.fossils.objects(fossils, tree, rho = 1)
+reconstructed.tree.fossils.objects(
+  fossils,
+  tree,
+  rho = 1,
+  tip_order = c("oldest_first", "youngest_first")
+)
 }
 \arguments{
 \item{fossils}{Fossils object.}
@@ -12,9 +17,12 @@ reconstructed.tree.fossils.objects(fossils, tree, rho = 1)
 \item{tree}{Tree object.}
 
 \item{rho}{Extant species sampling probability. Default = 1, will be disregarded if fossils object already contains extant samples.}
+
+\item{tip_order}{Order of indexes to assign to the tips in the SA tree, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first` 
+(indexes increase towards the past).}
 }
 \value{
-A list containing the tree and fossil objects.
+A list containing the reconstructed SA tree and fossil objects.
 }
 \description{
 Note that for datasets containing extinct only samples (& rho = 0) the ages output are scaled so that the youngest sample = 0.
