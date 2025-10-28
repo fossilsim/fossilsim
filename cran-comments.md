@@ -1,5 +1,5 @@
 ## Test environments
-* local Ubuntu 20.04 install, R 4.4.1
+* local Ubuntu 20.04 install, R 4.5.1
 * win-builder, devel and release
 
 ## R CMD check results
@@ -8,5 +8,5 @@
 
 ## Reverse dependencies
 
-The reverse dependency "FossilSimShiny" has been checked with the new changes.
+The reverse dependencies "FossilSimShiny", "admtools" and "StratPal" have been checked with the new changes using the package "checked".
 
