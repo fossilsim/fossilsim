@@ -1,3 +1,6 @@
+## Version 2.4.3
+* technical changes for compatibility with the new `ggtree` version.
+
 ## Version 2.4.2
 
 #### Bug fixes
@@ -9,7 +12,7 @@
 * added option for custom X axis label in `plot.fossils`
 
 ## Version 2.4.1
-* fixed dependency issues due to the new ggtree version
+* fixed dependency issues due to the new `ggtree` version
 
 ## Version 2.4.0
 
