@@ -62,13 +62,13 @@ plot(f, tree = t, show.strata = TRUE, max.age = tree.max(t), strata = 4)
 
 }
 \author{
-\strong{Maintainer}: Joelle Barido-Sottani \email{joelle.barido-sottani@m4x.org} [copyright holder]
+\strong{Maintainer}: Joëlle Barido-Sottani \email{joelle.barido-sottani@m4x.org} [copyright holder]
 
 Authors:
 \itemize{
-  \item Rachel Warnock \email{rachel.warnock@bsse.ethz.ch} [copyright holder]
+  \item Rachel Warnock \email{rachel.warnock@fau.de} [copyright holder]
   \item Walker Pett [copyright holder]
-  \item O'Reilly Joseph [copyright holder]
+  \item Joseph O'Reilly [copyright holder]
   \item Ugnė Stolz [copyright holder]
 }
 
