@@ -250,23 +250,8 @@ subsample.fossils.uniform <- function(fossils, proportion) {
 #' @export
 #'
 subsample.fossils.oldest <- function(fossils, tree, complete = TRUE){
-  if(!complete) {
-    ext <- prune.fossil.tips(tree)
-    fossils <- remove.stem.fossils(fossils, tree)
-    ancs <- place.fossils(tree, fossils, ext)
-  } else {
-    ancs <- place.fossils(tree, fossils)
-  }
-
-  smp <- c()
-  for (i in 1:length(unique(ancs))) {
-    x <- which(ancs == unique(ancs)[i])
-    smp <- c(smp, which(fossils$hmax == max(fossils$hmax[x])))
-  }
-  out <- fossils[smp,]
-  row.names(out) <- as.character(c(1:length(out$hmax)))
-  return(out
-  )
+  out = subsample.fossils(fossils, tree, complete = complete, incl.youngest = FALSE, incl.oldest = TRUE)
+  return(out)
 }
 
 #' Obtain a subsample of fossil occurrences containing the youngest fossil
@@ -288,23 +273,8 @@ subsample.fossils.oldest <- function(fossils, tree, complete = TRUE){
 #' @export
 #'
 subsample.fossils.youngest <- function(fossils, tree, complete = TRUE){
-  if(!complete) {
-    ext <- prune.fossil.tips(tree)
-    fossils <- remove.stem.fossils(fossils, tree)
-    ancs <- place.fossils(tree, fossils, ext)
-  } else {
-    ancs <- place.fossils(tree, fossils)
-  }
-
-  smp <- c()
-  for (i in 1:length(unique(ancs))) {
-    x <- which(ancs == unique(ancs)[i])
-    smp <- c(smp, which(fossils$hmin == min(fossils$hmin[x])))
-  }
-  out <- fossils[smp,]
-  row.names(out) <- as.character(c(1:length(out$hmin)))
-  return(out
-  )
+  out = subsample.fossils(fossils, tree, complete = complete, incl.youngest = TRUE, incl.oldest = FALSE)
+  return(out)
 }
 
 #' Obtain a subsample of fossil occurrences containing the oldest and youngest
@@ -325,6 +295,11 @@ subsample.fossils.youngest <- function(fossils, tree, complete = TRUE){
 #' subsample.fossils.oldest.and.youngest(f, t, complete = FALSE)
 #' @export
 subsample.fossils.oldest.and.youngest <- function(fossils, tree, complete = TRUE){
+  out = subsample.fossils(fossils, tree, complete = complete, incl.youngest = TRUE, incl.oldest = TRUE)
+  return(out)
+}
+
+subsample.fossils = function(fossils, tree, complete = TRUE, incl.youngest = TRUE, incl.oldest = TRUE) {
   if (!complete) {
     ext <- prune.fossil.tips(tree)
     fossils <- remove.stem.fossils(fossils, tree)
@@ -332,15 +307,15 @@ subsample.fossils.oldest.and.youngest <- function(fossils, tree, complete = TRUE
   } else {
     ancs <- place.fossils(tree, fossils)
   }
-
+  
   smp_1 <- c()
   smp_2 <- c()
   for (i in 1:length(unique(ancs))) {
     x <- which(ancs == unique(ancs)[i])
-    smp_1 <- c(smp_1, which(fossils$hmax == max(fossils$hmax[x])))
-    smp_2 <- c(smp_2, which(fossils$hmin == min(fossils$hmin[x])))
+    if(incl.oldest) smp_1 <- c(smp_1, which(fossils$hmax == max(fossils$hmax[x])))
+    if(incl.youngest) smp_2 <- c(smp_2, which(fossils$hmin == min(fossils$hmin[x])))
   }
-
+  
   smp <- unique(c(smp_1, smp_2))
   out <- fossils[smp,]
   row.names(out) <- as.character(c(1:length(out$hmin)))
