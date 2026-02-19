@@ -7,6 +7,7 @@
 SAtree.from.fossils(
   tree,
   fossils,
+  taxonomy = NULL,
   tip_order = c("oldest_first", "youngest_first")
 )
 }
@@ -15,16 +16,21 @@ SAtree.from.fossils(
 
 \item{fossils}{Fossils object.}
 
+\item{taxonomy}{Optional taxonomy map for the tree.}
+
 \item{tip_order}{Order of indexes to assign to the tips, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first` 
 (indexes increase towards the past).}
 }
 \value{
-A list of `tree`, the SA tree integrating the fossils, and `fossils`, the fossils object updated with the tip label of each sample.
+A list of `tree`, the SA tree integrating the fossils, `fossils`, the fossils object updated with the tip label of each sample, 
+and updated `taxonomy` object if provided.
 }
 \description{
 Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
 Tip labels are set to "species id"_"index". The order of the indexes is given by `tip_order`: either the oldest tip of a given species 
 receives index 1 and indexes increase towards the present (default) or the reverse.
+The fossils object is updated with the corresponding tip labels for each sampled and returned. If a `taxonomy` object is provided, 
+it will be updated with the added edges and also returned.
 }
 \examples{
 # simulate tree
