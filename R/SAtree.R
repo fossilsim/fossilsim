@@ -51,7 +51,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
   }
   
   fossils$h = (fossils$hmin + fossils$hmax)/2
-  fossils = fossils[order(fossils$sp, -fossils$h),]
+  fossils = fossils[order(fossils$edge, -fossils$h),]
   
   ntips = length(tree$tip.label)
   totalnodes = ntips + tree$Nnode
@@ -106,8 +106,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
       taxonomy = rbind(taxonomy, taxonomy[tax_row, ])
       end_row = nrow(taxonomy)
       taxonomy$start[end_row] = taxonomy$end[tax_row] = fossils$h[i]
-      taxonomy$edge[tax_row] = totalnodes
-      taxonomy$mode[end_row] = "f"
+      taxonomy$edge[which(taxonomy$edge == end_node & taxonomy$start > fossils$h[i])] = totalnodes
     }
     
     #adding the fossil tip on a zero-length edge
@@ -121,7 +120,6 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
     if(!is.null(taxonomy)) {
       taxonomy = rbind(taxonomy, taxonomy[end_row, ])
       taxonomy$end[end_row + 1] = fossils$h[i]
-      taxonomy$mode[end_row + 1] = "f"
       taxonomy$edge[end_row + 1] = -i
     }
   }
@@ -171,6 +169,6 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
   #force reordering for nice plotting
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
-  
+
   list(tree = SAtree(tree, TRUE), fossils = fossils, taxonomy = taxonomy)
 }
