@@ -1,7 +1,7 @@
 Package: FossilSim
 Type: Package
 Title: Simulation and Plots for Fossil and Taxonomy Data
-Version: 2.4.3
+Version: 2.4.4
 Authors@R: c(person("Rachel", "Warnock", email="rachel.warnock@fau.de", role=c("aut","cph")), 
   person("Joëlle", "Barido-Sottani", email="joelle.barido-sottani@m4x.org", role=c("aut","cre","cph")), 
   person("Walker", "Pett", role=c("aut","cph")), person("Joseph", "O'Reilly", role=c("aut","cph")),
@@ -12,12 +12,9 @@ License: GPL-3
 RoxygenNote: 7.3.3
 Imports:
     ape,
-    ggtree,
-    ggfun,
-    ggplot2,
-    tidytree,
     methods,
     rlang,
+    tidytree
 Suggests:
     paleotree,
     knitr,
@@ -25,6 +22,9 @@ Suggests:
     devtools,
     TreeSim,
     treeio,
+    ggtree,
+    ggfun,
+    ggplot2,
     ggrepel
 VignetteBuilder: knitr
 Language: en-GB
