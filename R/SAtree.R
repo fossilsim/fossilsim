@@ -15,19 +15,19 @@ SAtree = function(tree, complete = TRUE) {
 }
 
 #' Transforms a tree and fossils dataframe to a combined SA tree.
-#' 
+#'
 #' Sampled ancestors are represented as tips on zero-length edges to maintain compatibility with the ape format.
-#' Tip labels are set to "species id"_"index". The order of the indexes is given by `tip_order`: either the oldest tip of a given species 
+#' Tip labels are set to "species id"_"index". The order of the indexes is given by `tip_order`: either the oldest tip of a given species
 #' receives index 1 and indexes increase towards the present (default) or the reverse.
-#' The fossils object is updated with the corresponding tip labels for each sampled and returned. If a `taxonomy` object is provided, 
+#' The fossils object is updated with the corresponding tip labels for each sampled and returned. If a `taxonomy` object is provided,
 #' it will be updated with the added edges and also returned.
 #'
 #' @param tree Phylo object.
 #' @param fossils Fossils object.
 #' @param taxonomy Optional taxonomy map for the tree.
-#' @param tip_order Order of indexes to assign to the tips, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first` 
+#' @param tip_order Order of indexes to assign to the tips, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first`
 #' (indexes increase towards the past).
-#' @return A list of `tree`, the SA tree integrating the fossils, `fossils`, the fossils object updated with the tip label of each sample, 
+#' @return A list of `tree`, the SA tree integrating the fossils, `fossils`, the fossils object updated with the tip label of each sample,
 #' and updated `taxonomy` object if provided.
 #' @examples
 #' # simulate tree
@@ -42,23 +42,23 @@ SAtree = function(tree, complete = TRUE) {
 #' @export
 SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("oldest_first", "youngest_first")) {
   if(!is.fossils(fossils)) stop("Argument fossils must be a valid fossils object")
-  
+
   if(length(tip_order) > 1) tip_order = tip_order[1]
-  
+
   if(length(fossils[,1])==0) {
     tree$tip.label = paste0(tree$tip.label, "_", 1)
     return(list(tree = SAtree(tree, TRUE), fossils = fossils))
   }
-  
+
   fossils$h = (fossils$hmin + fossils$hmax)/2
   fossils = fossils[order(fossils$edge, -fossils$h),]
-  
+
   ntips = length(tree$tip.label)
   totalnodes = ntips + tree$Nnode
-  
+
   depths = ape::node.depth.edgelength(tree)
   times = max(depths) - depths
-  
+
   # adding root edge in case fossils appear on it
   if(!is.null(tree$root.edge)) {
     root = (ntips + length(fossils[,1]))*2
@@ -66,7 +66,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
     tree$edge.length = c(tree$edge.length, tree$root.edge)
     times[root] = max(times) + tree$root.edge
   }
-  
+
   #renaming all species not in fossils
   extant_tips = tree$tip.label
   for(i in 1:ntips) {
@@ -74,11 +74,11 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
       tree$tip.label[i] = paste0(tree$tip.label[i], "_", 1)
     }
   }
-  
+
   current_spec = 0
   count_spec = 1
   for(i in 1:length(fossils[,1])) {
-    
+
     # changing to a new species
     if(fossils$sp[i] !=  current_spec) {
       if(current_spec <= ntips) tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
@@ -89,7 +89,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
       }
       count_spec = 1
     }
-    
+
     #adding the new speciation node
     edge = which(tree$edge[,2] == fossils$edge[i])
     end_node = tree$edge[edge,2]
@@ -100,7 +100,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
     times[totalnodes+1] = fossils$h[i]
     totalnodes=totalnodes+1
     tree$Nnode=tree$Nnode+1
-    
+
     if(!is.null(taxonomy)) {
       tax_row = which(taxonomy$edge == end_node & taxonomy$start > fossils$h[i] & taxonomy$end < fossils$h[i])
       taxonomy = rbind(taxonomy, taxonomy[tax_row, ])
@@ -108,7 +108,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
       taxonomy$start[end_row] = taxonomy$end[tax_row] = fossils$h[i]
       taxonomy$edge[which(taxonomy$edge == end_node & taxonomy$start > fossils$h[i])] = totalnodes
     }
-    
+
     #adding the fossil tip on a zero-length edge
     tree$edge = rbind(tree$edge, c(totalnodes, -i))
     tree$edge.length = c(tree$edge.length, 0)
@@ -116,7 +116,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
     else tree$tip.label = c(tree$tip.label, paste0(edge_label, "_", count_spec))
     fossils$tip.label[i] = tree$tip.label[length(tree$tip.label)]
     count_spec = count_spec +1
-    
+
     if(!is.null(taxonomy)) {
       taxonomy = rbind(taxonomy, taxonomy[end_row, ])
       taxonomy$end[end_row + 1] = fossils$h[i]
@@ -124,21 +124,27 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
     }
   }
   if(current_spec <= ntips) tree$tip.label[current_spec] = paste0(tree$tip.label[current_spec], "_", count_spec)
-  
+
   #handling root edge again, mrca may have been modified by the inclusion of fossils
   if(!is.null(tree$root.edge)) {
     rootedge = which(tree$edge[,1] == root)
     newroot = tree$edge[rootedge,2]
-    
+
     rootidx = which(tree$edge == newroot)
     tree$edge[which(tree$edge == ntips + 1)] = newroot
     tree$edge[rootidx] = ntips + 1
-    
+
+    if(!is.null(taxonomy)) {
+      taxidx = which(taxonomy$edge == newroot)
+      taxonomy$edge[taxonomy$edge == ntips + 1] = newroot
+      taxonomy$edge[taxidx] = ntips + 1
+    }
+
     tree$root.edge = tree$edge.length[rootedge]
     tree$edge = tree$edge[-rootedge,]
     tree$edge.length = tree$edge.length[-rootedge]
   }
-  
+
   #renumbering all nodes to maintain ape format
   for(n in totalnodes:(ntips+1)) {
     tree$edge[tree$edge==n] = n + length(fossils[,1])
@@ -148,13 +154,13 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
     tree$edge[tree$edge==-i] = ntips + i
     if(!is.null(taxonomy)) taxonomy$edge[taxonomy$edge==-i] = ntips + i
   }
-  
+
   if(tip_order == "youngest_first") {
     new_labels = tree$tip.label
     split_tip_labels = strsplit(tree$tip.label, split = "_", fixed = T)
     sp_labels = sapply(split_tip_labels, function(t) t[1])
     idxs = sapply(split_tip_labels, function(t) t[2])
-    
+
     for(sp in unique(sp_labels)) {
       sp_positions = which(sp_labels == sp)
       sp_idxes = as.numeric(idxs[sp_positions])
@@ -165,7 +171,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
     fossils$tip.label = new_labels[fossils$tip.label]
     tree$tip.label = new_labels
   }
-  
+
   #force reordering for nice plotting
   attr(tree,"order")=NULL
   tree = ape::reorder.phylo(tree)
