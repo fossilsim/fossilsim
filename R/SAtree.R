@@ -47,7 +47,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
 
   if(length(fossils[,1])==0) {
     tree$tip.label = paste0(tree$tip.label, "_", 1)
-    return(list(tree = SAtree(tree, TRUE), fossils = fossils))
+    return(list(tree = SAtree(tree, TRUE), fossils = fossils, taxonomy = taxonomy))
   }
 
   fossils$h = (fossils$hmin + fossils$hmax)/2
