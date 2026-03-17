@@ -1,5 +1,5 @@
 #' Create a set of BEAST2 constraints to construct a DPPDIV style fixed extant
-#' topology FBD analysis
+#' topology FBD analysis in BEAST2.6
 #'
 #' If complete = FALSE, only the extant taxa are used to construct the taxon
 #' constraints, resulting in a DPPDIV style analysis in which the extant
@@ -24,6 +24,9 @@
 #' fossils.to.BEAST.constraints(f, t, file = tempfile(), complete = TRUE)
 #' @export
 fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints.xml", complete = FALSE, tree.name = "beastTree"){
+  
+  warning("This function has been deprecated and will be removed in the next release of FossilSim. 
+          If you need a copy of this code, please contact the package maintainer")
 
   if (missing(tree)) {
     stop("tree must be supplied")
@@ -325,6 +328,9 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
 #' fossils.to.BEAST.start.tree(t,f, complete = FALSE)
 #' @export
 fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
+  
+  warning("This function has been deprecated and will be removed in the next release of FossilSim. 
+          If you need a copy of this code, please contact the package maintainer")
 
   if (any(fossils$sp == min(tree$edge[,1]))) {
     stop("Can't handle fossil samples on the root.edge")
@@ -410,4 +416,34 @@ fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
          replacement = "") # Convert to newick
 
   return(aug_newick)
+}
+
+# mimics the performance of phangorn::Descendents(type="children")
+get.dec.nodes <- function(tree, node){
+  if(node <= length(tree$tip.label)){
+    stop("node must be an internal node, not a tip")
+  }
+  
+  return(tree$edge[tree$edge[, 1] == node, 2])
+}
+
+# Bind a new tip into an existing tree with a given label
+# the new tip will appear as the sister taxon to the chosen tip
+# "Where" is the node number of a tip
+bind.to.tip <- function(tree, where, label = "Foss_1"){
+  
+  if(where > length(tree$tip.label)){
+    stop("'where' must be the node number of a tip only")
+  }
+  
+  tip <- ape::rtree(2)
+  tip$tip.label <- c("=^%", label)
+  tip <- ape::drop.tip(tip, "=^%")
+  
+  len <- which(tree$edge[, 2] == where)
+  len <- tree$edge.length[len]/2
+  
+  x <- ape::bind.tree(tree, tip, where = where, position = len)
+  
+  return(x)
 }

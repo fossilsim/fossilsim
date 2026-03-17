@@ -321,36 +321,3 @@ subsample.fossils = function(fossils, tree, complete = TRUE, incl.youngest = TRU
   row.names(out) <- as.character(c(1:length(out$hmin)))
   return(out)
 }
-
-# mimics the performance of phangorn::Descendents(type="children")
-get.dec.nodes <- function(tree, node){
-  if(node <= length(tree$tip.label)){
-    stop("node must be an internal node, not a tip")
-  }
-
-  return(tree$edge[tree$edge[, 1] == node, 2])
-}
-
-# Bind a new tip into an existing tree with a given label
-# the new tip will appear as the sister taxon to the chosen tip
-# "Where" is the node number of a tip
-bind.to.tip <- function(tree, where, label = "Foss_1"){
-
-  if(where > length(tree$tip.label)){
-    stop("'where' must be the node number of a tip only")
-  }
-
-  tip <- ape::rtree(2)
-  tip$tip.label <- c("=^%", label)
-  tip <- ape::drop.tip(tip, "=^%")
-
-  len <- which(tree$edge[, 2] == where)
-  len <- tree$edge.length[len]/2
-
-  x <- ape::bind.tree(tree, tip, where = where, position = len)
-
-  return(x)
-}
-
-
-
