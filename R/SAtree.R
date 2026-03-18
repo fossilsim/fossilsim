@@ -233,7 +233,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
   tree
 }
 
-#' Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
+#' Removes all intermediate fossils from a combined tree and labels the first and last fossils of each species.
 #'
 #' First and last are based on the order used in the `\link{SAtree.from.fossils}` function, i.e. youngest first or oldest first.
 #' Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
@@ -258,6 +258,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' t4 = prune.SAtree.to.ranges(t3)
 #' plot(t4)
 #' @export
+#' @seealso [prune.fossils.to.ranges()] for the same function applied to a fossils object
 prune.SAtree.to.ranges = function(tree) {
   if(!("SAtree" %in% class(tree)) ){
     if("phylo" %in% class(tree)) tree = SAtree(tree)

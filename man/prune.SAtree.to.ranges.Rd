@@ -2,7 +2,7 @@
 % Please edit documentation in R/SAtree.R
 \name{prune.SAtree.to.ranges}
 \alias{prune.SAtree.to.ranges}
-\title{Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.}
+\title{Removes all intermediate fossils from a combined tree and labels the first and last fossils of each species.}
 \usage{
 prune.SAtree.to.ranges(tree)
 }
@@ -33,4 +33,7 @@ t4 = prune.SAtree.to.ranges(t2)
 t3 = sampled.tree.from.combined(t2)
 t4 = prune.SAtree.to.ranges(t3)
 plot(t4)
+}
+\seealso{
+[prune.fossils.to.ranges()] for the same function applied to a fossils object
 }

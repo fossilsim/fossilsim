@@ -37,16 +37,16 @@ get.tip.descs <- function(tree) {
   all_descs <- vector("list", ntips + tree$Nnode)
 
   descs <- function(tree, node, all_descs) {
-      descendants = tree$edge[which(tree$edge[,1]==node),2]
-      if(length(descendants) == 0) all_descs[[node]] = tree$tip.label[node]
+    descendants = tree$edge[which(tree$edge[,1]==node),2]
+    if(length(descendants) == 0) all_descs[[node]] = tree$tip.label[node]
 
-      for(d in descendants) {
-        all_descs = descs(tree, d, all_descs)
-        all_descs[[node]] = c(all_descs[[node]], all_descs[[d]])
-      }
-
-      all_descs
+    for(d in descendants) {
+      all_descs = descs(tree, d, all_descs)
+      all_descs[[node]] = c(all_descs[[node]], all_descs[[d]])
     }
+
+    all_descs
+  }
 
   all_descs = descs(tree, ntips + 1, all_descs)
   all_descs = all_descs[(ntips + 1):(ntips + tree$Nnode)]
@@ -115,6 +115,48 @@ remove.stem.lineages <- function(tree){
   remove <- setdiff(tree$tip.label, crownTips)
   tree <- ape::drop.tip(tree, remove)
   return(tree)
+}
+
+#' Removes all intermediate fossils from a fossils object and labels the first and last samples of each species.
+#'
+#' Extant samples will only be considered if included in the fossils object (using function `sim.extant.samples`).
+#' If only one fossil is present for a particular species it is labelled as first.
+#'
+#' @param fossils Fossils object.
+#' @return Updated fossils object, with intermediate fossils removed and an added `range` column
+#' specifying if the fossil is a `first` or `last` appearance.
+#' @examples
+#' # simulate tree
+#' t = ape::rtree(6)
+#'
+#' # simulate fossils
+#' f = sim.fossils.poisson(rate = 2, tree = t)
+#'
+#' # add extant tips to the fossils object
+#' f = sim.extant.samples(f, tree = t)
+#'
+#' # prune fossils to keep only first and last appearances
+#' fp = prune.fossils.to.ranges(f)
+#'
+#' @export
+#' @seealso [prune.SAtree.to.ranges()] for the same function applied to a combined tree
+prune.fossils.to.ranges = function(fossils) {
+  fossils$range = NA
+  for(sp in unique(fossils$sp)) {
+    idxs = which(fossils$sp == sp)
+    minid = which.min(fossils$hmin[idxs])
+    maxid = which.max(fossils$hmax[idxs])
+
+    fossils$range[idxs[maxid]] = "first"
+    if(minid != maxid) fossils$range[idxs[minid]] = "last"
+
+    if(length(idxs) > 2) {
+      idxs = idxs[c(- minid, - maxid)]
+      fossils = fossils[-idxs, ]
+    }
+  }
+
+  fossils
 }
 
 #' Place fossil samples from one tree in another tree, i.e. find the ancestral
@@ -188,9 +230,6 @@ place.fossils <- function(tree, fossils, ext.tree = NULL) {
   # Now find the comparable node in the second tree
   descs = get.tip.descs(tree)
   for (i in 1:length(output_nodes)) {
-    #tmp <- tree$tip.label[phangorn::Descendants(tree,
-    #        output_nodes[i])[[1]]][tree$tip.label[phangorn::Descendants(tree,
-    #          output_nodes[i])[[1]]] %in% ext.tree$tip.label]
     tmp_tips = which(tree$tip.label %in% descs[[as.character(output_nodes[i])]])
     tmp <- tree$tip.label[tmp_tips][tree$tip.label[tmp_tips] %in% ext.tree$tip.label]
 
@@ -218,11 +257,7 @@ subsample.fossils.uniform <- function(fossils, proportion) {
   if (proportion > 1 | proportion < 0) {
     stop("proportion must be between 0 and 1")
   }
-  smp <- sample(
-      x = c(1:length(fossils$sp)),
-      size = length(fossils$sp) * proportion,
-      replace = FALSE
-    )
+  smp <- sample(x = c(1:length(fossils$sp)), size = length(fossils$sp) * proportion, replace = FALSE)
   return(fossils[smp,])
 }
 
