@@ -4,12 +4,14 @@
 \alias{count.fossils.binned}
 \title{Count the total number of fossils per interval}
 \usage{
-count.fossils.binned(fossils, interval.ages)
+count.fossils.binned(fossils, interval.ages, tol = 1e-08)
 }
 \arguments{
 \item{fossils}{Fossils object.}
 
 \item{interval.ages}{Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.}
+
+\item{tol}{Tolerance for identifying extant tips.}
 }
 \value{
 Vector of extinct samples corresponding to each interval. Note the last value corresponds to the number of samples > the maximum age of the oldest interval.

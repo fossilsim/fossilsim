@@ -2,7 +2,7 @@
 % Please edit documentation in R/subsampling.R
 \name{get.tip.descs}
 \alias{get.tip.descs}
-\title{Obtain the tips that define each node in a tree}
+\title{Obtain the tips that define each clade in a tree}
 \usage{
 get.tip.descs(tree)
 }
@@ -11,10 +11,10 @@ get.tip.descs(tree)
 }
 \value{
 A list of vectors, with one entry for each node consisting of the tip labels
-  that define that node.
+  that define that clade.
 }
 \description{
-Obtain the tips that define each node in a tree
+Obtain the tips that define each clade in a tree
 }
 \examples{
 t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]

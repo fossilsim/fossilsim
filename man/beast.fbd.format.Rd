@@ -2,7 +2,7 @@
 % Please edit documentation in R/conversions.R
 \name{beast.fbd.format}
 \alias{beast.fbd.format}
-\title{Transforms a tree and fossils into a sampled tree in BEAST-usable format and writes it in Newick format.}
+\title{Transforms a tree and fossils into a tree in Newick format which can be read by BEAST2.}
 \usage{
 beast.fbd.format(
   tree,
@@ -10,6 +10,7 @@ beast.fbd.format(
   rho = 1,
   sampled_tips = NULL,
   tip_order = "oldest_first",
+  convert.to.ranges = FALSE,
   ...
 )
 }
@@ -24,14 +25,16 @@ beast.fbd.format(
 
 \item{tip_order}{Order of indexes to assign to the tips, either `oldest_first` (by default, first = oldest and last = youngest) or `youngest_first` (reversed).}
 
+\item{convert.to.ranges}{Whether to prune the fossils to only keep ranges, i.e. first and last appearances for each species.}
+
 \item{...}{Additional parameters will be passed to ape::write.tree}
 }
 \value{
 Output of write.tree.
 }
 \description{
-For each species, removes all the intermediate fossils and leave only the youngest and oldest. The oldest and youngest of each species will be
-labelled according to the `tip_order` argument.
+Optionally, will convert fossil specimens to stratigraphic ranges - i.e., for each species, remove all the intermediate fossils and leave only the youngest and oldest.
+The oldest and youngest of each species will be labelled according to the `tip_order` argument.
 }
 \examples{
 # simulate tree
@@ -42,7 +45,9 @@ f = sim.fossils.poisson(rate = 2, tree = t)
 
 # output for BEAST
 beast.fbd.format(t, f) # output on the console
+beast.fbd.format(t, f, convert.to.ranges = TRUE) # output on the console
 \dontrun{
 beast.fbd.format(t, f, file="example.tre") # output in file
+beast.fbd.format(t, f, file="example.tre", convert.to.ranges = TRUE) # output in file
 }
 }

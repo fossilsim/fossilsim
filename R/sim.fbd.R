@@ -27,31 +27,31 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
   if (!requireNamespace("TreeSim", quietly = TRUE)) {
     stop("TreeSim needed for this function to work. Please install it.", call. = FALSE)
   }
-  
+
   trees = TreeSim::sim.bd.age(age, numbsim, lambda, mu, frac, mrca, complete=T, K)
-  
+
   for(i in 1:length(trees)) {
     if(is.numeric(trees[[i]])) next
-    
+
     t = trees[[i]]
     f <- sim.fossils.poisson(tree = t, rate = psi)
-    
+
     tree = SAtree.from.fossils(t,f)$tree
-    
+
     node.ages = n.ages(tree)
     origin = max(n.ages(tree)) + tree$root.edge
-    
+
     if( !complete ) {
-      tree = drop.unsampled(tree, frac = frac)
+      tree = sampled.tree.from.combined(tree, rho = frac)
       node.ages = n.ages(tree)
     }
-    
+
     trees[[i]] = tree
-    
+
     if( !mrca ) {
       trees[[i]]$root.edge = origin - max(node.ages)
     }
-    
+
     trees[[i]] = SAtree(trees[[i]], complete)
   }
   return(trees)
@@ -83,32 +83,32 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
     stop("Length mismatch between rate shift times and death rates")
   if(length(psi) != length(times))
     stop("Length mismatch between rate shift times and sampling rates")
-  
+
   # check if TreeSim is installed
   if (!requireNamespace("TreeSim", quietly = TRUE)) {
     stop("TreeSim needed for this function to work. Please install it.", call. = FALSE)
-  }  
-  
+  }
+
   trees = TreeSim::sim.rateshift.taxa(n, numbsim, lambda, mu, rep(1, length(times)), times, complete = TRUE)
-  
+
   for(i in 1:length(trees))
   {
     t = trees[[i]]
     origin = max(n.ages(t)) + t$root.edge
-    
+
     horizons = c(times, origin)
-    
+
     f <- sim.fossils.intervals(tree = t, interval.ages = horizons, rates = psi) # reordered
-    
+
     tree = SAtree.from.fossils(t,f)$tree
-    
+
     if( !complete ) tree = drop.unsampled(tree)
-    
+
     node.ages = n.ages(tree)
-    
+
     trees[[i]] = tree
     trees[[i]]$root.edge = origin - max(node.ages)
-    
+
     trees[[i]] = SAtree(trees[[i]], complete)
   }
   return(trees)
@@ -141,45 +141,45 @@ sim.fbd.taxa <- function(n, numbsim, lambda, mu, psi, frac = 1, complete = FALSE
   if (!requireNamespace("TreeSim", quietly = TRUE)) {
     stop("TreeSim needed for this function to work. Please install it.", call. = FALSE)
   }
-  
+
   trees = TreeSim::sim.bd.taxa(n, numbsim, lambda, mu, frac, complete = TRUE)
   for(i in 1:length(trees))
   {
     t = trees[[i]]
     f <- sim.fossils.poisson(tree = t, rate = psi)
-    
+
     tree = SAtree.from.fossils(t,f)$tree
-    
+
     node.ages = n.ages(tree)
-    
+
     origin = max(node.ages) + tree$root.edge
-    
+
     if( !complete ) {
       tree = drop.unsampled(tree, frac = frac, n = n)
       node.ages = n.ages(tree)
     }
-    
+
     trees[[i]] = tree
     trees[[i]]$root.edge = origin - max(node.ages)
-    
+
     trees[[i]] = SAtree(trees[[i]], complete)
   }
   return(trees)
 }
 
 drop.unsampled = function(tree, frac = 1, n = -1) {
-  fossil.tips = is.extinct(tree, tol = 0.000001)
+  fossil.tips = get.extinct.tips(tree, tol = 0.000001)
   extant.tips = tree$tip.label[!(tree$tip.label %in% fossil.tips)]
-  
+
   sa.tips = tree$tip.label[tree$edge[,2][(tree$edge[,2] %in% 1:length(tree$tip.label)) & (tree$edge.length == 0.0)]]
-  
+
   unsampled.tips = fossil.tips[!(fossil.tips %in% sa.tips)]
-  
+
   if( frac < 1 ) {
     if(n == -1) n = round(length(extant.tips) * frac)
     unsampled.tips <- c( unsampled.tips, extant.tips[!(extant.tips %in% sample(extant.tips, n))] )
   }
-  
+
   tree = ape::drop.tip(tree, unsampled.tips)
   tree
 }

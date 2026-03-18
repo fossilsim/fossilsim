@@ -38,40 +38,40 @@ n.ages <- function(tree){
   return(node.ages)
 }
 
-# find all egdes between two edges
-# @param i the younger of the two edges
-# @param j the older of the two edges
-# @return a vector including the two edges and any edges in-between
-find.edges.inbetween <- function(i,j,tree){
+# find all nodes between two nodes
+# @param i the younger of the two nodes
+# @param j the older of the two nodes
+# @return a vector including the two nodes and any nodes in-between
+find.nodes.inbetween <- function(i,j,tree){
   if(i == j) return(i)
-  d = fetch.descendants(j, tree, return.edge.labels = TRUE)
+  d = fetch.descendants(j, tree, return.nodes = TRUE)
   if(!i %in% d) stop("i not a descendant of j")
   parent = ancestor(i,tree)
-  edges = c(i)
+  nodes = c(i)
   while(parent != j){
-    edges = c(edges, parent)
+    nodes = c(nodes, parent)
     parent = ancestor(parent,tree)
   }
-  edges = c(edges,j)
-  return(edges)
+  nodes = c(nodes,j)
+  return(nodes)
 }
 
-# Identify parent nodes
-ancestor <- function(edge,tree){
-  parent = tree$edge[,1][which(tree$edge[,2]==edge)]
+# Identify parent node
+ancestor <- function(node,tree){
+  parent = tree$edge[,1][which(tree$edge[,2] == node)]
   return(parent)
 }
 
 # Identify tips
 #
-# @param taxa Edge label.
+# @param taxa Node label.
 # @param tree Phylo object.
 # @return Boolean (true/false).
 # @examples
 # t = ape::rtree(6)
 # is.tip(t$edge[,2][6],t)
 is.tip <- function(taxa,tree){
-  return (length(which(tree$edge[,1]==taxa)) < 1)
+  return (sum(tree$edge[,1] == taxa) < 1)
 }
 
 # Identify extant tips
@@ -83,28 +83,23 @@ is.tip <- function(taxa,tree){
 # @examples
 # t = ape::rtree(6)
 # is.extant(t$edge[,2][6],t)
-is.extant <- function(taxa,tree,tol=NULL){
-
-  if(is.null(tol))
-    tol = min((min(tree$edge.length)/100),1e-8)
-
+is.extant <- function(taxa, tree, tol = NULL){
+  if(is.null(tol)) tol = max((min(tree$edge.length)/100), 1e-8)
   age = n.ages(tree)[taxa]
-
   return(abs(age) < tol)
 }
 
-# return tip.labels of extinct tips, given tolerance tol
+# return tip labels of extinct tips, given tolerance tol
 # adapted from geiger
-is.extinct <- function (phy, tol=NULL) {
+get.extinct.tips <- function (phy, tol = NULL) {
     if (!"phylo" %in% class(phy)) {
         stop("\"phy\" is not of class \"phylo\".");
     }
     if (is.null(phy$edge.length)) {
         stop("\"phy\" does not have branch lengths.");
     }
-    if (is.null(tol)) {
-        tol <- min(phy$edge.length)/100;
-    }
+    if (is.null(tol)) tol <- max((min(tree$edge.length)/100), 1e-8)
+
     Ntip <- length(phy$tip.label)
     phy <- ape::reorder.phylo(phy);
     xx <- numeric(Ntip + phy$Nnode);
@@ -125,43 +120,26 @@ root <- function(tree){
 }
 
 # Test is root
-is.root <- function(edge,tree) {
-  return(edge == root(tree))
+is.root <- function(node, tree) {
+  return(node == root(tree))
 }
 
-# map a vector of node numbers from one topology to another
-map_nodes<-function(x, t.old, t.new) {
-  ret = x
-  for(i in 1:length(ret)) {
-    if(x[i] > length(t.old$tip.label)) {
-      st = ape::extract.clade(t.old,x[i])$tip.label
-      ret[i] = ape::getMRCA(t.new,st)
-    }
-    else {
-      ret[i] = which(t.new$tip.label==t.old$tip.label[x[i]])
-    }
-  }
-  ret
-}
 
-# Fetch descendant lineages in a symmetric tree
+# Fetch descendant lineages from specified node in a symmetric tree
 #
-# @param edge Edge label.
+# @param start.node Starting node
 # @param tree Phylo object.
-# @param return.edge.labels If TRUE return all descendant edge labels instead of tips.
+# @param return.nodes If FALSE (default) return all descendant tip labels, otherwise return all descendant nodes (including tips).
 # @examples
 # t = ape::rtree(6)
 # fetch.descendants(7,t)
-# fetch.descendants(7,t,return.edge.labels=TRUE)
-# @return
-# Vector of symmetric descendants
-# @export
-# required by find.edges.inbetween
-fetch.descendants = function(edge, tree, return.edge.labels = F) {
+# fetch.descendants(7,t,return.nodes=TRUE)
+# @return Vector of symmetric descendants
+fetch.descendants = function(start.node, tree, return.nodes = F) {
 
   aux = function(node) {
-    result = if(return.edge.labels) node else c()
-    if(!return.edge.labels && is.tip(node,tree))  result = tree$tip.label[node]
+    result = if(return.nodes) node else c()
+    if(!return.nodes && is.tip(node,tree)) result = tree$tip.label[node]
 
     descendants = tree$edge[which(tree$edge[,1]==node),2]
     for(d in descendants) {
@@ -171,7 +149,7 @@ fetch.descendants = function(edge, tree, return.edge.labels = F) {
   }
 
   result = c()
-  descendants = tree$edge[which(tree$edge[,1]==edge),2]
+  descendants = tree$edge[which(tree$edge[,1]==start.node),2]
   for(d in descendants) {
     result = c(result, aux(d))
   }
@@ -187,11 +165,11 @@ fetch.descendants = function(edge, tree, return.edge.labels = F) {
 #' Count the total number of fossils
 #'
 #' @param fossils Fossils object.
+#' @param tol Tolerance for identifying extant tips.
 #' @return Number of extinct samples.
 #'
 #' @export
-count.fossils = function(fossils){
-  tol = 1e-8
+count.fossils = function(fossils, tol = 1e-8){
   k = length(fossils$sp[which(fossils$hmax > tol)])
   return(k)
 }
@@ -200,19 +178,18 @@ count.fossils = function(fossils){
 #'
 #' @param fossils Fossils object.
 #' @param interval.ages Vector of stratigraphic interval ages, starting with the minimum age of the youngest interval and ending with the maximum age of the oldest interval.
+#' @param tol Tolerance for identifying extant tips.
 #'
 #' @return Vector of extinct samples corresponding to each interval. Note the last value corresponds to the number of samples > the maximum age of the oldest interval.
 #'
 #' @export
-count.fossils.binned = function(fossils, interval.ages){
+count.fossils.binned = function(fossils, interval.ages, tol = 1e-8){
 
   if(any(fossils$hmin != fossils$hmax)) stop("Function only works for fossils with exact ages i.e. hmin = hmax");
 
-  tol = 1e-8
   k = rep(0, length(interval.ages))
 
-  if(length(fossils$sp) == 0)
-    return(k)
+  if(length(fossils$sp) == 0) return(k)
 
   for(i in 1:length(fossils$hmax)){
     if(fossils$hmax[i] > tol){

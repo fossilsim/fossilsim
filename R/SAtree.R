@@ -51,7 +51,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
   }
 
   fossils$h = (fossils$hmin + fossils$hmax)/2
-  fossils = fossils[order(fossils$edge, -fossils$h),]
+  fossils = fossils[order(fossils$sp, -fossils$h),]
 
   ntips = length(tree$tip.label)
   totalnodes = ntips + tree$Nnode
@@ -112,6 +112,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
     #adding the fossil tip on a zero-length edge
     tree$edge = rbind(tree$edge, c(totalnodes, -i))
     tree$edge.length = c(tree$edge.length, 0)
+
     if(current_spec <= ntips) tree$tip.label = c(tree$tip.label, paste0(tree$tip.label[current_spec], "_", count_spec))
     else tree$tip.label = c(tree$tip.label, paste0(edge_label, "_", count_spec))
     fossils$tip.label[i] = tree$tip.label[length(tree$tip.label)]
@@ -177,4 +178,106 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
   tree = ape::reorder.phylo(tree)
 
   list(tree = SAtree(tree, TRUE), fossils = fossils, taxonomy = taxonomy)
+}
+
+#' Removes all unsampled lineages from a combined tree.
+#' Extinct tips are only sampled if they are fossils. With default settings all extant tips are sampled.
+#'
+#' @param tree Combined tree with fossils.
+#' @param rho Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.
+#' @param sampled_tips List of tip labels corresponding to sampled extant tips.
+#' @return Sampled tree with fossils.
+#' @examples
+#' # simulate tree
+#' t = ape::rtree(6)
+#'
+#' # simulate fossils
+#' f = sim.fossils.poisson(rate = 2, tree = t)
+#'
+#' # transform format
+#' t2 = SAtree.from.fossils(t,f)$tree
+#'
+#' # transform to sampled tree
+#' t3 = sampled.tree.from.combined(t2)
+#' plot(t3)
+#' @export
+sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
+  if(!("SAtree" %in% class(tree)) ){
+    if("phylo" %in% class(tree)) tree = SAtree(tree)
+    else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
+  }
+  if(!tree$complete && rho == 1 && is.null(sampled_tips)) stop("Tree is already sampled")
+
+  remove_tips = c()
+
+  depths = ape::node.depth.edgelength(tree)
+  times = max(depths) - depths
+
+  for(i in 1:length(tree$tip.label)) {
+    if(times[i] < 1e-5) { #extant tip
+      if((!is.null(sampled_tips) && !tree$tip.label[i] %in% sampled_tips) || #tip not sampled from sampled_tips
+         (is.null(sampled_tips) && runif(1) > rho)) { #tip not sampled from rho
+        remove_tips = c(remove_tips, i)
+      }
+    }
+    else if(tree$complete) { #extinct tip
+      edge = which(tree$edge[,2]==i)
+      if(tree$edge.length[edge] > 1e-5) { #not on zero-length edge = not a fossil
+        remove_tips = c(remove_tips, i)
+      }
+    }
+  }
+
+  tree = ape::drop.tip(tree, remove_tips)
+  tree$complete = FALSE
+  tree
+}
+
+#' Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
+#'
+#' First and last are based on the order used in the `\link{SAtree.from.fossils}` function, i.e. youngest first or oldest first.
+#' Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
+#'
+#' @param tree Combined SAtree with fossils.
+#' @return Tree with pruned fossils.
+#' @examples
+#' # simulate tree
+#' t = ape::rtree(6)
+#'
+#' # simulate fossils
+#' f = sim.fossils.poisson(rate = 2, tree = t)
+#'
+#' # transform format
+#' t2 = SAtree.from.fossils(t,f)$tree
+#'
+#' # prune the tree to keep only ranges
+#' t4 = prune.SAtree.to.ranges(t2)
+#'
+#' # or transform to sampled tree first
+#' t3 = sampled.tree.from.combined(t2)
+#' t4 = prune.SAtree.to.ranges(t3)
+#' plot(t4)
+#' @export
+prune.SAtree.to.ranges = function(tree) {
+  if(!("SAtree" %in% class(tree)) ){
+    if("phylo" %in% class(tree)) tree = SAtree(tree)
+    else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
+  }
+
+  remove_tips = c()
+
+  split_names = cbind(sub("_[^_]*$","",tree$tip.label),sub("^.+_","",tree$tip.label))
+  for(name in unique(split_names[,1])) {
+    idx = which(split_names[,1] == name)
+    mn = min(split_names[idx,2])
+    mx = max(split_names[idx,2])
+    for(id in idx) {
+      if(split_names[id,2] == mn) tree$tip.label[id] = paste0(name,"_first")
+      else if(mx > mn && split_names[id,2] == mx) tree$tip.label[id] = paste0(name,"_last")
+      else remove_tips = c(remove_tips, id) # intermediate sample, to remove
+    }
+  }
+
+  tree = ape::drop.tip(tree, remove_tips)
+  tree
 }

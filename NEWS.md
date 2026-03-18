@@ -1,3 +1,6 @@
+## Version 2.4.4
+* some dependencies were made optional to make installation easier
+
 ## Version 2.4.3
 * technical changes for compatibility with the new `ggtree` version.
 

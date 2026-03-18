@@ -2,10 +2,10 @@
 % Please edit documentation in R/subsampling.R
 \name{place.fossils}
 \alias{place.fossils}
-\title{Place fossil samples from one tree in another tree, or find the ancestral
+\title{Place fossil samples from one tree in another tree, i.e. find the ancestral
 node for each fossil sample in one tree.}
 \usage{
-place.fossils(tree, fossils, ext.tree)
+place.fossils(tree, fossils, ext.tree = NULL)
 }
 \arguments{
 \item{tree}{an object of class "Phylo".}

@@ -1,6 +1,7 @@
 #' Remove fossil lineages from a tree
 #'
 #' @param tree an object of class "Phylo".
+#' @param tol tolerance for tips to be considered extinct
 #'
 #' @return an object of class "Phylo". If fossil lineages were found in the tree
 #'   these will be pruned, if not then the original tree is returned.
@@ -9,27 +10,23 @@
 #' prune.fossil.tips(t)
 #' @export
 #'
-prune.fossil.tips <- function(tree){
+prune.fossil.tips <- function(tree, tol = NULL){
   if(ape::is.ultrametric(tree)){
     warning("Tree is ultrametric and no fossil tips can be pruned")
     return(tree)
   }
 
-  # avoids geiger::is.extinct()
-  tol <- max(tree$edge.length)/1e8
-  tipHeight <- diag(ape::vcv.phylo(tree))
-
-  foss <- names(which(tipHeight < max(tipHeight)-tol))
+  foss <- get.extinct.tips(tree, tol = tol)
   newTree <- ape::drop.tip(tree, foss)
   return(newTree)
 }
 
-#' Obtain the tips that define each node in a tree
+#' Obtain the tips that define each clade in a tree
 #'
 #' @param tree an object of class "Phylo".
 #'
 #' @return A list of vectors, with one entry for each node consisting of the tip labels
-#'   that define that node.
+#'   that define that clade.
 #' @examples
 #' t = TreeSim::sim.bd.taxa(10, 1, 0.1, 0.05)[[1]]
 #' get.tip.descs(t)
@@ -108,19 +105,19 @@ remove.stem.lineages <- function(tree){
   crown <- prune.fossil.tips(tree)
   crown <- crown$tip.label
   crownNode <- ape::getMRCA(tree, crown)
-  #crownTips <-
-  #  tree$tip.label[phangorn::Descendants(tree, crownNode)[[1]]]
   crownTips <- fetch.descendants(crownNode, tree)
+
   if (length(crownTips) == length(tree$tip.label)) {
     warning("No stem lineages found, returning original tree")
     return(tree)
   }
+
   remove <- setdiff(tree$tip.label, crownTips)
   tree <- ape::drop.tip(tree, remove)
   return(tree)
 }
 
-#' Place fossil samples from one tree in another tree, or find the ancestral
+#' Place fossil samples from one tree in another tree, i.e. find the ancestral
 #' node for each fossil sample in one tree.
 #'
 #' If "ext.tree" is not supplied, this function will find the direct ancestral
@@ -145,14 +142,14 @@ remove.stem.lineages <- function(tree){
 #' place.fossils(t,f)
 #' @export
 #'
-place.fossils <- function(tree, fossils, ext.tree) {
+place.fossils <- function(tree, fossils, ext.tree = NULL) {
 
   if (any(fossils$sp == min(tree$edge[,1]))) {
     stop("Can't handle fossil samples on the root.edge")
   }
 
   # if placing in the extant tree is not required, then set it to be tree
-  if (missing(ext.tree)) {
+  if (is.null(ext.tree)) {
     ext.tree <- tree
   } else {
     # cant place stem group fossils in an extant tree
@@ -179,8 +176,7 @@ place.fossils <- function(tree, fossils, ext.tree) {
 
   # for each fossil, go backwards in the tree until we hit one of the suitable nodes
   for (i in 1:length(fossils$sp)) {
-    #a <- phangorn::Ancestors(tree, node = fossils$sp[i], type = "all")
-    a <- find.edges.inbetween(j = min(tree$edge[,1]), i = fossils$sp[i], tree = tree)[-1]
+    a <- find.nodes.inbetween(j = min(tree$edge[,1]), i = fossils$sp[i], tree = tree)[-1]
     if (length(a) == 1 && a[1] < min(nodes)) {
       # this error should not be met
       stop(paste0("fossil number ", i, " does not belong to the crown group"))
@@ -222,8 +218,7 @@ subsample.fossils.uniform <- function(fossils, proportion) {
   if (proportion > 1 | proportion < 0) {
     stop("proportion must be between 0 and 1")
   }
-  smp <-
-    sample(
+  smp <- sample(
       x = c(1:length(fossils$sp)),
       size = length(fossils$sp) * proportion,
       replace = FALSE
@@ -307,7 +302,7 @@ subsample.fossils = function(fossils, tree, complete = TRUE, incl.youngest = TRU
   } else {
     ancs <- place.fossils(tree, fossils)
   }
-  
+
   smp_1 <- c()
   smp_2 <- c()
   for (i in 1:length(unique(ancs))) {
@@ -315,42 +310,9 @@ subsample.fossils = function(fossils, tree, complete = TRUE, incl.youngest = TRU
     if(incl.oldest) smp_1 <- c(smp_1, which(fossils$hmax == max(fossils$hmax[x])))
     if(incl.youngest) smp_2 <- c(smp_2, which(fossils$hmin == min(fossils$hmin[x])))
   }
-  
+
   smp <- unique(c(smp_1, smp_2))
   out <- fossils[smp,]
   row.names(out) <- as.character(c(1:length(out$hmin)))
   return(out)
 }
-
-# mimics the performance of phangorn::Descendents(type="children")
-get.dec.nodes <- function(tree, node){
-  if(node <= length(tree$tip.label)){
-    stop("node must be an internal node, not a tip")
-  }
-
-  return(tree$edge[tree$edge[, 1] == node, 2])
-}
-
-# Bind a new tip into an existing tree with a given label
-# the new tip will appear as the sister taxon to the chosen tip
-# "Where" is the node number of a tip
-bind.to.tip <- function(tree, where, label = "Foss_1"){
-
-  if(where > length(tree$tip.label)){
-    stop("'where' must be the node number of a tip only")
-  }
-
-  tip <- ape::rtree(2)
-  tip$tip.label <- c("=^%", label)
-  tip <- ape::drop.tip(tip, "=^%")
-
-  len <- which(tree$edge[, 2] == where)
-  len <- tree$edge.length[len]/2
-
-  x <- ape::bind.tree(tree, tip, where = where, position = len)
-
-  return(x)
-}
-
-
-

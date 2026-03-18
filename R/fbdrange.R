@@ -35,7 +35,7 @@ get_fbdrange_from_file = function(input_file) {
   if (!requireNamespace("treeio", quietly = TRUE)) {
     stop("Package treeio is needed for this function to work. Please install it.", call. = FALSE)
   }
-  
+
   tree <- treeio::read.beast(input_file)
   as.fbdrange(tree)
 }

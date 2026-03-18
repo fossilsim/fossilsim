@@ -18,7 +18,7 @@ reconstructed.tree.fossils.objects(
 
 \item{rho}{Extant species sampling probability. Default = 1, will be disregarded if fossils object already contains extant samples.}
 
-\item{tip_order}{Order of indexes to assign to the tips in the SA tree, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first` 
+\item{tip_order}{Order of indexes to assign to the tips in the SA tree, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first`
 (indexes increase towards the past).}
 }
 \value{

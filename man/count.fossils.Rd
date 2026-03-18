@@ -4,10 +4,12 @@
 \alias{count.fossils}
 \title{Count the total number of fossils}
 \usage{
-count.fossils(fossils)
+count.fossils(fossils, tol = 1e-08)
 }
 \arguments{
 \item{fossils}{Fossils object.}
+
+\item{tol}{Tolerance for identifying extant tips.}
 }
 \value{
 Number of extinct samples.
