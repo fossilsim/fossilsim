@@ -222,7 +222,7 @@ plot.taxonomy = function(x, tree, show.mode = TRUE, show.legend = TRUE, legend.p
       edge.mn = taxonomy$edge[which(taxonomy$sp == i & taxonomy$end == mn)]
       edge.mx = taxonomy$edge[which(taxonomy$sp == i & taxonomy$start == mx)][1]
 
-      edges = find.edges.inbetween(edge.mn, edge.mx, tree)
+      edges = find.nodes.inbetween(edge.mn, edge.mx, tree)
 
       col = taxonomy$col[which(taxonomy$sp == i)]
 

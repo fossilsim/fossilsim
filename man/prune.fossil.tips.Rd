@@ -4,10 +4,12 @@
 \alias{prune.fossil.tips}
 \title{Remove fossil lineages from a tree}
 \usage{
-prune.fossil.tips(tree)
+prune.fossil.tips(tree, tol = NULL)
 }
 \arguments{
 \item{tree}{an object of class "Phylo".}
+
+\item{tol}{tolerance for tips to be considered extinct}
 }
 \value{
 an object of class "Phylo". If fossil lineages were found in the tree

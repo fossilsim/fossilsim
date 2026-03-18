@@ -24,8 +24,8 @@
 #' fossils.to.BEAST.constraints(f, t, file = tempfile(), complete = TRUE)
 #' @export
 fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints.xml", complete = FALSE, tree.name = "beastTree"){
-  
-  warning("This function has been deprecated and will be removed in the next release of FossilSim. 
+
+  warning("This function has been deprecated and will be removed in the next release of FossilSim.
           If you need a copy of this code, please contact the package maintainer")
 
   if (missing(tree)) {
@@ -42,16 +42,11 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
 
   # if the complete tree is required
   if (complete) {
-    anc <-
-      place.fossils(tree = tree,
-                    fossils = fossils)
+    anc <- place.fossils(tree = tree, fossils = fossils)
   } else {
     # if the extant only tree is required
     ext.tree <- prune.fossil.tips(tree)
-    anc <-
-      place.fossils(tree = tree,
-                    fossils = fossils,
-                    ext.tree = ext.tree)
+    anc <- place.fossils(tree = tree, fossils = fossils, ext.tree = ext.tree)
     tree <- ext.tree
   }
 
@@ -67,22 +62,12 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
   # Writing Functions, these are based on the write.nexus.data function in ape
   filename <- file
   zz <- file(filename, "w")
-  "fcat" <-
-    function (..., file = zz)
-    {
-      cat(...,
-          file = filename,
-          sep = "",
-          append = TRUE)
+  "fcat" <- function (..., file = zz) {
+      cat(..., file = filename, sep = "", append = TRUE)
     }
 
-  "ccat" <-
-    function (..., file = zz)
-    {
-      cat(...,
-          file = filename,
-          sep = " ",
-          append = TRUE)
+  "ccat" <- function (..., file = zz) {
+      cat(..., file = filename, sep = " ", append = TRUE)
     }
 
   # First, construct L/R calibs for the entire tree and store them in a list
@@ -100,10 +85,8 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
     dec_store <- rbind(dec_store, dec)
     #dec_t <- phangorn::Descendants(tree, dec, "tips")
     dec_t <- list()
-    dec_t[[1]] <-
-      which(tree$tip.label %in% fetch.descendants(dec[1], tree = tree))
-    dec_t[[2]] <-
-      which(tree$tip.label %in% fetch.descendants(dec[2], tree = tree))
+    dec_t[[1]] <- which(tree$tip.label %in% fetch.descendants(dec[1], tree = tree))
+    dec_t[[2]] <- which(tree$tip.label %in% fetch.descendants(dec[2], tree = tree))
 
     # Do the L and R sides have multiple taxa?
     mult_dec <- rbind(mult_dec, sapply(dec_t, length) > 1)
@@ -119,15 +102,7 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
   row.names(dec_store) <- nodes
 
   for (j in 1:length(fossils$anc_ext)) {
-    #ancs <-
-    #  c(phangorn::Ancestors(tree, fossils$anc_ext[j]),
-    #    fossils$anc_ext[j]) # get the node number of all clades the fossil is in
-    ancs <-
-      c(find.edges.inbetween(
-        j = min(tree$edge[, 1]),
-        i = fossils$anc_ext[j],
-        tree = tree
-      )[-1],
+    ancs <- c(find.nodes.inbetween(j = min(tree$edge[, 1]), i = fossils$anc_ext[j], tree = tree)[-1],
       fossils$anc_ext[j]) # get the node number of all clades the fossil is in
 
     if (any(ancs == root(tree))) {
@@ -138,16 +113,11 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
       # if we still have ancestors after removing the root
       for (k in 1:length(ancs)) {
         # add the fossil on the correct side
-        # side_tmp <- phangorn::Ancestors(tree, ancs[k], "parent")
-        side_tmp <-
-          find.edges.inbetween(j = min(tree$edge[, 1]),
-                               i = ancs[k],
-                               tree = tree)[-1][1]
+        side_tmp <- find.nodes.inbetween(j = min(tree$edge[, 1]), i = ancs[k], tree = tree)[-1][1]
         side_tmp <- which(row.names(dec_store) == side_tmp)
         side <- which(dec_store[side_tmp, ] == ancs[k])
 
-        base_clade <-
-          row.names(dec_store)[side_tmp]
+        base_clade <- row.names(dec_store)[side_tmp]
 
         if (side == 1) {
           # if the side is the right
@@ -163,8 +133,7 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
     }
   }
 
-  root_monophyly <-
-    c(tree$tip.label, fossils$names)
+  root_monophyly <- c(tree$tip.label, fossils$names)
 
   # Whole group Monophyly
   fcat(
@@ -188,8 +157,8 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
     lengths <- c()
     lengths[1] <- length(R[[i]])
     lengths[2] <- length(L[[i]])
-    # dec_node_id <- phangorn::Descendants(tree, nodes[i], "children")
     dec_node_id <- get.dec.nodes(tree, nodes[i])
+
     if (all(lengths > 1)) {
       # if both sides of the bifurcation have multiple taxa
       # L in, R out: R in ,L out
@@ -328,8 +297,8 @@ fossils.to.BEAST.constraints <- function(fossils, tree, file = "BEASTconstraints
 #' fossils.to.BEAST.start.tree(t,f, complete = FALSE)
 #' @export
 fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
-  
-  warning("This function has been deprecated and will be removed in the next release of FossilSim. 
+
+  warning("This function has been deprecated and will be removed in the next release of FossilSim.
           If you need a copy of this code, please contact the package maintainer")
 
   if (any(fossils$sp == min(tree$edge[,1]))) {
@@ -354,10 +323,7 @@ fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
     # if the extant only tree is required
     ext.tree <- prune.fossil.tips(tree)
     fossils <- remove.stem.fossils(fossils, tree)
-    anc <-
-      place.fossils(tree = tree,
-                    fossils = fossils,
-                    ext.tree = ext.tree)
+    anc <- place.fossils(tree = tree, fossils = fossils, ext.tree = ext.tree)
     aug_tree <- ext.tree
     tree <- ext.tree
   }
@@ -367,53 +333,22 @@ fossils.to.BEAST.start.tree <- function(tree, fossils, complete = FALSE){
     if (fossils$anc_ext[i] != 0) {
       # if the subtending node is not the origin
       # Get the descendent tips in the extant only tree
-      # dec <-
-      #  phangorn::Descendants(node = fossils$anc_ext[i], x = tree)[[1]]
-      dec <-
-        which(tree$tip.label %in% fetch.descendants(edge = fossils$anc_ext[i],tree = tree))
+      dec <- which(tree$tip.label %in% fetch.descendants(fossils$anc_ext[i], tree = tree))
       dec <- tree$tip.label[dec] # get the names of descendent taxa
-      dec <-
-        ape::getMRCA(aug_tree, dec)
-      # dec <-
-      #  phangorn::Descendants(node = dec, x = aug_tree)[[1]]
-      dec <-
-        which(aug_tree$tip.label %in% fetch.descendants(edge = dec, tree = aug_tree))
-      dec <-
-        sample(x = dec, size = 1) #randomly choose a sister taxon in the descendents
-      # Suppress warnings as bind.tip complains about binding a single tip
-      #aug_tree <-
-      #  suppressWarnings(phytools::bind.tip(
-      #    aug_tree,
-      #    tip.label = paste0("fossil_", i),
-      #    where = dec
-      #  ))
+      dec <- ape::getMRCA(aug_tree, dec)
+      dec <- which(aug_tree$tip.label %in% fetch.descendants(dec, tree = aug_tree))
+      dec <- sample(x = dec, size = 1) #randomly choose a sister taxon in the descendents
       aug_tree <- bind.to.tip(aug_tree, dec, paste0("fossil_", i))
 
-      aug_tree$edge.length <-
-        rep(1, length(aug_tree$edge.length)) # remove brLens
+      aug_tree$edge.length <- rep(1, length(aug_tree$edge.length)) # remove brLens
     } else {
       # if it is the origin, the fossil needs to be added outside the crown
       # this is not possible
       stop("fossil is not a member of the crown group")
-
-      # crown <- prune.fossil.tips(tree) # get taxa that are outside of the crown
-      # crown <- crown$tip.label
-      # crownNode <- ape::getMRCA(tree, crown)
-      # crownTax <- fetch.descendants(crownNode, tree)
-      # stemTax <- setdiff(fetch.descendants(min(tree$edge[,1]), tree), crownTax)
-      # placement <- sample(x = stemTax, size = 1)
-      # aug_tree <- bind.to.tip(aug_tree, placement, paste0("fossil_", i))
-      #
-      # aug_tree$edge.length <-
-      #   rep(1, length(aug_tree$edge.length)) # remove brLens
     }
   }
-  aug_tree$edge.length <-
-    rep(NA, length(aug_tree$edge.length)) # remove brLens
-  aug_newick <-
-    gsub(pattern = ":NA|;",
-         ape::write.tree(aug_tree),
-         replacement = "") # Convert to newick
+  aug_tree$edge.length <- rep(NA, length(aug_tree$edge.length)) # remove brLens
+  aug_newick <- gsub(pattern = ":NA|;", ape::write.tree(aug_tree), replacement = "") # Convert to newick
 
   return(aug_newick)
 }
@@ -423,7 +358,7 @@ get.dec.nodes <- function(tree, node){
   if(node <= length(tree$tip.label)){
     stop("node must be an internal node, not a tip")
   }
-  
+
   return(tree$edge[tree$edge[, 1] == node, 2])
 }
 
@@ -431,19 +366,19 @@ get.dec.nodes <- function(tree, node){
 # the new tip will appear as the sister taxon to the chosen tip
 # "Where" is the node number of a tip
 bind.to.tip <- function(tree, where, label = "Foss_1"){
-  
+
   if(where > length(tree$tip.label)){
     stop("'where' must be the node number of a tip only")
   }
-  
+
   tip <- ape::rtree(2)
   tip$tip.label <- c("=^%", label)
   tip <- ape::drop.tip(tip, "=^%")
-  
+
   len <- which(tree$edge[, 2] == where)
   len <- tree$edge.length[len]/2
-  
+
   x <- ape::bind.tree(tree, tip, where = where, position = len)
-  
+
   return(x)
 }

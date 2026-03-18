@@ -453,7 +453,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
             edge.mn = fossils$edge[which(fossils$sp == i & fossils$h == mn)]
             edge.mx = fossils$edge[which(fossils$sp == i & fossils$h == mx)]
 
-            edges = find.edges.inbetween(edge.mn, edge.mx, tree)
+            edges = find.nodes.inbetween(edge.mn, edge.mx, tree)
 
             col = fossils$col[which(fossils$sp == i)]
 

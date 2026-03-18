@@ -54,8 +54,7 @@ sim.extant.samples = function(fossils, tree = NULL, taxonomy = NULL, rho = 1, to
     from.taxonomy = FALSE
   } else from.taxonomy = TRUE
 
-  if(is.null(tol))
-    tol = if(is.null(tree)) 1e-8 else min(min(tree$edge.length)/100, 1e-8)
+  if(is.null(tol)) tol = if(is.null(tree)) 1e-8 else max(min(tree$edge.length)/100, 1e-8)
 
   nextant = length(which(taxonomy$end > (0 - tol) & taxonomy$end < (0 + tol)))
   if(length(rho) > 1){

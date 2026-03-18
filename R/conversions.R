@@ -1,56 +1,3 @@
-#' Removes all unsampled lineages from a combined tree.
-#' Extinct tips are only sampled if they are fossils. With default settings all extant tips are sampled.
-#'
-#' @param tree Combined tree with fossils.
-#' @param rho Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.
-#' @param sampled_tips List of tip labels corresponding to sampled extant tips.
-#' @return Sampled tree with fossils.
-#' @examples
-#' # simulate tree
-#' t = ape::rtree(6)
-#'
-#' # simulate fossils
-#' f = sim.fossils.poisson(rate = 2, tree = t)
-#'
-#' # transform format
-#' t2 = SAtree.from.fossils(t,f)$tree
-#'
-#' # transform to sampled tree
-#' t3 = sampled.tree.from.combined(t2)
-#' plot(t3)
-#' @export
-sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
-  if(!("SAtree" %in% class(tree)) ){
-    if("phylo" %in% class(tree)) tree = SAtree(tree)
-    else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
-  }
-  if(!tree$complete && rho == 1 && is.null(sampled_tips)) stop("Tree is already sampled")
-
-  remove_tips = c()
-
-  depths = ape::node.depth.edgelength(tree)
-  times = max(depths) - depths
-
-  for(i in 1:length(tree$tip.label)) {
-    if(times[i] < 1e-5) { #extant tip
-      if((!is.null(sampled_tips) && !tree$tip.label[i] %in% sampled_tips) || #tip not sampled from sampled_tips
-         (is.null(sampled_tips) && runif(1) > rho)) { #tip not sampled from rho
-        remove_tips = c(remove_tips, i)
-      }
-    }
-    else if(tree$complete) { #extinct tip
-      edge = which(tree$edge[,2]==i)
-      if(tree$edge.length[edge] > 1e-5) { #not on zero-length edge = not a fossil
-        remove_tips = c(remove_tips, i)
-      }
-    }
-  }
-
-  tree = ape::drop.tip(tree, remove_tips)
-  tree$complete = FALSE
-  tree
-}
-
 #' Returns tree and fossil objects that you can use to plot the reconstructed tree.
 #'
 #' Note that for datasets containing extinct only samples (& rho = 0) the ages output are scaled so that the youngest sample = 0.
@@ -58,7 +5,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' @param tree Tree object.
 #' @param fossils Fossils object.
 #' @param rho Extant species sampling probability. Default = 1, will be disregarded if fossils object already contains extant samples.
-#' @param tip_order Order of indexes to assign to the tips in the SA tree, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first` 
+#' @param tip_order Order of indexes to assign to the tips in the SA tree, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first`
 #' (indexes increase towards the past).
 #'
 #' @return A list containing the reconstructed SA tree and fossil objects.
@@ -172,65 +119,17 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order 
 
 }
 
-#' Removes all intermediate fossils from a combined tree and labels the first and last fossils of each lineage.
-#' 
-#' First and last are based on the order used in the `\link{SAtree.from.fossils}` function, i.e. youngest first or oldest first.
-#' Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
+#' Transforms a tree and fossils into a tree in Newick format which can be read by BEAST2.
 #'
-#' @param tree Combined tree with fossils.
-#' @return Tree with pruned fossils.
-#' @examples
-#' # simulate tree
-#' t = ape::rtree(6)
-#'
-#' # simulate fossils
-#' f = sim.fossils.poisson(rate = 2, tree = t)
-#'
-#' # transform format
-#' t2 = SAtree.from.fossils(t,f)$tree
-#'
-#' # prune fossils
-#' t4 = prune.fossils(t2)
-#'
-#' # or transform to sampled tree first
-#' t3 = sampled.tree.from.combined(t2)
-#' t4 = prune.fossils(t3)
-#' plot(t4)
-#' @export
-prune.fossils = function(tree) {
-  if(!("SAtree" %in% class(tree)) ){
-    if("phylo" %in% class(tree)) tree = SAtree(tree)
-    else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
-  }
-
-  remove_tips = c()
-
-  split_names = cbind(sub("_[^_]*$","",tree$tip.label),sub("^.+_","",tree$tip.label))
-  for(name in unique(split_names[,1])) {
-    idx = which(split_names[,1] == name)
-    mn = min(split_names[idx,2])
-    mx = max(split_names[idx,2])
-    for(id in idx) {
-      if(split_names[id,2] == mn) tree$tip.label[id] = paste0(name,"_first")
-      else if(mx > mn && split_names[id,2] == mx) tree$tip.label[id] = paste0(name,"_last")
-      else remove_tips = c(remove_tips, id) # intermediate sample, to remove
-    }
-  }
-
-  tree = ape::drop.tip(tree, remove_tips)
-  tree
-}
-
-#' Transforms a tree and fossils into a sampled tree in BEAST-usable format and writes it in Newick format.
-#'
-#' For each species, removes all the intermediate fossils and leave only the youngest and oldest. The oldest and youngest of each species will be
-#' labelled according to the `tip_order` argument.
+#' Optionally, will convert fossil specimens to stratigraphic ranges - i.e., for each species, remove all the intermediate fossils and leave only the youngest and oldest.
+#' The oldest and youngest of each species will be labelled according to the `tip_order` argument.
 #'
 #' @param tree Complete tree.
 #' @param fossils fossils dataframe.
 #' @param rho Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.
 #' @param sampled_tips List of tip labels corresponding to sampled extant tips.
 #' @param tip_order Order of indexes to assign to the tips, either `oldest_first` (by default, first = oldest and last = youngest) or `youngest_first` (reversed).
+#' @param convert.to.ranges Whether to prune the fossils to only keep ranges, i.e. first and last appearances for each species.
 #' @param ... Additional parameters will be passed to ape::write.tree
 #' @return Output of write.tree.
 #' @examples
@@ -242,12 +141,15 @@ prune.fossils = function(tree) {
 #'
 #' # output for BEAST
 #' beast.fbd.format(t, f) # output on the console
+#' beast.fbd.format(t, f, convert.to.ranges = TRUE) # output on the console
 #' \dontrun{
 #' beast.fbd.format(t, f, file="example.tre") # output in file
+#' beast.fbd.format(t, f, file="example.tre", convert.to.ranges = TRUE) # output in file
 #' }
 #' @export
-beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, tip_order = "oldest_first", ...) {
-  proc_tree = prune.fossils(sampled.tree.from.combined(SAtree.from.fossils(tree, fossils, tip_order = tip_order)$tree, rho = rho, sampled_tips = sampled_tips))
+beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, tip_order = "oldest_first", convert.to.ranges = FALSE, ...) {
+  proc_tree = sampled.tree.from.combined(SAtree.from.fossils(tree, fossils, tip_order = tip_order)$tree, rho = rho, sampled_tips = sampled_tips)
+  if(convert.to.ranges) proc_tree = prune.SAtree.to.ranges(proc_tree)
   ape::write.tree(proc_tree, ...)
 }
 
@@ -374,10 +276,10 @@ paleotree.record.to.fossils = function(record) {
                                             hmin = sort(record[[i]]$sampling.times), hmax = sort(record[[i]]$sampling.times),
                                             stringsAsFactors = F))
   }
-  
+
   tip_idxs = 1:length(tree$tip.label)
   names(tip_idxs) = tree$tip.label
-  
+
   fossildf$sp = tip_idxs[fossildf$sp]
   taxonomy$sp = tip_idxs[taxonomy$sp]
   taxonomy$cryptic.id = tip_idxs[taxonomy$cryptic.id]

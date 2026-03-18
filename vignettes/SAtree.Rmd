@@ -38,10 +38,10 @@ print(SAt$tree$complete)
 ## Other useful functions
 
 Other functions are present in `FossilSim` to modify trees. 
-`prune.fossils` will remove all intermediate fossil samples and keep only the first and last occurrences of any species.
+`prune.SAtree.to.ranges` will remove all intermediate fossil samples and keep only the first and last occurrences of any species.
 
 ```{r}
-SAt_pruned = prune.fossils(tree = SAt$tree)
+SAt_pruned = prune.SAtree.to.ranges(tree = SAt$tree)
 plot(SAt_pruned)
 ```
 
