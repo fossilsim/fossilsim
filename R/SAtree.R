@@ -27,7 +27,7 @@ SAtree = function(tree, complete = TRUE) {
 #' @param taxonomy Optional taxonomy map for the tree.
 #' @param tip_order Order of indexes to assign to the tips, either `oldest_first` (by default, indexes increase towards the present) or `youngest_first`
 #' (indexes increase towards the past).
-#' @return A list of `tree`, the SA tree integrating the fossils, `fossils`, the fossils object updated with the tip label of each sample,
+#' @return A list of `tree`, the SA tree integrating the fossils, `fossils`, the fossils object updated with the tip label of each sample (in `tip.label`),
 #' and updated `taxonomy` object if provided.
 #' @examples
 #' # simulate tree
@@ -237,9 +237,12 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #'
 #' First and last are based on the order used in the `\link{SAtree.from.fossils}` function, i.e. youngest first or oldest first.
 #' Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
+#' If provided, the `taxonomy` and `fossils` objects will also be updated to match the pruned tree.
 #'
 #' @param tree Combined SAtree with fossils.
-#' @return Tree with pruned fossils.
+#' @param taxonomy Optional `taxonomy` object to update with the removed fossils.
+#' @param fossils Options `fossils` object to update with the removed fossils and new labels.
+#' @return List of tree with pruned fossils, and updated taxonomy and fossils if provided.
 #' @examples
 #' # simulate tree
 #' t = ape::rtree(6)
@@ -251,34 +254,49 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' t2 = SAtree.from.fossils(t,f)$tree
 #'
 #' # prune the tree to keep only ranges
-#' t4 = prune.SAtree.to.ranges(t2)
+#' t4 = prune.SAtree.to.ranges(t2)$tree
 #'
 #' # or transform to sampled tree first
 #' t3 = sampled.tree.from.combined(t2)
-#' t4 = prune.SAtree.to.ranges(t3)
+#' t4 = prune.SAtree.to.ranges(t3)$tree
 #' plot(t4)
 #' @export
 #' @seealso [prune.fossils.to.ranges()] for the same function applied to a fossils object
-prune.SAtree.to.ranges = function(tree) {
+prune.SAtree.to.ranges = function(tree, taxonomy = NULL, fossils = NULL) {
   if(!("SAtree" %in% class(tree)) ){
     if("phylo" %in% class(tree)) tree = SAtree(tree)
-    else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
+    else stop(paste('object "', class(tree), '" is not of class "SAtree"', sep=""))
   }
 
   remove_tips = c()
+  ages = n.ages(tree)
 
-  split_names = cbind(sub("_[^_]*$","",tree$tip.label),sub("^.+_","",tree$tip.label))
-  for(name in unique(split_names[,1])) {
-    idx = which(split_names[,1] == name)
-    mn = min(split_names[idx,2])
-    mx = max(split_names[idx,2])
+  tip_sp = sapply(tree$tip.label, function(nm) {
+    strsplit(nm, "_", fixed = T)[[1]][1]
+  })
+
+  for(name in unique(tip_sp)) {
+    idx = which(tip_sp == name)
+
+    mn = idx[which.min(ages[idx])]
+    mx = idx[which.max(ages[idx])]
+
+    if(!is.null(fossils)) fossils[fossils$tip.label == tree$tip.label[mn]] = paste0(tip_sp, "_first")
+    tree$tip.label[mn] = paste0(tip_sp, "_first")
+
+    if(mn != mx) {
+      if(!is.null(fossils)) fossils[fossils$tip.label == tree$tip.label[mx]] = paste0(tip_sp, "_last")
+      tree$tip.label[mx] = paste0(tip_sp, "_last")
+    }
+
     for(id in idx) {
-      if(split_names[id,2] == mn) tree$tip.label[id] = paste0(name,"_first")
-      else if(mx > mn && split_names[id,2] == mx) tree$tip.label[id] = paste0(name,"_last")
-      else remove_tips = c(remove_tips, id) # intermediate sample, to remove
+      if(id == mn || id == mx) next
+      remove_tips = c(remove_tips, id) # intermediate sample, to remove
     }
   }
 
-  tree = ape::drop.tip(tree, remove_tips)
-  tree
+  fossils = fossils[!fossils$tip.label %in% tree$tip.label[remove_tips]]
+  dropped_result = drop.tip.with.taxonomy(tree, taxonomy = taxonomy, remove_tips)
+
+  list(tree = dropped_result$tree, taxonomy = dropped_result$taxonomy, fossils = fossils)
 }
