@@ -52,4 +52,4 @@ SAt_sampled = sampled.tree.from.combined(tree = SAt$tree)$tree
 plot(SAt_sampled)
 ```
 
-These two functions can be applied to any object of type `phylo`, but are designed to work on trees which include fossil samples.
+These two functions can be applied to any object of type `phylo`, but are designed to work on trees which include fossil samples. Note that all functions which operate on `SAtree` objects also accept an optional `taxonomy` object as argument (and some also accept a `fossils` object). This allows the taxonomy and fossil dataframes to be updated alongside the tree, for instance when edges are added or removed, so that all objects remain consistent with each other.
