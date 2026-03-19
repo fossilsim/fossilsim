@@ -285,11 +285,11 @@ prune.SAtree.to.ranges = function(tree, taxonomy = NULL, fossils = NULL) {
     mn = idx[which.min(ages[idx])]
     mx = idx[which.max(ages[idx])]
 
-    if(!is.null(fossils)) fossils[fossils$tip.label == tree$tip.label[mx]] = paste0(name, "_first")
+    if(!is.null(fossils)) fossils$tip.label[fossils$tip.label == tree$tip.label[mx]] = paste0(name, "_first")
     tree$tip.label[mx] = paste0(name, "_first")
 
     if(mn != mx) {
-      if(!is.null(fossils)) fossils[fossils$tip.label == tree$tip.label[mn]] = paste0(name, "_last")
+      if(!is.null(fossils)) fossils$tip.label[fossils$tip.label == tree$tip.label[mn]] = paste0(name, "_last")
       tree$tip.label[mn] = paste0(name, "_last")
     }
 
@@ -299,7 +299,7 @@ prune.SAtree.to.ranges = function(tree, taxonomy = NULL, fossils = NULL) {
     }
   }
 
-  fossils = fossils[!fossils$tip.label %in% tree$tip.label[remove_tips]]
+  fossils = fossils[!fossils$tip.label %in% tree$tip.label[remove_tips],]
   dropped_result = drop.tip.with.taxonomy(tree, taxonomy = taxonomy, remove_tips)
 
   list(tree = dropped_result$tree, taxonomy = dropped_result$taxonomy, fossils = fossils)
