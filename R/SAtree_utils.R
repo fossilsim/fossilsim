@@ -49,7 +49,7 @@ drop.tip.with.taxonomy = function(phy, remove_tips, taxonomy = NULL) {
     keep[sel] <- FALSE
   }
   
-  if(!is.null(taxonomy)) taxonomy = taxonomy[taxonomy$edge %in% phy$edge[keep,],]
+  if(!is.null(taxonomy)) tax = taxonomy[taxonomy$edge %in% phy$edge[keep,],]
   
   phy$edge <- phy$edge[keep, ]
   phy$edge.length <- phy$edge.length[keep]
@@ -71,15 +71,16 @@ drop.tip.with.taxonomy = function(phy, remove_tips, taxonomy = NULL) {
   if (!is.null(phy$node.label)) phy$node.label <- phy$node.label[which(newNb > 0) - Ntip]
   
   newNb[oldNo.ofNewTips] = rank(phy$edge[TERMS, 2])
-  if(!is.null(taxonomy)) taxonomy$edge = newNb[taxonomy$edge]
+  if(!is.null(taxonomy)) tax$edge = newNb[tax$edge]
   
-  collapse.singles.taxonomy(phy, taxonomy)
+  collapse.singles.taxonomy(phy, tax)
 }
 
 ## adapted from ape::collapse.singles to account for the taxonomy updates
 ## returns a list of tree and taxonomy
 collapse.singles.taxonomy = function (tree, taxonomy = NULL) {
   n <- length(tree$tip.label)
+  tax = taxonomy
   
   tree <- ape::reorder.phylo(tree)
   e1 <- tree$edge[, 1]

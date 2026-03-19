@@ -51,7 +51,7 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
   }
 
   fossils$h = (fossils$hmin + fossils$hmax)/2
-  fossils = fossils[order(fossils$sp, -fossils$h),]
+  fossils = fossils[order(fossils$edge, -fossils$h),]
 
   ntips = length(tree$tip.label)
   totalnodes = ntips + tree$Nnode
@@ -232,8 +232,8 @@ sampled.tree.from.combined = function(tree, taxonomy = NULL, rho = 1, sampled_ti
     }
   }
 
-  tree = drop.tip.with.taxonomy(tree, remove_tips, taxonomy)
-  tree$complete = FALSE
+  tree = drop.tip.with.taxonomy(tree, remove_tips, taxonomy = taxonomy)
+  tree$tree$complete = FALSE
   tree
 }
 
@@ -300,7 +300,7 @@ prune.SAtree.to.ranges = function(tree, taxonomy = NULL, fossils = NULL) {
   }
 
   fossils = fossils[!fossils$tip.label %in% tree$tip.label[remove_tips],]
-  dropped_result = drop.tip.with.taxonomy(tree, taxonomy = taxonomy, remove_tips)
+  dropped_result = drop.tip.with.taxonomy(tree, remove_tips, taxonomy = taxonomy)
 
   list(tree = dropped_result$tree, taxonomy = dropped_result$taxonomy, fossils = fossils)
 }
