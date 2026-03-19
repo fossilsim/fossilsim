@@ -12,13 +12,8 @@
 #' @return Array of 'numbsim' SAtrees with the time since origin / most recent common ancestor being 'age'. If the tree goes extinct or
 #' no tips are sampled (only possible when mrca = FALSE), return value is '0'. If only one extant and no extinct tips are sampled, return value is '1'.
 #' @examples
-#' age = 1
-#' lambda = 2.0
-#' mu = 0.5
-#' psi = 0.6
-#' numbsim = 2
 #' if (requireNamespace("TreeSim", quietly = TRUE)) {
-#' sim.fbd.age(age, numbsim, lambda, mu, psi)
+#' sim.fbd.age(age = 1, numbsim = 2, lambda = 2.0, mu = 0.5, psi = 0.6)
 #' }
 #' @keywords fossilized birth death
 #' @export
@@ -38,21 +33,11 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 
     tree = SAtree.from.fossils(t,f)$tree
 
-    node.ages = n.ages(tree)
-    origin = max(n.ages(tree)) + tree$root.edge
-
     if( !complete ) {
-      tree = sampled.tree.from.combined(tree, rho = frac)
-      node.ages = n.ages(tree)
+      tree = sampled.tree.from.combined(tree, rho = frac)$tree
     }
 
     trees[[i]] = tree
-
-    if( !mrca ) {
-      trees[[i]]$root.edge = origin - max(node.ages)
-    }
-
-    trees[[i]] = SAtree(trees[[i]], complete)
   }
   return(trees)
 }
@@ -69,10 +54,9 @@ sim.fbd.age<-function(age, numbsim, lambda, mu, psi, frac = 1, mrca = FALSE, com
 #' @param complete whether to return the complete tree (with non-sampled lineages) or the reconstructed tree (with unsampled lineages removed).
 #' @return List of numbsim simulated SAtrees with n extant sampled tips.
 #' @examples
-#' n = 10
-#' numbsim = 1
 #' if (requireNamespace("TreeSim", quietly = TRUE)) {
-#' sim.fbd.rateshift.taxa(n, numbsim, lambda = c(2,1), mu = c(0,0.3), psi = c(1,0.1), times = c(0,0.3))
+#' sim.fbd.rateshift.taxa(n = 10, numbsim = 1, lambda = c(2, 1), mu = c(0, 0.3), 
+#'                       psi = c(1, 0.1), times = c(0, 0.3))
 #' }
 #' @keywords fossilized birth death
 #' @export
@@ -126,13 +110,8 @@ sim.fbd.rateshift.taxa <- function(n, numbsim, lambda, mu, psi, times, complete 
 #' @param complete whether to return the complete tree (with non-sampled lineages) or the reconstructed tree (with unsampled lineages removed).
 #' @return List of numbsim simulated SAtrees with n extant sampled tips.
 #' @examples
-#' n = 10
-#' lambda = 2.0
-#' mu = 0.5
-#' psi = 0.6
-#' numbsim = 2
 #' if (requireNamespace("TreeSim", quietly = TRUE)) {
-#' sim.fbd.taxa(n, numbsim, lambda, mu, psi)
+#' sim.fbd.taxa(n = 10, numbsim = 2, lambda = 2.0, mu = 0.5, psi = 0.6)
 #' }
 #' @keywords fossilized birth death
 #' @export

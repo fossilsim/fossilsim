@@ -43,13 +43,8 @@ no tips are sampled (only possible when mrca = FALSE), return value is '0'. If o
 sim.fbd.age: Simulating fossilized birth-death trees of a fixed age.
 }
 \examples{
-age = 1
-lambda = 2.0
-mu = 0.5
-psi = 0.6
-numbsim = 2
 if (requireNamespace("TreeSim", quietly = TRUE)) {
-sim.fbd.age(age, numbsim, lambda, mu, psi)
+sim.fbd.age(age = 1, numbsim = 2, lambda = 2.0, mu = 0.5, psi = 0.6)
 }
 }
 \keyword{birth}

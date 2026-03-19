@@ -181,12 +181,16 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
 }
 
 #' Removes all unsampled lineages from a combined tree.
-#' Extinct tips are only sampled if they are fossils. With default settings all extant tips are sampled.
+#' 
+#' Extinct tips are only sampled if they are fossil samples (i.e. on zero-length edges). With default settings all extant tips are sampled.
+#' If a `taxonomy` object is provided, it will be updated with the removed edges and also returned.
 #'
 #' @param tree Combined tree with fossils.
+#' @param taxonomy Optional taxonomy map for the tree.
 #' @param rho Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.
 #' @param sampled_tips List of tip labels corresponding to sampled extant tips.
-#' @return Sampled tree with fossils.
+#' @param tol Rounding tolerance for identifying extant tips.
+#' @return list containing the sampled tree with fossils, and the updated taxonomy if provided.
 #' @examples
 #' # simulate tree
 #' t = ape::rtree(6)
@@ -198,10 +202,10 @@ SAtree.from.fossils = function(tree, fossils, taxonomy = NULL, tip_order = c("ol
 #' t2 = SAtree.from.fossils(t,f)$tree
 #'
 #' # transform to sampled tree
-#' t3 = sampled.tree.from.combined(t2)
+#' t3 = sampled.tree.from.combined(t2)$tree
 #' plot(t3)
 #' @export
-sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
+sampled.tree.from.combined = function(tree, taxonomy = NULL, rho = 1, sampled_tips = NULL, tol = 1e-8) {
   if(!("SAtree" %in% class(tree)) ){
     if("phylo" %in% class(tree)) tree = SAtree(tree)
     else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
@@ -214,7 +218,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
   times = max(depths) - depths
 
   for(i in 1:length(tree$tip.label)) {
-    if(times[i] < 1e-5) { #extant tip
+    if(times[i] < tol) { #extant tip
       if((!is.null(sampled_tips) && !tree$tip.label[i] %in% sampled_tips) || #tip not sampled from sampled_tips
          (is.null(sampled_tips) && runif(1) > rho)) { #tip not sampled from rho
         remove_tips = c(remove_tips, i)
@@ -222,13 +226,13 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
     }
     else if(tree$complete) { #extinct tip
       edge = which(tree$edge[,2]==i)
-      if(tree$edge.length[edge] > 1e-5) { #not on zero-length edge = not a fossil
+      if(tree$edge.length[edge] > tol) { #not on zero-length edge = not a fossil
         remove_tips = c(remove_tips, i)
       }
     }
   }
 
-  tree = ape::drop.tip(tree, remove_tips)
+  tree = drop.tip.with.taxonomy(tree, remove_tips, taxonomy)
   tree$complete = FALSE
   tree
 }
@@ -257,7 +261,7 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
 #' t4 = prune.SAtree.to.ranges(t2)$tree
 #'
 #' # or transform to sampled tree first
-#' t3 = sampled.tree.from.combined(t2)
+#' t3 = sampled.tree.from.combined(t2)$tree
 #' t4 = prune.SAtree.to.ranges(t3)$tree
 #' plot(t4)
 #' @export
@@ -281,12 +285,12 @@ prune.SAtree.to.ranges = function(tree, taxonomy = NULL, fossils = NULL) {
     mn = idx[which.min(ages[idx])]
     mx = idx[which.max(ages[idx])]
 
-    if(!is.null(fossils)) fossils[fossils$tip.label == tree$tip.label[mn]] = paste0(tip_sp, "_first")
-    tree$tip.label[mn] = paste0(tip_sp, "_first")
+    if(!is.null(fossils)) fossils[fossils$tip.label == tree$tip.label[mx]] = paste0(name, "_first")
+    tree$tip.label[mx] = paste0(name, "_first")
 
     if(mn != mx) {
-      if(!is.null(fossils)) fossils[fossils$tip.label == tree$tip.label[mx]] = paste0(tip_sp, "_last")
-      tree$tip.label[mx] = paste0(tip_sp, "_last")
+      if(!is.null(fossils)) fossils[fossils$tip.label == tree$tip.label[mn]] = paste0(name, "_last")
+      tree$tip.label[mn] = paste0(name, "_last")
     }
 
     for(id in idx) {

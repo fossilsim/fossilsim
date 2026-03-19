@@ -36,7 +36,7 @@
 #'
 #' @export
 # function to generate tree and corresponding fossil object for the reconstructed tree
-reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order = c("oldest_first", "youngest_first")){
+reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order = c("oldest_first", "youngest_first")) {
 
   if(!is.null(tree) && !"phylo" %in% class(tree))
     stop("tree must be an object of class \"phylo\"")
@@ -68,7 +68,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order 
   }
 
   # removes all unsampled lineages
-  samp.tree = sampled.tree.from.combined(sa.tree, rho = rho, sampled_tips = samp_tips)
+  samp.tree = sampled.tree.from.combined(sa.tree, rho = rho, sampled_tips = samp_tips)$tree
 
   # identify sampled ancestors and drop from the sampled tree
   sa = c()
@@ -96,10 +96,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order 
         j = which(no.sa.tree$tip.label==s2)
       }
       h = nages[[which(samp.tree$tip.label==i)]]
-      f.new = rbind(f.new, data.frame(sp = j,
-                                      edge = j,
-                                      hmin = h,
-                                      hmax = h))
+      f.new = rbind(f.new, data.frame(sp = j, edge = j, hmin = h, hmax = h))
     }
     f.new = fossils(f.new)
   } else {
@@ -148,8 +145,8 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order 
 #' }
 #' @export
 beast.fbd.format = function(tree, fossils, rho = 1, sampled_tips = NULL, tip_order = "oldest_first", convert.to.ranges = FALSE, ...) {
-  proc_tree = sampled.tree.from.combined(SAtree.from.fossils(tree, fossils, tip_order = tip_order)$tree, rho = rho, sampled_tips = sampled_tips)
-  if(convert.to.ranges) proc_tree = prune.SAtree.to.ranges(proc_tree)
+  proc_tree = sampled.tree.from.combined(SAtree.from.fossils(tree, fossils, tip_order = tip_order)$tree, rho = rho, sampled_tips = sampled_tips)$tree
+  if(convert.to.ranges) proc_tree = prune.SAtree.to.ranges(proc_tree)$tree
   ape::write.tree(proc_tree, ...)
 }
 

@@ -29,10 +29,9 @@ List of numbsim simulated SAtrees with n extant sampled tips.
 sim.fbd.rateshift.taxa: Simulating fossilized birth death trees incorporating rate shifts.
 }
 \examples{
-n = 10
-numbsim = 1
 if (requireNamespace("TreeSim", quietly = TRUE)) {
-sim.fbd.rateshift.taxa(n, numbsim, lambda = c(2,1), mu = c(0,0.3), psi = c(1,0.1), times = c(0,0.3))
+sim.fbd.rateshift.taxa(n = 10, numbsim = 1, lambda = c(2, 1), mu = c(0, 0.3), 
+                      psi = c(1, 0.1), times = c(0, 0.3))
 }
 }
 \keyword{birth}

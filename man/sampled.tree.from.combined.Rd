@@ -2,24 +2,33 @@
 % Please edit documentation in R/SAtree.R
 \name{sampled.tree.from.combined}
 \alias{sampled.tree.from.combined}
-\title{Removes all unsampled lineages from a combined tree.
-Extinct tips are only sampled if they are fossils. With default settings all extant tips are sampled.}
+\title{Removes all unsampled lineages from a combined tree.}
 \usage{
-sampled.tree.from.combined(tree, rho = 1, sampled_tips = NULL)
+sampled.tree.from.combined(
+  tree,
+  taxonomy = NULL,
+  rho = 1,
+  sampled_tips = NULL,
+  tol = 1e-08
+)
 }
 \arguments{
 \item{tree}{Combined tree with fossils.}
 
+\item{taxonomy}{Optional taxonomy map for the tree.}
+
 \item{rho}{Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.}
 
 \item{sampled_tips}{List of tip labels corresponding to sampled extant tips.}
+
+\item{tol}{Rounding tolerance for identifying extant tips.}
 }
 \value{
-Sampled tree with fossils.
+list containing the sampled tree with fossils, and the updated taxonomy if provided.
 }
 \description{
-Removes all unsampled lineages from a combined tree.
-Extinct tips are only sampled if they are fossils. With default settings all extant tips are sampled.
+Extinct tips are only sampled if they are fossil samples (i.e. on zero-length edges). With default settings all extant tips are sampled.
+If a `taxonomy` object is provided, it will be updated with the removed edges and also returned.
 }
 \examples{
 # simulate tree
@@ -32,6 +41,6 @@ f = sim.fossils.poisson(rate = 2, tree = t)
 t2 = SAtree.from.fossils(t,f)$tree
 
 # transform to sampled tree
-t3 = sampled.tree.from.combined(t2)
+t3 = sampled.tree.from.combined(t2)$tree
 plot(t3)
 }

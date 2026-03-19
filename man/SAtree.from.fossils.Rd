@@ -22,7 +22,7 @@ SAtree.from.fossils(
 (indexes increase towards the past).}
 }
 \value{
-A list of `tree`, the SA tree integrating the fossils, `fossils`, the fossils object updated with the tip label of each sample,
+A list of `tree`, the SA tree integrating the fossils, `fossils`, the fossils object updated with the tip label of each sample (in `tip.label`),
 and updated `taxonomy` object if provided.
 }
 \description{

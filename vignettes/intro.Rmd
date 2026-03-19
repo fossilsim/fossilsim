@@ -1,10 +1,10 @@
 ---
-title: "The FossilSim package"
+title: "Introduction to the FossilSim package"
 author: "Joelle Barido-Sottani, Rachel C. M. Warnock"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to FossilSim}
+  %\VignetteIndexEntry{Introduction to the FossilSim package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -4,17 +4,22 @@
 \alias{prune.SAtree.to.ranges}
 \title{Removes all intermediate fossils from a combined tree and labels the first and last fossils of each species.}
 \usage{
-prune.SAtree.to.ranges(tree)
+prune.SAtree.to.ranges(tree, taxonomy = NULL, fossils = NULL)
 }
 \arguments{
 \item{tree}{Combined SAtree with fossils.}
+
+\item{taxonomy}{Optional `taxonomy` object to update with the removed fossils.}
+
+\item{fossils}{Options `fossils` object to update with the removed fossils and new labels.}
 }
 \value{
-Tree with pruned fossils.
+List of tree with pruned fossils, and updated taxonomy and fossils if provided.
 }
 \description{
 First and last are based on the order used in the `\link{SAtree.from.fossils}` function, i.e. youngest first or oldest first.
 Can be used with sampled or complete trees. If only one fossil is present for a particular species it is labelled as first.
+If provided, the `taxonomy` and `fossils` objects will also be updated to match the pruned tree.
 }
 \examples{
 # simulate tree
@@ -27,11 +32,11 @@ f = sim.fossils.poisson(rate = 2, tree = t)
 t2 = SAtree.from.fossils(t,f)$tree
 
 # prune the tree to keep only ranges
-t4 = prune.SAtree.to.ranges(t2)
+t4 = prune.SAtree.to.ranges(t2)$tree
 
 # or transform to sampled tree first
-t3 = sampled.tree.from.combined(t2)
-t4 = prune.SAtree.to.ranges(t3)
+t3 = sampled.tree.from.combined(t2)$tree
+t4 = prune.SAtree.to.ranges(t3)$tree
 plot(t4)
 }
 \seealso{
