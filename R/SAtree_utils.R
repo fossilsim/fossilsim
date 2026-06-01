@@ -50,6 +50,7 @@ drop.tip.with.taxonomy = function(phy, remove_tips, taxonomy = NULL) {
   }
   
   if(!is.null(taxonomy)) tax = taxonomy[taxonomy$edge %in% phy$edge[keep,],]
+  else tax = NULL
   
   phy$edge <- phy$edge[keep, ]
   phy$edge.length <- phy$edge.length[keep]
