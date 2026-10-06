@@ -155,6 +155,7 @@ SAtree.from.fossils = function(tree, fossils, tip_order = c("oldest_first", "you
 #' @param tree Combined tree with fossils.
 #' @param rho Sampling probability of extant tips. Default 1, will be disregarded if sampled_tips is not null.
 #' @param sampled_tips List of tip labels corresponding to sampled extant tips.
+#' @param tol Rounding error tolerance for extant tip ages.
 #' @return Sampled tree with fossils.
 #' @examples
 #' # simulate tree
@@ -170,20 +171,20 @@ SAtree.from.fossils = function(tree, fossils, tip_order = c("oldest_first", "you
 #' t3 = sampled.tree.from.combined(t2)
 #' plot(t3)
 #' @export
-sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
+sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL, tol = NULL) {
   if(!("SAtree" %in% class(tree)) ){
     if("phylo" %in% class(tree)) tree = SAtree(tree)
     else stop(paste('object "',class(tree),'" is not of class "SAtree"',sep=""))
   }
   if(!tree$complete && rho == 1 && is.null(sampled_tips)) stop("Tree is already sampled")
+  
+  if(is.null(tol)) tol = max(min(tree$edge.length)/100, 1e-8)
 
   remove_tips = c()
-
-  depths = ape::node.depth.edgelength(tree)
-  times = max(depths) - depths
+  times = n.ages(tree)
 
   for(i in 1:length(tree$tip.label)) {
-    if(times[i] < 1e-5) { #extant tip
+    if(times[i] < tol) { #extant tip
       if((!is.null(sampled_tips) && !tree$tip.label[i] %in% sampled_tips) || #tip not sampled from sampled_tips
          (is.null(sampled_tips) && runif(1) > rho)) { #tip not sampled from rho
         remove_tips = c(remove_tips, i)
@@ -196,9 +197,20 @@ sampled.tree.from.combined = function(tree, rho = 1, sampled_tips = NULL) {
       }
     }
   }
+  
+  # check if we need to store the tree origin time (e.g. if removing all extant tips)
+  remaining_tips = setdiff(1:length(tree$tip.label), remove_tips)
+  offset = min(times[remaining_tips])
+  if(offset < tol) offset = 0
+  tree$origin.time = NULL
 
   tree = ape::drop.tip(tree, remove_tips)
   tree$complete = FALSE
+  
+  if(offset > 0) {
+    tree$origin.time = tree.max(tree) + offset
+  }
+  
   tree
 }
 

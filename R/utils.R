@@ -16,6 +16,8 @@
 #'
 #' @export
 tree.max = function(tree, root.edge = TRUE){
+  if(!is.null(tree$origin.time)) return(tree$origin.time)
+  
   node.ages<-n.ages(tree)
   if(root.edge && exists("root.edge",tree) )
     ba = max(node.ages) + tree$root.edge
@@ -33,7 +35,7 @@ n.ages <- function(tree){
   names(node.ages) <- 1:(tree$Nnode+length(tree$tip))
 
   # adding possible offset if tree fully extinct
-  if(!is.null(tree$root.time)) node.ages = node.ages + tree$root.time - max(node.ages)
+  if(!is.null(tree$origin.time)) node.ages = node.ages + tree$origin.time - max(node.ages)
 
   return(node.ages)
 }
