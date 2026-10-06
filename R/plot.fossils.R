@@ -123,7 +123,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     stop("rho must be a probability between 0 and 1")
 
   # tolerance for extant tips and interval/ fossil age comparisons
-  tol = min((min(tree$edge.length)/100), 1e-8)
+  tol = max((min(tree$edge.length)/100), 1e-8)
 
   # If there are no extant samples, simulate extant samples
   if(!any( abs(fossils$hmax) < tol )){
