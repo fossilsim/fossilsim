@@ -47,7 +47,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order 
   if(!(rho >= 0 && rho <= 1))
     stop("rho must be a probability between 0 and 1")
 
-  tol = min((min(tree$edge.length)/100),1e-8)
+  tol = max((min(tree$edge.length)/100),1e-8)
   samp_tips = NULL
 
   if(any( abs(fossils$hmax) < tol )){
@@ -81,7 +81,7 @@ reconstructed.tree.fossils.objects = function(fossils, tree, rho = 1, tip_order 
   # create new fossils object based on the reconstructed tree
   # & deal with sampled ancestors
   if(length(fossils$sp) > 0){
-    f.new = data.frame()
+    f.new = fossils()
     nages = n.ages(samp.tree)
     for(i in sa){
       anc = ancestor(which(samp.tree$tip.label==i), samp.tree)

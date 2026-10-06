@@ -123,7 +123,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
     stop("rho must be a probability between 0 and 1")
 
   # tolerance for extant tips and interval/ fossil age comparisons
-  tol = min((min(tree$edge.length)/100), 1e-8)
+  tol = max((min(tree$edge.length)/100), 1e-8)
 
   # If there are no extant samples, simulate extant samples
   if(!any( abs(fossils$hmax) < tol )){
@@ -132,6 +132,14 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
 
   if(is.null(tree$root.edge))
     root.edge = FALSE
+  
+  if(reconstructed){
+    out = reconstructed.tree.fossils.objects(fossils, tree, rho = rho)
+    
+    fossils = out$fossils
+    tree = out$tree
+    if(is.null(tree$root.edge)) root.edge = FALSE
+  }
 
   if(is.null(max.age))
     ba = tree.max(tree, root.edge = root.edge)
@@ -139,15 +147,7 @@ plot.fossils = function(x, tree, show.fossils = TRUE, show.tree = TRUE, show.ran
 
   offset = 0 # distance from youngest tip to present
   if(!is.null(tree$origin.time)) offset = min(n.ages(tree))
-
-  # note max.age defined above based on the complete tree
-  if(reconstructed){
-    out = reconstructed.tree.fossils.objects(fossils, tree)
-    fossils = out$fossils
-    tree = out$tree
-    if(is.null(tree$root.edge)) root.edge = FALSE
-  }
-
+  
   # check the tree
   Ntip <- length(tree$tip.label)
   if (Ntip < 2) {

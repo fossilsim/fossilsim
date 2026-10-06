@@ -82,6 +82,7 @@ remove.stem.fossils <- function(fossils, tree) {
   stem <- setdiff(fetch.descendants(tree$edge[,1], tree, TRUE), fetch.descendants(crownNode, tree, TRUE))
 
   remove <- which(fossils$sp %in% stem)
+  if(!is.null(tree$root.edge)) remove = c(remove, which(fossils$sp == length(tree$tip.label) + 1))
   if (length(remove > 0)) {
     fossils <- fossils[-remove, ]
     if(length(fossils$sp) > 0) row.names(fossils) <- as.character(c(1:length(fossils$sp)))

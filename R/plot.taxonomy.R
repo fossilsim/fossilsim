@@ -57,7 +57,7 @@ plot.taxonomy = function(x, tree, show.mode = TRUE, show.legend = TRUE, legend.p
     stop("tree must be an object of class \"phylo\"")
 
   # tolerance for extant tips and interval/ fossil age comparisons #NEEDED
-  tol = min((min(tree$edge.length)/100), 1e-8)
+  tol = max((min(tree$edge.length)/100), 1e-8)
 
   if(is.null(tree$root.edge))
     root.edge = FALSE
