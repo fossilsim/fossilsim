@@ -4,7 +4,7 @@ Title: Simulation and Plots for Fossil and Taxonomy Data
 Version: 2.4.4
 Authors@R: c(person("Rachel", "Warnock", email="rachel.warnock@fau.de", role=c("aut","cph")), 
   person("Joëlle", "Barido-Sottani", email="joelle.barido-sottani@m4x.org", role=c("aut","cre","cph")), 
-  person("Walker", "Pett", role=c("aut","cph")), person("Joseph", "O'Reilly", role=c("aut","cph")),
+  person("June", "Walker", role=c("aut","cph")), person("Joseph", "O'Reilly", role=c("aut","cph")),
   person("Ugnė", "Stolz", role=c("aut","cph")))
 Description: Simulating and plotting taxonomy and fossil data on phylogenetic trees under mechanistic
     models of speciation, preservation and sampling.

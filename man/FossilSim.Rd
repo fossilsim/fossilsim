@@ -67,7 +67,7 @@ plot(f, tree = t, show.strata = TRUE, max.age = tree.max(t), strata = 4)
 Authors:
 \itemize{
   \item Rachel Warnock \email{rachel.warnock@fau.de} [copyright holder]
-  \item Walker Pett [copyright holder]
+  \item June Walker [copyright holder]
   \item Joseph O'Reilly [copyright holder]
   \item Ugnė Stolz [copyright holder]
 }
