@@ -1,6 +1,6 @@
 ---
 title: "Simulating trees from the fossilized birth-death process"
-author: "Walker Pett"
+author: "June Walker"
 date: "`r Sys.Date()`"
 output: html_document
 vignette: >

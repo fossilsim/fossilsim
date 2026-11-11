@@ -50,7 +50,7 @@ The following vignettes are available via CRAN and provide detailed examples:
 
 ### Contributors
 * Joëlle Barido-Sottani  
-* Walker Pett
+* June Walker
 * Joseph O'Reilly
 * Ugnė Stolz
 * Rachel Warnock
